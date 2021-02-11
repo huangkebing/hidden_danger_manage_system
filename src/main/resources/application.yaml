@@ -1,3 +1,17 @@
+server:
+  port: 8706
 spring:
-  profiles:
-    active: dev
+  #数据源
+  datasource:
+    url: jdbc:mysql://101.37.16.60:3308/hdms?useUnicode=true&characterEncoding=utf8&autoReconnect=true&useSSL=false
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  #redis
+  redis:
+    host: 101.37.16.60
+    port: 6379
+    password: 123456
+  activiti:
+    database-schema-update: true
+    db-history-used: true
