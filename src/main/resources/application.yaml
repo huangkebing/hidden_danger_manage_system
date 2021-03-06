@@ -15,3 +15,11 @@ spring:
   activiti:
     database-schema-update: true
     db-history-used: true
+  #邮件配置
+  #mail:
+  #  host: smtp.163.com
+  #  port: 25
+  #  protocol: stmp
+  #  username: hdmsserver@163.com
+  #  password: XBXBEETDWDDBJGWS
+  #  default-encoding: UTF-8
