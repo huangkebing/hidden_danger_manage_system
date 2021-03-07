@@ -11,7 +11,7 @@ public class ValidateCodeConstants {
     public static final int CODE_LENGTH = 6;
 
     //验证码有效时间 15分钟
-    public static final int EXPIRE_IN = 15;
+    public static final int EXPIRE_IN = 5;
 
 
 }

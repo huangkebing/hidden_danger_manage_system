@@ -47,10 +47,9 @@ public class ValidateCodeMailSender implements MailSender {
      * @param message 邮件动态的信息，本类中为登录的验证码
      */
     private String contextBuild(String message) {
-        return "hdms系统登录验证码：" + message +
-                "，有效时间" +
+        return "【hdms系统】登录验证码：" + message + "，" +
                 ValidateCodeConstants.EXPIRE_IN +
-                "分钟。" +
+                "分钟内有效。" +
                 "\n -------------------- \n" +
                 "来自hdms安全隐患管理系统，请勿泄漏验证码！";
     }
