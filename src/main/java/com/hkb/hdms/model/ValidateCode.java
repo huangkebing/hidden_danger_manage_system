@@ -22,7 +22,7 @@ public class ValidateCode {
 
     public ValidateCode(String code, int expireIn) {
         this.code = code;
-        this.expireTime = LocalDateTime.now().plusSeconds(expireIn);
+        this.expireTime = LocalDateTime.now().plusMinutes(expireIn);
     }
 
     //校验是否验证码已过期

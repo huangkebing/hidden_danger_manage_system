@@ -1,6 +1,8 @@
 package com.hkb.hdms.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -9,11 +11,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author huangkebing
  * 2021/02/11
  */
-@Controller
+@Controller("/login")
 public class LoginController {
-    @RequestMapping("/hello")
+
+    @GetMapping("/validateCode/{toMail}")
     @ResponseBody
-    public String hello(){
+    public String validateCode(@PathVariable String toMail){
         return "hello";
     }
 }
