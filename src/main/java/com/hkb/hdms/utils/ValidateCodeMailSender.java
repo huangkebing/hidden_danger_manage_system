@@ -5,11 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.stereotype.Component;
 
 /**
  * @author huangkebing
  * 2021/03/06
  */
+@Component
 public class ValidateCodeMailSender implements MailSender {
 
     //发送邮件的邮箱
@@ -17,10 +19,14 @@ public class ValidateCodeMailSender implements MailSender {
     private String from;
 
     //邮件主题
-    private static final String SUBJECT = "登录邮箱验证码";
+    private static final String SUBJECT = "hdms系统登录验证码";
+
+    private final JavaMailSender sender;
 
     @Autowired
-    private JavaMailSender sender;
+    public ValidateCodeMailSender(JavaMailSender sender) {
+        this.sender = sender;
+    }
 
     @Override
     public void sendMail(String message, String... to) {

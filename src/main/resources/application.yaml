@@ -19,7 +19,7 @@ spring:
   mail:
     host: smtp.163.com
     port: 25
-    protocol: stmp
+    protocol: smtp
     username: hdmsserver@163.com
     password: XBXBEETDWDDBJGWS
     default-encoding: UTF-8
