@@ -4,7 +4,7 @@ create table hdms_user(
     `email` varchar(25) not null comment '用户邮箱',
     `name` varchar(15) not null comment '用户昵称',
     `password` varchar(20) not null comment '密码',
-    `role` int unsigned not null comment '用户角色 0=技术人员，1=资深人员，2=主管',
+    `role` int unsigned not null comment '用户角色 1=网格员，2=网格长，3=安监办，4=安监长，5=系统管理员',
     `group` varchar(30) not null comment '用户分组',
     `create` timestamp not null comment '创建时间',
     `modify` timestamp not null comment '修改时间',
