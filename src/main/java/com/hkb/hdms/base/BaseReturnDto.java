@@ -22,4 +22,9 @@ public class BaseReturnDto {
     private String message;
 
     private Map<String, Object> data;
+
+    public BaseReturnDto(int code, String message) {
+        this.code = code;
+        this.message = message;
+    }
 }

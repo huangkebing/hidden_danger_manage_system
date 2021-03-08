@@ -1,5 +1,7 @@
 package com.hkb.hdms.controller;
 
+import com.hkb.hdms.service.ValidateCodeService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,12 +13,19 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @author huangkebing
  * 2021/02/11
  */
-@Controller("/login")
+@Controller
 public class LoginController {
 
-    @GetMapping("/validateCode/{toMail}")
+    private final ValidateCodeService validateCodeService;
+
+    @Autowired
+    public LoginController(ValidateCodeService validateCodeService) {
+        this.validateCodeService = validateCodeService;
+    }
+
+    @GetMapping("/login/validateCode/{toMail}")
     @ResponseBody
-    public String validateCode(@PathVariable String toMail){
-        return "hello";
+    public Object validateCode(@PathVariable String toMail){
+        return validateCodeService.createCode(toMail);
     }
 }
