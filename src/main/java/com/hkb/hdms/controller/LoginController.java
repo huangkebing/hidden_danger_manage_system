@@ -24,7 +24,7 @@ public class LoginController {
 
     @GetMapping("/login.html")
     public String toLogin(){
-        return "login4";
+        return "login";
     }
 
     @GetMapping("/login/validateCode/{toMail}")
