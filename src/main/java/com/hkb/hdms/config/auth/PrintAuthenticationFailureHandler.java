@@ -21,6 +21,7 @@ import java.io.PrintWriter;
 public class PrintAuthenticationFailureHandler implements AuthenticationFailureHandler {
     @Override
     public void onAuthenticationFailure(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException {
+        //认证失败，返回一个JSON数据包，方便前端给出提示信息
         BaseReturnDto result = new BaseReturnDto(ReturnConstants.LOGIN_FAILURE_CODE, e.getMessage());
         httpServletResponse.setCharacterEncoding("UTF-8");
         httpServletResponse.setContentType("application/json; charset=utf-8");

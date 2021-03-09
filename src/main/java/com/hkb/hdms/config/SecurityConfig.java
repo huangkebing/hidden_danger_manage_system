@@ -4,8 +4,6 @@ import com.hkb.hdms.config.auth.EmailAuthenticationProcessingFilter;
 import com.hkb.hdms.config.auth.EmailAuthenticationProvider;
 import com.hkb.hdms.config.auth.PrintAuthenticationFailureHandler;
 import com.hkb.hdms.config.auth.UsernamePasswordAuthenticationProvider;
-import com.hkb.hdms.service.UserService;
-import com.hkb.hdms.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +12,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -34,17 +31,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UsernamePasswordAuthenticationProvider usernamePasswordAuthenticationProvider;
 
-    private final UserService userService;
-
     @Autowired
     public SecurityConfig(EmailAuthenticationProcessingFilter emailAuthenticationProcessingFilter,
                           EmailAuthenticationProvider emailAuthenticationProvider,
-                          UsernamePasswordAuthenticationProvider usernamePasswordAuthenticationProvider,
-                          UserService userService) {
+                          UsernamePasswordAuthenticationProvider usernamePasswordAuthenticationProvider) {
         this.emailAuthenticationProcessingFilter = emailAuthenticationProcessingFilter;
         this.emailAuthenticationProvider = emailAuthenticationProvider;
         this.usernamePasswordAuthenticationProvider = usernamePasswordAuthenticationProvider;
-        this.userService = userService;
     }
 
     @Bean
@@ -64,7 +57,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    protected void configure(AuthenticationManagerBuilder auth) {
         //添加自定义认证
         auth.authenticationProvider(usernamePasswordAuthenticationProvider);
         auth.authenticationProvider(emailAuthenticationProvider);
@@ -75,15 +68,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         emailAuthenticationProcessingFilter.setAuthenticationFailureHandler(printAuthenticationFailureHandler());
         http.authorizeRequests()
                 .antMatchers("/","/index").permitAll()
-                .antMatchers("/register","/login","/toLogin").permitAll()
+                .antMatchers("/login","/login.html").permitAll()
                 .antMatchers("/*").authenticated();
 
         // 登录配置
         http.formLogin()
                 .usernameParameter("username")
                 .passwordParameter("password")
-                .loginPage("/toLogin")
-                .loginProcessingUrl("/login") // 登陆表单提交请求
+                .loginPage("/login.html")
+                .loginProcessingUrl("/login/password") // 登陆表单提交请求
                 .defaultSuccessUrl("/index")// 设置默认登录成功后跳转的页面
                 .failureHandler(printAuthenticationFailureHandler());
 

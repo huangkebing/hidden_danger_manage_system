@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ * 邮箱验证码Filter
+ *
  * @author huangkebing
  * 2021/03/09
  */
