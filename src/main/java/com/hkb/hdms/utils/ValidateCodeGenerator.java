@@ -15,8 +15,8 @@ import java.util.Random;
 @Component
 public class ValidateCodeGenerator {
 
-    public ValidateCode generator() {
-        return new ValidateCode(getCode(), ValidateCodeConstants.EXPIRE_IN);
+    public ValidateCode generator(String toMail) {
+        return new ValidateCode(getCode(), ValidateCodeConstants.EXPIRE_IN, toMail);
     }
 
     /**

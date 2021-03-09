@@ -23,9 +23,20 @@ public class LoginController {
         this.validateCodeService = validateCodeService;
     }
 
+    @GetMapping("/toLogin")
+    public String toLogin(){
+        return "login4";
+    }
+
     @GetMapping("/login/validateCode/{toMail}")
     @ResponseBody
     public Object validateCode(@PathVariable String toMail){
         return validateCodeService.createCode(toMail);
+    }
+
+    @GetMapping("/hello")
+    @ResponseBody
+    public Object hello(){
+        return "hello";
     }
 }

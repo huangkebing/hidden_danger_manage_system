@@ -47,7 +47,7 @@ public class ValidateCodeServiceImpl extends ServiceImpl<UserMapper, User> imple
             return ReturnConstants.EMAIL_NOT_EXIST;
         }
 
-        ValidateCode code = codeGenerator.generator();
+        ValidateCode code = codeGenerator.generator(toMail);
 
         //验证码存入session中
         session.setAttribute(Constants.VALIDATE_CODE_KEY,code);
