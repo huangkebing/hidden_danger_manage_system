@@ -2,7 +2,9 @@ package com.hkb.hdms.config;
 
 import com.hkb.hdms.config.auth.EmailAuthenticationProcessingFilter;
 import com.hkb.hdms.config.auth.EmailAuthenticationProvider;
+import com.hkb.hdms.config.auth.PrintAuthenticationFailureHandler;
 import com.hkb.hdms.config.auth.UsernamePasswordAuthenticationProvider;
+import com.hkb.hdms.service.UserService;
 import com.hkb.hdms.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +17,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
@@ -31,13 +34,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UsernamePasswordAuthenticationProvider usernamePasswordAuthenticationProvider;
 
+    private final UserService userService;
+
     @Autowired
     public SecurityConfig(EmailAuthenticationProcessingFilter emailAuthenticationProcessingFilter,
                           EmailAuthenticationProvider emailAuthenticationProvider,
-                          UsernamePasswordAuthenticationProvider usernamePasswordAuthenticationProvider) {
+                          UsernamePasswordAuthenticationProvider usernamePasswordAuthenticationProvider,
+                          UserService userService) {
         this.emailAuthenticationProcessingFilter = emailAuthenticationProcessingFilter;
         this.emailAuthenticationProvider = emailAuthenticationProvider;
         this.usernamePasswordAuthenticationProvider = usernamePasswordAuthenticationProvider;
+        this.userService = userService;
     }
 
     @Bean
@@ -51,8 +58,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManager();
     }
 
+    @Bean
+    public AuthenticationFailureHandler printAuthenticationFailureHandler() {
+        return new PrintAuthenticationFailureHandler();
+    }
+
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) {
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         //添加自定义认证
         auth.authenticationProvider(usernamePasswordAuthenticationProvider);
         auth.authenticationProvider(emailAuthenticationProvider);
@@ -60,6 +72,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        emailAuthenticationProcessingFilter.setAuthenticationFailureHandler(printAuthenticationFailureHandler());
         http.authorizeRequests()
                 .antMatchers("/","/index").permitAll()
                 .antMatchers("/register","/login","/toLogin").permitAll()
@@ -71,7 +84,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .passwordParameter("password")
                 .loginPage("/toLogin")
                 .loginProcessingUrl("/login") // 登陆表单提交请求
-                .defaultSuccessUrl("/index"); // 设置默认登录成功后跳转的页面
+                .defaultSuccessUrl("/index")// 设置默认登录成功后跳转的页面
+                .failureHandler(printAuthenticationFailureHandler());
+
+
 
         http.headers().contentTypeOptions().disable();
         http.headers().frameOptions().disable(); // 图片跨域
