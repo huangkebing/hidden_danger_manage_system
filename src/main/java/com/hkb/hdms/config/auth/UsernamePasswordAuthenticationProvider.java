@@ -44,7 +44,7 @@ public class UsernamePasswordAuthenticationProvider implements AuthenticationPro
             throw new BadCredentialsException("该邮箱不存在");
         }
         if (!passwordEncoder.matches(password,userDetails.getPassword())){
-            throw new BadCredentialsException("登录密码错误");
+            throw new BadCredentialsException("密码错误");
         }
         //返回经过认证的Authentication
         UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(

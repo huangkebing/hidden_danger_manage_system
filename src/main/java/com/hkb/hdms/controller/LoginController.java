@@ -27,6 +27,11 @@ public class LoginController {
         return "login";
     }
 
+    @GetMapping("/index.html")
+    public String toIndex(){
+        return "index";
+    }
+
     @GetMapping("/login/validateCode/{toMail}")
     @ResponseBody
     public Object validateCode(@PathVariable String toMail){

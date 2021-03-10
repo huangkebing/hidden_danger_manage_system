@@ -1,28 +1,28 @@
 <!DOCTYPE html>
+<!--suppress ALL-->
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>登录</title>
 </head>
-<body>
-<h1>标准登录页面</h1>
-<h2>账号密码登录</h2>
-<form method="post" action="/hdms/login/password">
-    username: <input type="text" name="username"value="1216033824@qq.com"><br>
-    password: <input type="text" name="password" value="123456"><br>
+<body style="text-align: center">
+<h2>密码登录</h2>
+<form method="post" th:action="@{/login/password}">
+    username: <input type="text" name="username" value="1216033824@qq.com"><br>
+    pawssword: <input type="text" name="password" value="123456"><br>
     <input type="checkbox" value="true" name="remember-me" checked="checked">记住我<br>
     <input type="submit" value="登录">
 </form>
 <h2>邮箱登录</h2>
-<form id="loginForm" method="post" action="/hdms/login/email">
+<form id="loginForm" method="post" th:action="@{/login/email}">
     邮箱: <input type="text" name="toMail" value="1216033824@qq.com"><br>
     验证码:<input type="text" name="code">
     <button onclick="sendCode(this)">发送验证码</button>
     <br>
-    <input type="checkbox" value="true" name="remember-me" checked="checked">记住我<br>
+    <input type="checkbox" value="true" name="remember" checked="checked">记住我<br>
     <input type="submit" value="登录">
 </form>
-
+<div th:if="${param.error}" th:text="${session['SPRING_SECURITY_LAST_EXCEPTION'].message}"></div>
 <script>
     let form = new FormData(document.getElementById("loginForm"));
     let content = "发送验证码"
@@ -38,8 +38,8 @@
     }
 
     function path() {
-        let email = form.get("email");
-        return "/hdms/login/validateCode/" + email;
+        let email = form.get("toMail");
+        return "http://localhost:8706/hdms/login/validateCode/" + email;
     }
 
     let wait = 60;
@@ -49,7 +49,6 @@
             o.innerHTML = content;
             wait = 60;
         } else {
-            debugger
             o.setAttribute("disabled", true);
             o.innerHTML = wait + "秒后可以重新发送";
             wait--;
