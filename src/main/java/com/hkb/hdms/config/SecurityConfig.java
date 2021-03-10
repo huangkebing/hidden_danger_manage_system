@@ -1,5 +1,6 @@
 package com.hkb.hdms.config;
 
+import com.hkb.hdms.base.Constants;
 import com.hkb.hdms.config.auth.EmailAuthenticationProcessingFilter;
 import com.hkb.hdms.config.auth.EmailAuthenticationProvider;
 import com.hkb.hdms.config.auth.UsernamePasswordAuthenticationProvider;
@@ -13,6 +14,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
@@ -49,6 +52,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManager();
     }
 
+    @Bean
+    public AuthenticationFailureHandler getAuthenticationFailureHandler(){
+        return new SimpleUrlAuthenticationFailureHandler(Constants.LOGIN_FAILURE_URL);
+    }
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) {
         //添加自定义认证
@@ -58,6 +66,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        emailAuthenticationProcessingFilter.setAuthenticationFailureHandler(getAuthenticationFailureHandler());
         http.authorizeRequests()
                 .antMatchers("/","/index").permitAll()
                 .antMatchers("/login","/login.html").permitAll()
@@ -69,7 +78,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .passwordParameter("password")
                 .loginPage("/login.html")
                 .loginProcessingUrl("/login/password") // 登陆表单提交请求
-                .defaultSuccessUrl("/index.html");// 设置默认登录成功后跳转的页面
+                .defaultSuccessUrl("/index.html")// 设置默认登录成功后跳转的页面
+                .failureUrl(Constants.LOGIN_FAILURE_URL);
 
 
 
