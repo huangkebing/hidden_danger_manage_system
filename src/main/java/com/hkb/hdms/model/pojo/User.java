@@ -1,9 +1,6 @@
 package com.hkb.hdms.model.pojo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 import java.util.Date;
@@ -19,13 +16,21 @@ import java.util.Date;
 public class User {
     @TableId(value = "id", type = IdType.AUTO)
     private long id;
+
     private String email;
+
     private String name;
+
     private String password;
+
     private int role;
+
     @TableField("`group`")
     private String group;
-    @TableField("`create`")
+
+    @TableField(value = "`create`", fill = FieldFill.INSERT)
     private Date create;
+
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Date modify;
 }
