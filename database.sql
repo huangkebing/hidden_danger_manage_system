@@ -23,3 +23,13 @@ create table hdms_group(
     unique index (owner)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+#hdms_role 系统角色表
+create table hdms_role(
+    `id` int unsigned not null auto_increment comment 'id',
+    `name` varchar(15) not null comment '角色名',
+    `description` varchar(15) not null comment '说明',
+    `create` timestamp not null comment '创建时间',
+    `modify` timestamp not null comment '修改时间',
+    primary key (id)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+

@@ -18,7 +18,7 @@ import java.util.Date;
 @TableName("hdms_user")
 public class User {
     @TableId(value = "id", type = IdType.AUTO)
-    private int id;
+    private long id;
     private String email;
     private String name;
     private String password;
