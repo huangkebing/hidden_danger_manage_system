@@ -25,7 +25,7 @@ public class LoginController {
 
     @GetMapping("/login.html")
     public String toLogin(){
-        return "login-1";
+        return "login";
     }
 
     @GetMapping("/index.html")

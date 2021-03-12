@@ -3,61 +3,108 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>登录</title>
+    <title>隐患管理系统登录</title>
+    <link rel="stylesheet" th:href="@{/css/login.css}" media="all">
+    <script th:src="@{/js/jquery-3.5.1.min.js}" charset="utf-8"></script>
+    <script th:src="@{/layui/layui.js}" charset="utf-8"></script>
 </head>
-<body style="text-align: center">
-<h2>密码登录</h2>
-<form method="post" th:action="@{/login/password}">
-    username: <input type="text" name="username" value="1216033824@qq.com"><br>
-    pawssword: <input type="text" name="password" value="123456"><br>
-    <input type="checkbox" value="true" name="remember-me" checked="checked">记住我<br>
-    <input type="submit" value="登录">
-</form>
-<h2>邮箱登录</h2>
-<form id="loginForm" method="post" th:action="@{/login/email}">
-    邮箱: <input type="text" name="toMail" value="1216033824@qq.com"><br>
-    验证码:<input type="text" name="code">
-    <button onclick="sendCode(this)">发送验证码</button>
-    <br>
-    <input type="checkbox" value="true" name="remember" checked="checked">记住我<br>
-    <input type="submit" value="登录">
-</form>
-<div th:if="${param.error}" th:text="${session['SPRING_SECURITY_LAST_EXCEPTION'].message}"></div>
+<body>
+<div style="padding-top:120px">
+    <div class="login-wrap">
+        <div class="login-html">
+            <div class="title">
+                <h1>安全隐患管理系统</h1>
+            </div>
+            <input id="tab-1" type="radio" name="tab" class="sign-in" checked><label for="tab-1"
+                                                                                     class="tab">邮箱登录</label>
+            <input id="tab-2" type="radio" name="tab" class="sign-up"><label for="tab-2" class="tab">密码登录</label>
+            <div class="login-form">
+                <form class="sign-in-htm" method="post" th:action="@{/login/email}">
+                    <div class="group">
+                        <label for="toMail" class="label">邮&nbsp;&nbsp;&nbsp;&nbsp;箱</label>
+                        <input id="toMail" name="toMail" type="text" class="input" style="width: 240px"
+                               value="1216033824"><span style="color: #FFFFFF;font-size: 18px">@163.com</span>
+                    </div>
+                    <div class="group">
+                        <label for="code" class="label">验证码</label>
+                        <input id="code" name="code" type="text" class="input" style="width: 110px">
+                        <button class="button" type="button" style="width: 220px;cursor: pointer" id="sendCode">发送验证码
+                        </button>
+                    </div>
+                    <div class="group" hidden>
+                        <input id="check" type="checkbox" name="remember" class="check" checked>
+                        <label for="check"><span class="icon"></span>记住我</label>
+                    </div>
+                    <div style="text-align: center;color: red;font-size: 18px" th:if="${param.error1}"
+                         th:text="${session['SPRING_SECURITY_LAST_EXCEPTION'].message}"></div>
+                    <div class="group" style="padding-top: 20px">
+                        <input type="submit" class="button" style="cursor: pointer;" value="登&nbsp;录">
+                    </div>
+                </form>
+                <form class="sign-up-htm" method="post" th:action="@{/login/password}">
+                    <div class="group">
+                        <label for="username" class="label">邮箱</label>
+                        <input id="username" name="username" type="text" class="input" style="width: 250px"
+                               value="1216033824"><span style="color: #FFFFFF;font-size: 18px">@163.com</span>
+                    </div>
+                    <div class="group">
+                        <label for="password" class="label">密码</label>
+                        <input id="password" name="password" type="password" class="input" data-type="password"
+                               style="width: 350px" value="123456">
+                    </div>
+                    <div class="group" hidden>
+                        <input id="check" type="checkbox" name="remember" class="check" checked>
+                        <label for="check"><span class="icon"></span>记住我</label>
+                    </div>
+                    <div style="text-align: center;color: red;font-size: 18px" th:if="${param.error2}"
+                         th:text="${session['SPRING_SECURITY_LAST_EXCEPTION'].message}"></div>
+                    <div class="group" style="padding-top: 20px">
+                        <input type="submit" class="button" style="cursor: pointer;" value="登&nbsp;录">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
-    let form = new FormData(document.getElementById("loginForm"));
-    let content = "发送验证码"
-    function sendCode(o) {
-        let xhr = new XMLHttpRequest();
-        xhr.open('GET', path());
-        xhr.send(null);
-        xhr.onload = function () {
-            alert("验证码发送成功!");
-        }
-        content = o.innerHTML;
-        time(o);
-    }
+    layui.use(['layer'], function () {
+        let layer = layui.layer;
 
-    function path() {
-        let email = form.get("toMail");
-        return "http://localhost:8706/hdms/login/validateCode/" + email;
-    }
+        $("#sendCode").click(function () {
+            let toMail = $("#toMail").val();
+            $.ajax({
+                type: "GET",
+                url: "http://localhost:8706/hdms/login/validateCode/" + toMail,
+                success: function (result) {
+                    layer.msg('验证码发送成功!');
+                    content = $("#sendCode").html();
+                    time();
+                },
+                error: function () {
+                    layer.msg('系统错误，请联系系统管理员');
+                }
+            });
+        })
 
-    let wait = 60;
-    function time(o) {
-        if (wait == 0) {
-            o.removeAttribute("disabled");
-            o.innerHTML = content;
-            wait = 60;
-        } else {
-            o.setAttribute("disabled", true);
-            o.innerHTML = wait + "秒后可以重新发送";
-            wait--;
-            setTimeout(() => {
-                time(o)
-            }, 1000);
+        let wait = 60;
+        let content = "发送验证码"
+
+        function time(o) {
+            if (wait === 0) {
+                $("#sendCode").removeAttr("disabled");
+                $("#sendCode").html(content);
+                wait = 60;
+            } else {
+                $("#sendCode").attr("disabled", true);
+                $("#sendCode").html(wait + "秒后可以重新发送");
+                wait--;
+                setTimeout(() => {
+                    time(o)
+                }, 1000);
+            }
         }
-    }
+    })
 </script>
-
 </body>
 </html>
