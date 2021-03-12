@@ -4,6 +4,7 @@ import com.hkb.hdms.base.Constants;
 import com.hkb.hdms.config.auth.EmailAuthenticationProcessingFilter;
 import com.hkb.hdms.config.auth.EmailAuthenticationProvider;
 import com.hkb.hdms.config.auth.UsernamePasswordAuthenticationProvider;
+import com.hkb.hdms.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,8 +16,14 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+
+import javax.sql.DataSource;
 
 /**
  * @author huangkebing
@@ -32,13 +39,28 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UsernamePasswordAuthenticationProvider usernamePasswordAuthenticationProvider;
 
+    private final DataSource dataSource;
+
+    private final UserService userService;
+
     @Autowired
     public SecurityConfig(EmailAuthenticationProcessingFilter emailAuthenticationProcessingFilter,
                           EmailAuthenticationProvider emailAuthenticationProvider,
-                          UsernamePasswordAuthenticationProvider usernamePasswordAuthenticationProvider) {
+                          UsernamePasswordAuthenticationProvider usernamePasswordAuthenticationProvider,
+                          DataSource dataSource, UserService userService) {
         this.emailAuthenticationProcessingFilter = emailAuthenticationProcessingFilter;
         this.emailAuthenticationProvider = emailAuthenticationProvider;
         this.usernamePasswordAuthenticationProvider = usernamePasswordAuthenticationProvider;
+        this.dataSource = dataSource;
+        this.userService = userService;
+    }
+
+    @Bean
+    public PersistentTokenRepository persistentTokenRepository() {
+        JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();
+        jdbcTokenRepository.setDataSource(dataSource);
+        jdbcTokenRepository.setCreateTableOnStartup(false);
+        return jdbcTokenRepository;
     }
 
     @Bean
@@ -53,8 +75,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
+    public RememberMeServices getRememberMeServices(){
+        PersistentTokenBasedRememberMeServices rememberMeServices = new PersistentTokenBasedRememberMeServices("emailCookie", userService, persistentTokenRepository());
+        rememberMeServices.setTokenValiditySeconds(24 * 60 * 60);
+        rememberMeServices.setParameter("remember");
+        return rememberMeServices;
+    }
+
+    @Bean
     public AuthenticationFailureHandler getAuthenticationFailureHandler(){
-        return new SimpleUrlAuthenticationFailureHandler(Constants.LOGIN_FAILURE_URL);
+        return new SimpleUrlAuthenticationFailureHandler(Constants.LOGIN_FAILURE_URL_EMAIL);
     }
 
     @Override
@@ -67,6 +97,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         emailAuthenticationProcessingFilter.setAuthenticationFailureHandler(getAuthenticationFailureHandler());
+        emailAuthenticationProcessingFilter.setRememberMeServices(getRememberMeServices());
+
         http.authorizeRequests()
                 .antMatchers("/","/index").permitAll()
                 .antMatchers("/login","/login.html").permitAll()
@@ -79,7 +111,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .loginPage("/login.html")
                 .loginProcessingUrl("/login/password") // 登陆表单提交请求
                 .defaultSuccessUrl("/index.html")// 设置默认登录成功后跳转的页面
-                .failureUrl(Constants.LOGIN_FAILURE_URL);
+                .failureUrl(Constants.LOGIN_FAILURE_URL_PASSWORD);
 
 
 
@@ -89,7 +121,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.logout().logoutSuccessUrl("/");
 
         // 记住我配置
-        http.rememberMe().rememberMeParameter("remember");
+        http.rememberMe()
+                .key("passwordCookie")
+                .rememberMeParameter("remember")
+                .tokenRepository(persistentTokenRepository())
+                .tokenValiditySeconds(24 * 60 * 60)
+                .userDetailsService(userService);
 
         //添加自定义过滤器
         http.addFilterBefore(emailAuthenticationProcessingFilter, UsernamePasswordAuthenticationFilter.class);

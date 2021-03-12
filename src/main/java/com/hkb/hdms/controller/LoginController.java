@@ -1,5 +1,6 @@
 package com.hkb.hdms.controller;
 
+import com.hkb.hdms.base.Constants;
 import com.hkb.hdms.service.ValidateCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -24,7 +25,7 @@ public class LoginController {
 
     @GetMapping("/login.html")
     public String toLogin(){
-        return "login";
+        return "login-1";
     }
 
     @GetMapping("/index.html")
@@ -35,7 +36,7 @@ public class LoginController {
     @GetMapping("/login/validateCode/{toMail}")
     @ResponseBody
     public Object validateCode(@PathVariable String toMail){
-        return validateCodeService.createCode(toMail);
+        return validateCodeService.createCode(toMail + Constants.EMAIL_SUFFIX);
     }
 
     @GetMapping("/hello")

@@ -45,34 +45,34 @@ public class EmailAuthenticationProvider implements AuthenticationProvider {
         String code = authentication.getCredentials().toString();
         UserDetails userDetails = userService.loadUserByEmail(email);
 
-        if (Objects.isNull(userDetails)){
+        if (Objects.isNull(userDetails)) {
             throw new BadCredentialsException("该邮箱不存在");
         }
         ValidateCode validateCode = (ValidateCode) session.getAttribute(Constants.VALIDATE_CODE_KEY);
 
         //没有验证码情况
-        if(validateCode == null){
+        if (validateCode == null) {
             throw new BadCredentialsException("请先发送验证码");
         }
 
         //登录邮箱和发送验证码邮箱不同
-        if(!email.equals(validateCode.getToMail())){
+        if (!userDetails.getUsername().equals(validateCode.getToMail())) {
             throw new BadCredentialsException("请先发送验证码");
         }
 
         //验证码过期
-        if(validateCode.isExpired()){
+        if (validateCode.isExpired()) {
             throw new BadCredentialsException("验证码已过期，请重新发送");
         }
 
         //验证码错误
-        if (!passwordEncoder.matches(code,passwordEncoder.encode(validateCode.getCode()))){
+        if (!passwordEncoder.matches(code, passwordEncoder.encode(validateCode.getCode()))) {
             throw new BadCredentialsException("验证码错误");
         }
 
         //校验完成后，移除session中的值
         session.removeAttribute(Constants.VALIDATE_CODE_KEY);
-        EmailAuthenticationToken token = new EmailAuthenticationToken(email, code, Collections.emptyList());
+        EmailAuthenticationToken token = new EmailAuthenticationToken(email, userDetails.getPassword(), userDetails.getAuthorities());
         token.setDetails(authentication.getDetails());
         return token;
     }

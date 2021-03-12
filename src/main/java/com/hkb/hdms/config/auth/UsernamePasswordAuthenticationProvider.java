@@ -48,7 +48,7 @@ public class UsernamePasswordAuthenticationProvider implements AuthenticationPro
         }
         //返回经过认证的Authentication
         UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(
-                password, null, Collections.emptyList());
+                username, password, userDetails.getAuthorities());
         result.setDetails(authentication.getDetails());
         return result;
     }

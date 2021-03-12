@@ -2,6 +2,7 @@ package com.hkb.hdms.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.hkb.hdms.base.Constants;
 import com.hkb.hdms.mapper.UserMapper;
 import com.hkb.hdms.model.pojo.User;
 import com.hkb.hdms.model.pojo.UserRole;
@@ -34,6 +35,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public UserDetails loadUserByEmail(String email) {
+        email += Constants.EMAIL_SUFFIX;
         User queryUser = this.getOne(new QueryWrapper<User>().eq("email", email));
         UserDetails userDetails = null;
         if (queryUser != null) {
@@ -46,6 +48,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        username += Constants.EMAIL_SUFFIX;
         User queryUser = this.getOne(new QueryWrapper<User>().eq("email", username));
         UserDetails userDetails = null;
         if (queryUser != null) {
