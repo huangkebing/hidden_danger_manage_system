@@ -9,12 +9,14 @@
     <script th:src="@{/layuimini/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
 </head>
 <body>
-<div style="padding-top:120px">
+<div style="padding-top:150px">
     <div class="login-wrap">
+        <div class="login-top">
+            <span>安全隐患管理系统</span>
+            <span class="bg1"></span>
+            <span class="bg2"></span>
+        </div>
         <div class="login-html">
-            <div class="title">
-                <h1>安全隐患管理系统</h1>
-            </div>
             <input id="tab-1" type="radio" name="tab" class="sign-in" checked><label for="tab-1"
                                                                                      class="tab">邮箱登录</label>
             <input id="tab-2" type="radio" name="tab" class="sign-up"><label for="tab-2" class="tab">密码登录</label>
@@ -22,15 +24,17 @@
                 <form class="sign-in-htm" method="post" th:action="@{/login/email}">
                     <div class="group">
                         <label for="toMail" class="label">邮&nbsp;&nbsp;&nbsp;&nbsp;箱</label>
-                        <input id="toMail" name="toMail" type="text" class="input" style="width: 240px"
-                               value="1216033824"><span style="color: #FFFFFF;font-size: 18px">@163.com</span>
+                        <input id="toMail" name="toMail" type="text" class="input" style="width: 240px" placeholder="请输入登录邮箱"
+                               value="1216033824"><span style="color: #000000;font-size: 16px">@163.com</span>
                     </div>
+                    <div class="hr"></div>
                     <div class="group">
                         <label for="code" class="label">验证码</label>
-                        <input id="code" name="code" type="text" class="input" style="width: 110px">
-                        <button class="button" type="button" style="width: 220px;cursor: pointer" id="sendCode">发送验证码
+                        <input id="code" name="code" type="text" class="input" style="width: 110px" placeholder="验证码">
+                        <button class="button" type="button" style="line-height:15px;height:40px;width: 220px;cursor: pointer" id="sendCode">发送验证码
                         </button>
                     </div>
+                    <div class="hrCode"></div>
                     <div class="group" hidden>
                         <input id="check" type="checkbox" name="remember" class="check" checked>
                         <label for="check"><span class="icon"></span>记住我</label>
@@ -43,15 +47,17 @@
                 </form>
                 <form class="sign-up-htm" method="post" th:action="@{/login/password}">
                     <div class="group">
-                        <label for="username" class="label">邮箱</label>
-                        <input id="username" name="username" type="text" class="input" style="width: 250px"
-                               value="1216033824"><span style="color: #FFFFFF;font-size: 18px">@163.com</span>
+                        <label for="username" class="label">邮&nbsp;&nbsp;&nbsp;&nbsp;箱</label>
+                        <input id="username" name="username" type="text" class="input" style="width: 240px" placeholder="请输入登录邮箱"
+                               value="1216033824"><span style="color: #000000;font-size: 16px">@163.com</span>
                     </div>
+                    <div class="hr"></div>
                     <div class="group">
-                        <label for="password" class="label">密码</label>
+                        <label for="password" class="label">密&nbsp;&nbsp;&nbsp;&nbsp;码</label>
                         <input id="password" name="password" type="password" class="input" data-type="password"
-                               style="width: 350px" value="123456">
+                               style="width: 330px" value="123456" placeholder="请输入密码">
                     </div>
+                    <div class="hrPass"></div>
                     <div class="group" hidden>
                         <input id="check" type="checkbox" name="remember" class="check" checked>
                         <label for="check"><span class="icon"></span>记住我</label>
