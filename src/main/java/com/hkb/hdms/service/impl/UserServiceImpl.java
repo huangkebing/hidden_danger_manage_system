@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -28,15 +29,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     private final RoleService roleService;
 
+    private final HttpSession session;
+
     @Autowired
-    public UserServiceImpl(RoleService roleService) {
+    public UserServiceImpl(RoleService roleService, HttpSession session) {
         this.roleService = roleService;
+        this.session = session;
     }
 
     @Override
     public UserDetails loadUserByEmail(String email) {
         email += Constants.EMAIL_SUFFIX;
         User queryUser = this.getOne(new QueryWrapper<User>().eq("email", email));
+        session.setAttribute(Constants.LOGIN_USER_KEY,queryUser);
         UserDetails userDetails = null;
         if (queryUser != null) {
             Collection<GrantedAuthority> authorities = getAuthorities(queryUser);
@@ -50,6 +55,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         username += Constants.EMAIL_SUFFIX;
         User queryUser = this.getOne(new QueryWrapper<User>().eq("email", username));
+        session.setAttribute(Constants.LOGIN_USER_KEY,queryUser);
         UserDetails userDetails = null;
         if (queryUser != null) {
             String password = queryUser.getPassword();

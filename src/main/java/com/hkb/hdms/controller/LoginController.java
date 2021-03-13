@@ -30,7 +30,7 @@ public class LoginController {
 
     @GetMapping("/index.html")
     public String toIndex(){
-        return "index";
+        return "index1";
     }
 
     @GetMapping("/login/validateCode/{toMail}")

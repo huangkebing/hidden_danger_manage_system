@@ -16,4 +16,6 @@ public class Constants {
 
     //邮箱后缀
     public static final String EMAIL_SUFFIX = "@qq.com";
+
+    public static final String LOGIN_USER_KEY = "loginUser";
 }
