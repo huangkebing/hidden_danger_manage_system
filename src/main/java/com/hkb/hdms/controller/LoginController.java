@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
- * 登录相关Controller
+ * 用户登录相关接口
+ *
  * @author huangkebing
  * 2021/02/11
  */
@@ -30,7 +31,7 @@ public class LoginController {
 
     @GetMapping("/index.html")
     public String toIndex(){
-        return "index1";
+        return "index";
     }
 
     @GetMapping("/login/validateCode/{toMail}")
