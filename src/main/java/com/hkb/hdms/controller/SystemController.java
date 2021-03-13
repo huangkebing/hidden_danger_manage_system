@@ -15,13 +15,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("/system")
 public class SystemController {
 
+    @RequestMapping("/test.html")
+    public Object test(){
+        return "test";
+    }
+
     @GetMapping("/menuInit")
     @ResponseBody
     public Object menuInit(){
         return "{\n" +
                 "  \"homeInfo\": {\n" +
                 "    \"title\": \"首页\",\n" +
-                "    \"href\": \"page/welcome-1.html?t=1\"\n" +
+                "    \"href\": \"system/test.html\"\n" +
                 "  },\n" +
                 "  \"logoInfo\": {\n" +
                 "    \"title\": \"LAYUI MINI\",\n" +

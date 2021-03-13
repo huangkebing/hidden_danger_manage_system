@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="format-detection" content="telephone=no">
-    <link rel="icon" href="images/favicon.ico">
+    <link rel="icon" th:href="@{img/favicon.ico}">
     <link rel="stylesheet" th:href="@{/layuimini/lib/layui-v2.5.5/css/layui.css}" media="all">
     <link rel="stylesheet" th:href="@{/layuimini/css/layuimini.css}" media="all">
     <link rel="stylesheet" th:href="@{/layuimini/css/themes/default.css}" media="all">
@@ -133,7 +133,7 @@
             miniTongji = layui.miniTongji;
 
         var options = {
-            iniUrl: "http://localhost:8706/hdms/system/menuInit",    // 初始化接口
+            iniUrl: "system/menuInit",    // 初始化接口
             clearUrl: "api/clear.json", // 缓存清理接口
             urlHashLocation: true,      // 是否打开hash定位
             bgColorDefault: false,      // 主题默认配置

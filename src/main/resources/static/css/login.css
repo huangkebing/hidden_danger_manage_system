@@ -1,7 +1,7 @@
 body {
     margin: 0;
     color: #A6AEBF;
-    background: url(../img/login-bg.png) no-repeat fixed center;
+    background: url(../images/login-bg.png) no-repeat fixed center;
     font: 600 16px/18px 'Open Sans', sans-serif;
 }
 
@@ -39,7 +39,7 @@ button {
     max-width: 525px;
     min-height: 340px;
     position: relative;
-    background: url(../img/login-bg.png) no-repeat center;
+    background: url(../images/login-bg.png) no-repeat center;
     box-shadow: 0 12px 15px 0 rgba(0, 0, 0, .24), 0 17px 50px 0 rgba(0, 0, 0, .19);
 }
 
