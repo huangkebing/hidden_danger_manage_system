@@ -48,7 +48,7 @@ public class SystemController {
                 "          \"child\": [\n" +
                 "            {\n" +
                 "              \"title\": \"主页一\",\n" +
-                "              \"href\": \"page/welcome-1.html\",\n" +
+                "              \"href\": \"system/test.html\",\n" +
                 "              \"icon\": \"fa fa-tachometer\",\n" +
                 "              \"target\": \"_self\"\n" +
                 "            },\n" +

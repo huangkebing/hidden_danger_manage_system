@@ -118,7 +118,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.headers().contentTypeOptions().disable();
         http.headers().frameOptions().disable(); // 图片跨域
         http.csrf().disable();//关闭csrf功能:跨站请求伪造,默认只能通过post方式提交logout请求
-        http.logout().logoutSuccessUrl("/index.html");
+        http.logout().logoutSuccessUrl("/login.html");
 
         // 记住我配置
         http.rememberMe()
