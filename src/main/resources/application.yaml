@@ -14,9 +14,21 @@ spring:
     host: 101.37.16.60
     port: 6379
     password: 123456
+  #activiti配置
   activiti:
+    # false 数据库不存在抛出异常
+    # true 对表进行更新，表不存在则创建
+    # create_drop 启动时创建表，关闭时删除表
+    # drop_create 启动时删除旧表，创建新表
     database-schema-update: true
     db-history-used: true
+    # none 不保存任何历史数据
+    # activity 保存流程实例与流程行为，其他数据不保存
+    # audit 保存全部的流程任务及其属性，默认值
+    # full 保存流程相关的细节数据，包括一些流程参数
+    history-level: full
+    # 校验流程文件，默认校验resources下的流程文件
+    check-process-definitions: false
   #邮件配置
   mail:
     host: smtp.163.com
@@ -25,6 +37,7 @@ spring:
     username: hdmsserver@163.com
     password: XBXBEETDWDDBJGWS
     default-encoding: UTF-8
+  #thymeleaf 缓存
   thymeleaf:
     cache: false
 mybatis-plus:
