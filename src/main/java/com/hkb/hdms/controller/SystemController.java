@@ -29,7 +29,7 @@ public class SystemController {
                 "    \"href\": \"system/test.html\"\n" +
                 "  },\n" +
                 "  \"logoInfo\": {\n" +
-                "    \"title\": \"LAYUI MINI\",\n" +
+                "    \"title\": \"HDMS\",\n" +
                 "    \"image\": \"images/logo.png\",\n" +
                 "    \"href\": \"\"\n" +
                 "  },\n" +

@@ -39,10 +39,4 @@ public class LoginController {
     public Object validateCode(@PathVariable String toMail){
         return validateCodeService.createCode(toMail + Constants.EMAIL_SUFFIX);
     }
-
-    @GetMapping("/hello")
-    @ResponseBody
-    public Object hello(){
-        return "hello";
-    }
 }
