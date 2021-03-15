@@ -24,14 +24,16 @@
                 <form class="sign-in-htm" method="post" th:action="@{/login/email}">
                     <div class="group">
                         <label for="toMail" class="label">邮&nbsp;&nbsp;&nbsp;&nbsp;箱</label>
-                        <input id="toMail" name="toMail" type="text" class="input" style="width: 240px" placeholder="请输入登录邮箱"
+                        <input id="toMail" name="toMail" type="text" class="input" style="width: 240px"
+                               placeholder="请输入登录邮箱"
                                value="1216033824"><span style="color: #000000;font-size: 16px">@163.com</span>
                     </div>
                     <div class="hr"></div>
                     <div class="group">
                         <label for="code" class="label">验证码</label>
                         <input id="code" name="code" type="text" class="input" style="width: 110px" placeholder="验证码">
-                        <button class="button" type="button" style="line-height:15px;height:40px;width: 220px;cursor: pointer" id="sendCode">发送验证码
+                        <button class="button" type="button"
+                                style="line-height:15px;height:40px;width: 220px;cursor: pointer" id="sendCode">发送验证码
                         </button>
                     </div>
                     <div class="hrCode"></div>
@@ -48,7 +50,8 @@
                 <form class="sign-up-htm" method="post" th:action="@{/login/password}">
                     <div class="group">
                         <label for="username" class="label">邮&nbsp;&nbsp;&nbsp;&nbsp;箱</label>
-                        <input id="username" name="username" type="text" class="input" style="width: 240px" placeholder="请输入登录邮箱"
+                        <input id="username" name="username" type="text" class="input" style="width: 240px"
+                               placeholder="请输入登录邮箱"
                                value="1216033824"><span style="color: #000000;font-size: 16px">@163.com</span>
                     </div>
                     <div class="hr"></div>
@@ -83,12 +86,12 @@
                 type: "GET",
                 url: "http://localhost:8706/hdms/login/validateCode/" + toMail,
                 success: function (result) {
-                    layer.msg('验证码发送成功!');
+                    layer.msg('验证码发送成功!', {icon: 1});
                     content = $("#sendCode").html();
                     time();
                 },
                 error: function () {
-                    layer.msg('系统错误，请联系系统管理员');
+                    layer.msg('系统错误，请联系系统管理员', {icon: 2});
                 }
             });
         })

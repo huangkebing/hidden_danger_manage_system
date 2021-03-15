@@ -63,7 +63,7 @@
                             <hr>
                         </dd>
                         <dd>
-                            <a th:href="@{/logout}" class="login-out">退出登录</a>
+                            <a th:href="@{/logout}" id="logout" class="login-out"><span>退出登录</span></a>
                         </dd>
                     </dl>
                 </li>
@@ -120,6 +120,7 @@
 </div>
 <script th:src="@{/layuimini/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
 <script th:src="@{/layuimini/js/lay-config.js}" charset="utf-8"></script>
+<script th:src="@{/layuimini/lib/jquery-3.4.1/jquery-3.4.1.min.js}"></script>
 <script>
     layui.use(['jquery', 'layer', 'miniAdmin','miniTongji'], function () {
         var $ = layui.jquery,
@@ -139,6 +140,10 @@
         };
         miniAdmin.render(options);
     });
+
+    function toLogin(){
+        $("#logout span").click();
+    }
 </script>
 </body>
 </html>

@@ -44,4 +44,4 @@ mybatis-plus:
   mapper-locations: classpath*:com/hkb/hdms/mapper/xml/*.xml
   type-aliases-package: com.hkb.hdms.model.pojo
   #configuration:
-  #  log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
