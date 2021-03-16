@@ -33,3 +33,26 @@ create table hdms_role(
     primary key (id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+#hdms_system_menu 系统资源表
+create table `hdms_system_menu` (
+    `id` int unsigned not null auto_increment comment 'id',
+    `pid` int unsigned not null default '0' comment '父id',
+    `title` varchar(100) not null default '' comment '名称',
+    `icon` varchar(100) not null default '' comment '菜单图标',
+    `href` varchar(100) not null default '' comment '链接',
+    `target` varchar(20) not null default '_self' comment '链接打开方式',
+    `sort` int default '0' comment '菜单排序',
+    `create` timestamp not null comment '创建时间',
+    `modify` timestamp not null comment '修改时间',
+    primary key (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+#角色-资源绑定表
+create table `hdms_role_menu` (
+    `id` int unsigned not null auto_increment comment 'id',
+    `role_id` int unsigned not null comment '角色id',
+    `menu_id` int unsigned not null comment '资源id',
+    `create` timestamp not null comment '创建时间',
+    `modify` timestamp not null comment '修改时间',
+    primary key (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

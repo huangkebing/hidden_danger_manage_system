@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hkb.hdms.mapper.MenuMapper">
+    <select id="selectByRole" resultType="com.hkb.hdms.model.pojo.Menu">
+        select m.id,
+               m.pid,
+               m.title,
+               m.icon,
+               m.href,
+               m.target,
+               m.sort,
+               m.create,
+               m.modify
+        from hdms_system_menu as m,
+             hdms_role_menu as r
+        where r.menu_id = m.id
+          and r.role_id = #{roleId}
+        order by m.sort ASC
+    </select>
+</mapper>
