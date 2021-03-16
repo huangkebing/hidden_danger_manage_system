@@ -29,6 +29,14 @@ public class SystemController {
         return "test";
     }
 
+    /**
+     * 跳转到资源管理页面
+     */
+    @RequestMapping("/menu.html")
+    public Object menuPage(){
+         return "system/menu";
+    }
+
     @GetMapping("/menuInit")
     @ResponseBody
     public Object menuInit(){

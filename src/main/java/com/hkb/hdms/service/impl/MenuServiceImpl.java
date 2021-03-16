@@ -75,6 +75,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
 
         logo.put("title", "HDMS");
         logo.put("image", Constants.LOGO_PATH);
+        logo.put("href", "");
 
         map.put("homeInfo", home);
         map.put("logoInfo", logo);
