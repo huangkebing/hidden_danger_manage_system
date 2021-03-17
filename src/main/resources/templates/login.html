@@ -7,6 +7,7 @@
     <link rel="stylesheet" th:href="@{/css/login.css}" media="all">
     <script th:src="@{/layuimini/lib/jquery-3.4.1/jquery-3.4.1.min.js}" charset="utf-8"></script>
     <script th:src="@{/layuimini/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
+    <script th:src="@{/js/url.js}"></script>
 </head>
 <body>
 <div style="padding-top:150px">
@@ -84,7 +85,7 @@
             let toMail = $("#toMail").val();
             $.ajax({
                 type: "GET",
-                url: "http://localhost:8706/hdms/login/validateCode/" + toMail,
+                url: basePath + "/login/validateCode/" + toMail,
                 success: function (result) {
                     layer.msg('验证码发送成功!', {icon: 1});
                     content = $("#sendCode").html();
