@@ -24,5 +24,7 @@ public class MenuVo {
 
     private String target;
 
+    private Long sort;
+
     private List<MenuVo> child;
 }

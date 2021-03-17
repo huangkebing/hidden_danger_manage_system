@@ -6,6 +6,7 @@
     <title>menu</title>
     <link rel="stylesheet" th:href="@{/layuimini/lib/layui-v2.5.5/css/layui.css}" media="all">
     <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
+    <link rel="stylesheet" th:href="@{/layuimini/lib/font-awesome-4.7.0/css/font-awesome.min.css}" media="all">
     <style>
         .layui-btn:not(.layui-btn-lg ):not(.layui-btn-sm):not(.layui-btn-xs) {
             height: 34px;
@@ -17,10 +18,6 @@
 <body>
 <div class="layuimini-container">
     <div class="layuimini-main">
-        <blockquote class="layui-elem-quote">
-            Layui的树形表格treeTable，支持异步加载(懒加载)、复选框联动、折叠状态记忆。<br>
-            <a href="https://gitee.com/whvse/treetable-lay" target="_blank" class="layui-btn layui-btn-danger">treetable-lay</a>
-        </blockquote>
         <div>
             <div class="layui-btn-group">
                 <button class="layui-btn" id="btn-expand">全部展开</button>
@@ -38,7 +35,8 @@
 
 <script th:src="@{/layuimini/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
 <script th:src="@{/layuimini/js/lay-config.js}" charset="utf-8"></script>
-<script>
+<script th:src="@{/js/url.js}"></script>
+<script th:inline="none">
     layui.use(['table', 'treetable'], function () {
         var $ = layui.jquery;
         var table = layui.table;
@@ -49,23 +47,23 @@
         treetable.render({
             treeColIndex: 1,
             treeSpid: -1,
-            treeIdName: 'authorityId',
-            treePidName: 'parentId',
+            treeIdName: 'id',
+            treePidName: 'pid',
             elem: '#munu-table',
-            url: 'http://localhost:8706/hdms/system/getMenu',
+            url: basePath + '/system/getMenu',
             page: false,
             cols: [[
                 {type: 'numbers'},
-                {field: 'authorityName', minWidth: 200, title: '权限名称'},
-                {field: 'authority', title: '权限标识'},
-                {field: 'menuUrl', title: '菜单url'},
-                {field: 'orderNumber', width: 80, align: 'center', title: '排序号'},
+                {field: 'title', minWidth: 200, title: '资源名称'},
+                {field: 'href', title: '菜单url'},
+                {field: 'target', title: '访问方式'},
+                {field: 'icon', title: '图标', width: 80, align: 'center', templet: function (d) {
+                    return '<i class="'+ d.icon + '"></i>';
+                }},
+                {field: 'sort', width: 80, align: 'center', title: '排序号'},
                 {
                     field: 'isMenu', width: 80, align: 'center', templet: function (d) {
-                        if (d.isMenu == 1) {
-                            return '<span class="layui-badge layui-bg-gray">按钮</span>';
-                        }
-                        if (d.parentId == -1) {
+                        if (d.pid == -1) {
                             return '<span class="layui-badge layui-bg-blue">目录</span>';
                         } else {
                             return '<span class="layui-badge-rim">菜单</span>';

@@ -10,5 +10,7 @@ import java.util.Map;
  * 2021/03/16
  */
 public interface MenuService extends IService<Menu> {
-    Map<String,Object> initMenu();
+    Map<String, Object> initMenu();
+
+    Map<String, Object> getMenu();
 }
