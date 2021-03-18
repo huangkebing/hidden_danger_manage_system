@@ -1,6 +1,5 @@
 package com.hkb.hdms.controller;
 
-import com.hkb.hdms.base.ReturnConstants;
 import com.hkb.hdms.model.pojo.Menu;
 import com.hkb.hdms.service.MenuService;
 import org.springframework.beans.factory.annotation.Autowired;
