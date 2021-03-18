@@ -1,14 +1,18 @@
 package com.hkb.hdms.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.hkb.hdms.base.BaseReturnDto;
 import com.hkb.hdms.base.Constants;
+import com.hkb.hdms.base.ReturnConstants;
 import com.hkb.hdms.mapper.MenuMapper;
 import com.hkb.hdms.model.pojo.Menu;
 import com.hkb.hdms.model.pojo.User;
 import com.hkb.hdms.model.vo.MenuVo;
 import com.hkb.hdms.service.MenuService;
 import com.hkb.hdms.utils.MenuTreeUtil;
+import com.mysql.cj.util.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -95,6 +99,41 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         ArrayList<MenuVo> menuVos = (ArrayList<MenuVo>) menuData.get("data");
         map.put("data", dataFormat(menuVos));
         return map;
+    }
+
+    @Override
+    public BaseReturnDto addMenu(Menu menu) {
+        if (StringUtils.isNullOrEmpty(menu.getTitle())) {
+            return ReturnConstants.PARAMS_EMPTY;
+        }
+        if (this.save(menu)) {
+            return ReturnConstants.SUCCESS;
+        } else {
+            return ReturnConstants.FAILURE;
+        }
+    }
+
+    @Override
+    public BaseReturnDto updateMenu(Menu menu) {
+        if (StringUtils.isNullOrEmpty(menu.getTitle())) {
+            return ReturnConstants.PARAMS_EMPTY;
+        }
+        UpdateWrapper<Menu> wrapper = new UpdateWrapper<>();
+        wrapper.eq("id",menu.getId());
+        if (this.update(menu,wrapper)) {
+            return ReturnConstants.SUCCESS;
+        } else {
+            return ReturnConstants.FAILURE;
+        }
+    }
+
+    @Override
+    public BaseReturnDto deleteMenu(Long id) {
+        if (this.removeById(id)) {
+            return ReturnConstants.SUCCESS;
+        } else {
+            return ReturnConstants.FAILURE;
+        }
     }
 
     /**

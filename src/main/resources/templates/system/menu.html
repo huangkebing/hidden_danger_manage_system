@@ -28,15 +28,66 @@
                 <button class="layui-btn layui-btn-warm" id="btn-update">修改</button>
                 <button class="layui-btn layui-btn-danger" id="btn-delete">删除</button>
             </div>
-            <table id="munu-table" class="layui-table"></table>
+            <table id="munu-table" class="layui-table" lay-filter="menu-table"></table>
         </div>
     </div>
 </div>
-<!-- 操作列
-<script type="text/html" id="auth-state">
-    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">修改</a>
-    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
-</script>-->
+
+<form id="operateMenu" class="layui-form" style="display: none">
+    <div class="layui-form-item" style="margin-top: 20px">
+        <label class="layui-form-label">父资源id<span style="color: red"> *</span></label>
+        <div class="layui-input-block" style="width: 300px;">
+            <span name="pid" id="pid" class="layui-input" style="height: 38px;line-height: 38px">0</span>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">资源名称<span style="color: red"> *</span></label>
+        <div class="layui-input-block" style="width: 300px;">
+            <input type="text" name="title" id="title" lay-verify="required" lay-reqtext="请输入资源名称" placeholder="资源名称"
+                   autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">访问路径</label>
+        <div class="layui-input-block" style="width: 300px;">
+            <input type="text" name="href" id="href" placeholder="访问路径" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">排序编码</label>
+        <div class="layui-input-block" style="width: 300px;">
+            <input type="text" name="sort" id="sort" lay-verify="number" lay-reqtext="请输入排序编码"
+                   placeholder="排序编码，纯数字" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">资源图标<span>&nbsp;&nbsp;</span></label>
+        <div class="layui-input-block" style="width: 300px;">
+            <input type="text" name="icon" id="icon" autocomplete="off" class="layui-input" placeholder="资源图标，fa-xxx"
+                   style="width: 265px;display: inline-block;margin-right: 10px">
+            <i id="icon-preview"></i>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">访问方式<span>&nbsp;&nbsp;</span></label>
+        <div class="layui-input-block" style="width: 300px;">
+            <input type="text" name="target" id="target" placeholder="访问方式" value="_self" autocomplete="off"
+                   class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item" style="margin-left: 70px">
+        <div class="layui-input-block">
+            <button class="layui-btn" id="submit" style="padding: 0 20px" lay-submit="" lay-filter="operate">提交</button>
+            <button type="reset" id="reset" style="visibility: hidden" class="layui-btn">重置</button>
+        </div>
+    </div>
+</form>
 
 <script th:src="@{/layuimini/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
 <script th:src="@{/layuimini/js/lay-config.js}" charset="utf-8"></script>
@@ -47,41 +98,51 @@
         var table = layui.table;
         var treetable = layui.treetable;
         var layer = layui.layer;
+        var form = layui.form;
 
-        // 渲染表格
-        layer.load(2);
-        treetable.render({
-            id: 'menuTable',
-            treeColIndex: 1,
-            treeSpid: -1,
-            treeIdName: 'id',
-            treePidName: 'pid',
-            elem: '#munu-table',
-            url: basePath + '/system/getMenu',
-            page: false,
-            cols: [[
-                {type: 'radio'},
-                {field: 'title', minWidth: 200, title: '资源名称'},
-                {field: 'href', title: '菜单url'},
-                {field: 'target', title: '访问方式'},
-                {field: 'icon', title: '图标', width: 80, align: 'center', templet: function (d) {
-                    return '<i class="'+ d.icon + '"></i>';
-                }},
-                {field: 'sort', width: 80, align: 'center', title: '排序号'},
-                {
-                    field: 'isMenu', width: 80, align: 'center', templet: function (d) {
-                        if (d.pid == -1) {
-                            return '<span class="layui-badge layui-bg-blue">目录</span>';
-                        } else {
-                            return '<span class="layui-badge-rim">菜单</span>';
+        let flag = 0;//增加还是修改
+
+        //表格生成
+        var renderTable = function(){
+            // 渲染表格
+            layer.load(2);
+            treetable.render({
+                id: 'menuTable',
+                treeColIndex: 1,
+                treeSpid: -1,
+                treeIdName: 'id',
+                treePidName: 'pid',
+                elem: '#munu-table',
+                url: basePath + '/system/getMenu',
+                page: false,
+                cols: [[
+                    {type: 'radio'},
+                    {field: 'title', minWidth: 200, title: '资源名称'},
+                    {field: 'href', title: '菜单url'},
+                    {field: 'target', title: '访问方式'},
+                    {
+                        field: 'icon', title: '图标', width: 80, align: 'center', templet: function (d) {
+                            return '<i class="' + d.icon + '"></i>';
                         }
-                    }, title: '类型'
+                    },
+                    {field: 'sort', width: 80, align: 'center', title: '排序号'},
+                    {
+                        field: 'isMenu', width: 80, align: 'center', templet: function (d) {
+                            if (d.pid == -1) {
+                                return '<span class="layui-badge layui-bg-blue">目录</span>';
+                            } else {
+                                return '<span class="layui-badge-rim">菜单</span>';
+                            }
+                        }, title: '类型'
+                    }
+                ]],
+                done: function () {
+                    layer.closeAll('loading');
                 }
-            ]],
-            done: function () {
-                layer.closeAll('loading');
-            }
-        });
+            });
+        }
+
+        renderTable();
 
         $('#btn-expand').click(function () {
             treetable.expandAll('#munu-table');
@@ -91,26 +152,162 @@
             treetable.foldAll('#munu-table');
         });
 
+        //icon图标预览
+        $("#icon").on('input',function () {
+            $("#icon-preview").removeClass();
+            $("#icon-preview").addClass("fa "+$("#icon").val());
+        })
+
+        //初始化表单
+        function resetForm(){
+            $("#reset").click();
+            $("#pid").html(0);
+            $("#icon-preview").removeClass();
+        }
+
+        //新增资源
         $("#btn-add").click(function () {
+            flag = 0;
             let checkStatus = table.checkStatus('menuTable');
-            if(checkStatus.data.length === 0){
-
+            //渲染pid
+            if (checkStatus.data.length !== 0) {
+                $("#pid").html(checkStatus.data[0].id);
             }
+            layer.open({
+                type: 1,
+                area: ['450px', '450px'],
+                title: "新增资源",
+                content: $("#operateMenu"),
+                cancel: function(layero,index){
+                    resetForm();
+                }
+            });
         })
 
+        //修改资源
         $("#btn-update").click(function () {
+            flag = 1;
             let checkStatus = table.checkStatus('menuTable');
-            if(checkStatus.data.length === 0){
-                layer.msg("请先选择一个资源",{icon: 2})
+            if (checkStatus.data.length === 0) {
+                layer.msg("请先选择一个资源", {icon: 2})
+            } else{
+                //渲染数据
+                $("#pid").html(checkStatus.data[0].id);
+                $("#title").val(checkStatus.data[0].title);
+                $("#href").val(checkStatus.data[0].href);
+                $("#sort").val(checkStatus.data[0].sort);
+                let icon = checkStatus.data[0].icon;
+                $("#icon").val(icon.substring(3,icon.length));
+                $("#icon-preview").addClass("fa "+$("#icon").val());
+                $("#target").val(checkStatus.data[0].target);
+
+                layer.open({
+                    type: 1,
+                    area: ['450px', '450px'],
+                    title: "修改资源",
+                    content: $("#operateMenu"),
+                    cancel: function(layero,index){
+                        resetForm();
+                    }
+                });
             }
         })
 
+        //删除资源
         $("#btn-delete").click(function () {
             let checkStatus = table.checkStatus('menuTable');
-            if(checkStatus.data.length === 0){
-                layer.msg("请先选择一个资源",{icon: 2})
+            if (checkStatus.data.length === 0) {
+                layer.msg("请先选择一个资源", {icon: 2})
+            } else{
+                layer.confirm('你确定要删除该广告吗?', {icon: 3, title:'提示'}, function(index){
+                    $.ajax({
+                        type: "POST",
+                        url: basePath + "/system/deleteMenu",
+                        data: {
+                            id : checkStatus.data[0].id
+                        },
+                        success: function (result) {
+                            if(result.code === 0){
+                                layer.msg("删除资源成功！",{icon: 1});
+                                renderTable();
+                            }
+                            else{
+                                layer.msg(result.message,{icon: 2});
+                            }
+                        },
+                        error: function () {
+                            layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                        }
+                    });
+                    layer.close(index);
+                });
+
             }
         })
+
+        //表单提交
+        form.on('submit(operate)', function (data) {
+            //新增提交
+            if(flag === 0){
+                $.ajax({
+                    type: "POST",
+                    url: basePath + "/system/addMenu",
+                    data: {
+                        pid : $("#pid").html(),
+                        title : data.field.title,
+                        icon : "fa " + data.field.icon,
+                        href : data.field.href,
+                        target : data.field.target,
+                        sort : data.field.sort
+                    },
+                    success: function (result) {
+                        if(result.code === 0){
+                            layer.closeAll();
+                            resetForm();
+                            layer.msg("新增资源成功！",{icon: 1});
+                            renderTable();
+                        }
+                        else{
+                            layer.msg(result.message,{icon: 2});
+                        }
+                    },
+                    error: function () {
+                        layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                    }
+                });
+            }
+            //修改提交
+            else if(flag === 1){
+                let checkStatus = table.checkStatus('menuTable');
+                $.ajax({
+                    type: "POST",
+                    url: basePath + "/system/updateMenu",
+                    data: {
+                        id : checkStatus.data[0].id,
+                        title : data.field.title,
+                        icon : "fa " + data.field.icon,
+                        href : data.field.href,
+                        target : data.field.target,
+                        sort : data.field.sort
+                    },
+                    success: function (result) {
+                        if(result.code === 0){
+                            layer.closeAll();
+                            resetForm();
+                            layer.msg("修改资源成功！",{icon: 1});
+                            renderTable();
+                        }
+                        else{
+                            layer.msg(result.message,{icon: 2});
+                        }
+                    },
+                    error: function () {
+                        layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                    }
+                });
+            }
+            return false;
+        });
     });
 </script>
 </body>

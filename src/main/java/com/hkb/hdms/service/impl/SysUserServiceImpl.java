@@ -31,7 +31,7 @@ public class SysUserServiceImpl extends ServiceImpl<UserMapper, User> implements
     @Override
     public BaseReturnDto resetPassword(String old, String now, String check) {
         if(StringUtils.isNullOrEmpty(old) || StringUtils.isNullOrEmpty(now) || StringUtils.isNullOrEmpty(check)){
-            return ReturnConstants.PASSWORD_EMPTY;
+            return ReturnConstants.PARAMS_EMPTY;
         }
         User loginUser = (User) session.getAttribute(Constants.LOGIN_USER_KEY);
         //旧密码不匹配
@@ -47,7 +47,6 @@ public class SysUserServiceImpl extends ServiceImpl<UserMapper, User> implements
         updateWrapper.eq("id",loginUser.getId());
         User user = new User();
         user.setPassword(now);
-        user.setRole(loginUser.getRole());
         //修改
         if (this.update(user,updateWrapper)) {
             return ReturnConstants.SUCCESS;

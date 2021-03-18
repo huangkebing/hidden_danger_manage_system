@@ -15,9 +15,9 @@ import java.util.Date;
 @TableName("hdms_system_menu")
 public class Menu {
     @TableId(value = "id", type = IdType.AUTO)
-    private long id;
+    private Long id;
 
-    private long pid;
+    private Long pid;
 
     private String title;
 
@@ -27,7 +27,7 @@ public class Menu {
 
     private String target;
 
-    private long sort;
+    private Long sort;
 
     @TableField(value = "`create`", fill = FieldFill.INSERT)
     private Date create;

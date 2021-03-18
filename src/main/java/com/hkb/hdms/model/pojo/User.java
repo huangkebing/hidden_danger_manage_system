@@ -15,7 +15,7 @@ import java.util.Date;
 @TableName("hdms_user")
 public class User {
     @TableId(value = "id", type = IdType.AUTO)
-    private long id;
+    private Long id;
 
     private String email;
 
@@ -23,7 +23,7 @@ public class User {
 
     private String password;
 
-    private int role;
+    private Integer role;
 
     @TableField("`group`")
     private String group;

@@ -1,9 +1,12 @@
 package com.hkb.hdms.controller;
 
+import com.hkb.hdms.base.ReturnConstants;
+import com.hkb.hdms.model.pojo.Menu;
 import com.hkb.hdms.service.MenuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -53,5 +56,32 @@ public class SystemController {
     @ResponseBody
     public Object getMenu() {
         return menuService.getMenu();
+    }
+
+    /**
+     * 新增资源接口
+     */
+    @PostMapping("/addMenu")
+    @ResponseBody
+    public Object addMenu(Menu menu){
+        return menuService.addMenu(menu);
+    }
+
+    /**
+     * 修改资源接口
+     */
+    @PostMapping("/updateMenu")
+    @ResponseBody
+    public Object updateMenu(Menu menu){
+        return menuService.updateMenu(menu);
+    }
+
+    /**
+     * 删除资源接口
+     */
+    @PostMapping("/deleteMenu")
+    @ResponseBody
+    public Object deleteMenu(Long id){
+        return menuService.deleteMenu(id);
     }
 }

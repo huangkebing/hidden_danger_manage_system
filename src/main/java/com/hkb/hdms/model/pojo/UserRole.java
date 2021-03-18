@@ -15,7 +15,7 @@ import java.util.Date;
 @TableName("hdms_role")
 public class UserRole {
     @TableId(value = "id", type = IdType.AUTO)
-    private long id;
+    private Long id;
 
     private String name;
 
