@@ -3,7 +3,7 @@ package com.hkb.hdms.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.hkb.hdms.base.BaseReturnDto;
+import com.hkb.hdms.base.R;
 import com.hkb.hdms.base.Constants;
 import com.hkb.hdms.base.ReturnConstants;
 import com.hkb.hdms.mapper.MenuMapper;
@@ -102,7 +102,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     }
 
     @Override
-    public BaseReturnDto addMenu(Menu menu) {
+    public R addMenu(Menu menu) {
         if (StringUtils.isNullOrEmpty(menu.getTitle())) {
             return ReturnConstants.PARAMS_EMPTY;
         }
@@ -114,7 +114,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     }
 
     @Override
-    public BaseReturnDto updateMenu(Menu menu) {
+    public R updateMenu(Menu menu) {
         if (StringUtils.isNullOrEmpty(menu.getTitle())) {
             return ReturnConstants.PARAMS_EMPTY;
         }
@@ -128,7 +128,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     }
 
     @Override
-    public BaseReturnDto deleteMenu(Long id) {
+    public R deleteMenu(Long id) {
         if (this.removeById(id)) {
             return ReturnConstants.SUCCESS;
         } else {

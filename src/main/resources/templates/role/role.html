@@ -13,16 +13,17 @@
 <body>
 <div class="layuimini-container">
     <div class="layuimini-main">
-        <script type="text/html" id="toolbarDemo">
+        <script type="text/html" id="toolbar">
             <div class="layui-btn-container">
-                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 添加 </button>
+                <button class="layui-btn layui-btn-sm data-add-btn" lay-event="add"> 添加 </button>
             </div>
         </script>
 
-        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+        <table class="layui-hide" id="roleTable" lay-filter="roleTableFilter"></table>
 
-        <script type="text/html" id="currentTableBar">
-            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
+        <script type="text/html" id="roleTableBar">
+            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="update">授权</a>
+            <a class="layui-btn layui-btn-warm layui-btn-xs data-count-edit" lay-event="edit">修改</a>
             <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
         </script>
 
@@ -37,45 +38,28 @@
             table = layui.table;
 
         table.render({
-            elem: '#currentTableId',
+            elem: '#roleTable',
             url: basePath + '/role/getRole',
-            toolbar: '#toolbarDemo',
+            toolbar: '#toolbar',
             defaultToolbar: ['filter', 'exports'],
             cols: [[
                 {type: "numbers", width: 50},
-                {field: 'description', width: 80, title: '角色名称', sort: true},
-                {field: 'name', width: 80, title: '角色变量'},
-                {title: '操作', minWidth: 150, toolbar: '#currentTableBar', align: "center"}
+                {field: 'name', title: '角色名称'},
+                {field: 'description', title: '备注'},
+                {field: 'create',title: '创建时间', templet:
+                        "<div>{{layui.util.toDateString(d.create, 'yyyy-MM-dd HH:mm:ss')}}</div>"
+                },
+                {title: '操作', minWidth: 180, toolbar: '#roleTableBar', align: "center"}
             ]],
             limits: [10, 15, 20, 25, 50, 100],
             limit: 15,
             page: true
         });
 
-        // 监听搜索操作
-        form.on('submit(data-search-btn)', function (data) {
-            var result = JSON.stringify(data.field);
-            layer.alert(result, {
-                title: '最终的搜索信息'
-            });
-
-            //执行搜索重载
-            table.reload('currentTableId', {
-                page: {
-                    curr: 1
-                }
-                , where: {
-                    searchParams: result
-                }
-            }, 'data');
-
-            return false;
-        });
-
         /**
          * toolbar监听事件
          */
-        table.on('toolbar(currentTableFilter)', function (obj) {
+        table.on('toolbar(roleTableFilter)', function (obj) {
             if (obj.event === 'add') {  // 监听添加操作
                 var index = layer.open({
                     title: '添加用户',
@@ -90,18 +74,13 @@
                     layer.full(index);
                 });
             } else if (obj.event === 'delete') {  // 监听删除操作
-                var checkStatus = table.checkStatus('currentTableId')
+                var checkStatus = table.checkStatus('roleTable')
                     , data = checkStatus.data;
                 layer.alert(JSON.stringify(data));
             }
         });
 
-        //监听表格复选框选择
-        table.on('checkbox(currentTableFilter)', function (obj) {
-            console.log(obj)
-        });
-
-        table.on('tool(currentTableFilter)', function (obj) {
+        table.on('tool(roleTableFilter)', function (obj) {
             var data = obj.data;
             if (obj.event === 'edit') {
 
@@ -119,8 +98,9 @@
                 });
                 return false;
             } else if (obj.event === 'delete') {
-                layer.confirm('真的删除行么', function (index) {
-                    obj.del();
+                layer.confirm('真的删除行么',{icon: 3, title:'提示'}, function (index) {
+
+                    obj.data;
                     layer.close(index);
                 });
             }

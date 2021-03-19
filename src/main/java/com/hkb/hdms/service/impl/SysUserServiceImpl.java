@@ -2,7 +2,7 @@ package com.hkb.hdms.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.hkb.hdms.base.BaseReturnDto;
+import com.hkb.hdms.base.R;
 import com.hkb.hdms.base.Constants;
 import com.hkb.hdms.base.ReturnConstants;
 import com.hkb.hdms.mapper.UserMapper;
@@ -29,7 +29,7 @@ public class SysUserServiceImpl extends ServiceImpl<UserMapper, User> implements
     }
 
     @Override
-    public BaseReturnDto resetPassword(String old, String now, String check) {
+    public R resetPassword(String old, String now, String check) {
         if(StringUtils.isNullOrEmpty(old) || StringUtils.isNullOrEmpty(now) || StringUtils.isNullOrEmpty(check)){
             return ReturnConstants.PARAMS_EMPTY;
         }

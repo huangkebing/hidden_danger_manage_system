@@ -8,6 +8,8 @@ import lombok.Setter;
 import java.util.Map;
 
 /**
+ * 统一数据格式
+ *
  * @author huangkebing
  * 2021/03/07
  */
@@ -15,7 +17,7 @@ import java.util.Map;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class BaseReturnDto {
+public class R {
 
     private int code;
 
@@ -23,7 +25,7 @@ public class BaseReturnDto {
 
     private Map<String, Object> data;
 
-    public BaseReturnDto(int code, String message) {
+    public R(int code, String message) {
         this.code = code;
         this.message = message;
     }
