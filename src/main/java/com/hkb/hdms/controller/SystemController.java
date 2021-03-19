@@ -4,10 +4,7 @@ import com.hkb.hdms.model.pojo.Menu;
 import com.hkb.hdms.service.MenuService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 系统资源相关接口
@@ -55,6 +52,12 @@ public class SystemController {
     @ResponseBody
     public Object getMenu() {
         return menuService.getMenu();
+    }
+
+    @GetMapping("/getMenuWithRole/{roleId}")
+    @ResponseBody
+    public Object getMenuWithRole(@PathVariable Long roleId){
+        return menuService.getMenuWithRole(roleId);
     }
 
     /**

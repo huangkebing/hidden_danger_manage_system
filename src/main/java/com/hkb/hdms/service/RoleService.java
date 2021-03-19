@@ -22,5 +22,5 @@ public interface RoleService extends IService<UserRole> {
 
     R deleteRole(Long id);
 
-
+    R roleToMenu(Long roleId, String menuIds);
 }

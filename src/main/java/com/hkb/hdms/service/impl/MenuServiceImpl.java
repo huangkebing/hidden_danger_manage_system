@@ -7,8 +7,11 @@ import com.hkb.hdms.base.R;
 import com.hkb.hdms.base.Constants;
 import com.hkb.hdms.base.ReturnConstants;
 import com.hkb.hdms.mapper.MenuMapper;
+import com.hkb.hdms.mapper.RoleMenuMapper;
 import com.hkb.hdms.model.pojo.Menu;
+import com.hkb.hdms.model.pojo.RoleMenu;
 import com.hkb.hdms.model.pojo.User;
+import com.hkb.hdms.model.vo.MenuTreeVo;
 import com.hkb.hdms.model.vo.MenuVo;
 import com.hkb.hdms.service.MenuService;
 import com.hkb.hdms.utils.MenuTreeUtil;
@@ -22,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author huangkebing
@@ -35,12 +39,15 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     private final HttpSession session;
 
     private final MenuTreeUtil treeUtil;
+    
+    private final RoleMenuMapper roleMenuMapper;
 
     @Autowired
-    public MenuServiceImpl(MenuMapper menuMapper, HttpSession session, MenuTreeUtil treeUtil) {
+    public MenuServiceImpl(MenuMapper menuMapper, HttpSession session, MenuTreeUtil treeUtil, RoleMenuMapper roleMenuMapper) {
         this.menuMapper = menuMapper;
         this.session = session;
         this.treeUtil = treeUtil;
+        this.roleMenuMapper = roleMenuMapper;
     }
 
     /**
@@ -134,6 +141,30 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         } else {
             return ReturnConstants.FAILURE;
         }
+    }
+
+    @Override
+    public List<MenuTreeVo> getMenuWithRole(Long roleId) {
+        //查询出所有的资源
+        List<Menu> menus = this.list(new QueryWrapper<Menu>().orderByAsc("sort"));
+        
+        //查询出roleId下绑定的资源
+        List<RoleMenu> ownMenus = roleMenuMapper.selectList(new QueryWrapper<RoleMenu>().eq("role_id", roleId));
+
+        //过滤出roleId下的资源id
+        List<Long> ownMenuIds = ownMenus.stream().map(RoleMenu::getMenuId).collect(Collectors.toList());
+
+        List<MenuTreeVo> menuTreeVos = new ArrayList<>();
+
+        for (Menu menu : menus) {
+            MenuTreeVo menuTreeVo = new MenuTreeVo();
+            menuTreeVo.setId(menu.getId());
+            menuTreeVo.setPid(menu.getPid());
+            menuTreeVo.setTitle(menu.getTitle());
+            menuTreeVos.add(menuTreeVo);
+        }
+
+        return treeUtil.toTree(menuTreeVos, 0L, ownMenuIds);
     }
 
     /**

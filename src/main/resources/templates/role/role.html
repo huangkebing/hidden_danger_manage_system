@@ -55,14 +55,21 @@
             </div>
         </div>
     </form>
+
+    <div id="menuTreeDiv" style="display: none">
+        <div id="menuTree" class="demo-tree demo-tree-box"></div>
+        <button style="padding: 0 20px;position: absolute;bottom: 5px;right: 115px"
+                class="layui-btn" id="menuSubmit" type="button" >提交</button>
+    </div>
 </div>
 <script th:src="@{/layuimini/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
 <script th:src="@{/js/url.js}"></script>
 <script th:inline="none">
-    layui.use(['form', 'table'], function () {
+    layui.use(['form', 'table','tree'], function () {
         var $ = layui.jquery,
             form = layui.form,
             table = layui.table;
+            tree = layui.tree;
 
         var currPage = 1;
         var res = 1;
@@ -94,6 +101,21 @@
             }
         });
 
+        var treeRender = function (){
+            $.ajax({
+                url: basePath + "/system/getMenuWithRole/" + currObj.data.id,    //后台数据请求地址
+                type: "GET",
+                success: function(result){
+                    tree.render({
+                        elem: '#menuTree',
+                        data: result,
+                        showCheckbox: true,  //是否显示复选框
+                        id: 'menuTree',
+                        isJump: false //是否允许点击节点时弹出新窗口跳转
+                    });
+                }
+            });
+        }
         /**
          * toolbar监听事件
          */
@@ -130,7 +152,6 @@
                         $("#reset").click();
                     }
                 });
-
             } else if (obj.event === 'delete') {
                 layer.confirm('你确定要删除该角色吗?', {icon: 3, title: '提示'}, function (index) {
                     $.ajax({
@@ -157,6 +178,14 @@
                         }
                     });
                     layer.close(index);
+                });
+            } else if(obj.event === 'update'){
+                treeRender();
+                var index = layer.open({
+                    title: '角色授权',
+                    type: 1,
+                    area: ['300px', '400px'],
+                    content: $("#menuTreeDiv")
                 });
             }
             return false;
@@ -220,6 +249,48 @@
             }
             return false;
         });
+
+        //获取tree选中的id
+        function getCheckedId(jsonObj) {
+            var id = "";
+            $.each(jsonObj, function (index, item) {
+                if (id != "") {
+                    id = id + "," + item.id;
+                }
+                else {
+                    id = item.id;
+                }
+                var i = getCheckedId(item.children);
+                if (i != "") {
+                    id = id + "," + i;
+                }
+            });
+            return id;
+        }
+
+        $("#menuSubmit").click(function () {
+            var checkedId = getCheckedId(tree.getChecked("menuTree"));
+            $.ajax({
+                type: "POST",
+                url: basePath + "/role/roleToMenu",
+                data: {
+                    roleId : currObj.data.id,
+                    menuIds : checkedId
+                },
+                success: function (result) {
+                    if(result.code === 0){
+                        layer.closeAll();
+                        layer.msg("角色授权成功！",{icon: 1});
+                    }
+                    else{
+                        layer.msg(result.message,{icon: 2});
+                    }
+                },
+                error: function () {
+                    layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                }
+            });
+        })
     });
 </script>
 

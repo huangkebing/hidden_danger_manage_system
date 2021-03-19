@@ -75,7 +75,7 @@ public class RoleController {
      */
     @PostMapping("/roleToMenu")
     @ResponseBody
-    public Object roleToMenu(){
-        return null;
+    public Object roleToMenu(Long roleId, String menuIds){
+        return roleService.roleToMenu(roleId, menuIds);
     }
 }
