@@ -50,14 +50,14 @@
     </div>
 
     <div class="layui-form-item">
-        <label class="layui-form-label">访问路径</label>
+        <label class="layui-form-label">访问路径<span>&nbsp;&nbsp;</span></label>
         <div class="layui-input-block" style="width: 300px;">
             <input type="text" name="href" id="href" placeholder="访问路径" autocomplete="off" class="layui-input">
         </div>
     </div>
 
     <div class="layui-form-item">
-        <label class="layui-form-label">排序编码</label>
+        <label class="layui-form-label">排序编码<span>&nbsp;&nbsp;</span></label>
         <div class="layui-input-block" style="width: 300px;">
             <input type="text" name="sort" id="sort" lay-verify="number" lay-reqtext="请输入排序编码"
                    placeholder="排序编码，纯数字" autocomplete="off" class="layui-input">
@@ -219,7 +219,7 @@
             if (checkStatus.data.length === 0) {
                 layer.msg("请先选择一个资源", {icon: 2})
             } else{
-                layer.confirm('你确定要删除该广告吗?', {icon: 3, title:'提示'}, function(index){
+                layer.confirm('你确定要删除该资源吗?', {icon: 3, title:'提示'}, function(index){
                     $.ajax({
                         type: "POST",
                         url: basePath + "/system/deleteMenu",

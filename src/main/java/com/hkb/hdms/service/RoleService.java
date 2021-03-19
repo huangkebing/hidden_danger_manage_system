@@ -1,6 +1,7 @@
 package com.hkb.hdms.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.hkb.hdms.base.R;
 import com.hkb.hdms.model.pojo.UserRole;
 import org.springframework.stereotype.Repository;
 
@@ -14,4 +15,12 @@ import java.util.Map;
 @Repository
 public interface RoleService extends IService<UserRole> {
     Map<String,Object> getRoles(int limit,int page);
+
+    R addRole(UserRole role);
+
+    R updateRole(UserRole role);
+
+    R deleteRole(Long id);
+
+
 }

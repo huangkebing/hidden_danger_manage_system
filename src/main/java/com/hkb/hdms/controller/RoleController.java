@@ -1,5 +1,6 @@
 package com.hkb.hdms.controller;
 
+import com.hkb.hdms.model.pojo.UserRole;
 import com.hkb.hdms.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -47,8 +48,8 @@ public class RoleController {
      */
     @PostMapping("/addRole")
     @ResponseBody
-    public Object addRole(){
-        return null;
+    public Object addRole(UserRole role){
+        return roleService.addRole(role);
     }
 
     /**
@@ -56,8 +57,8 @@ public class RoleController {
      */
     @PostMapping("/updateRole")
     @ResponseBody
-    public Object updateRole(){
-        return null;
+    public Object updateRole(UserRole role){
+        return roleService.updateRole(role);
     }
 
     /**
@@ -65,8 +66,8 @@ public class RoleController {
      */
     @PostMapping("/deleteRole")
     @ResponseBody
-    public Object deleteRole(){
-        return null;
+    public Object deleteRole(Long id){
+        return roleService.deleteRole(id);
     }
 
     /**
