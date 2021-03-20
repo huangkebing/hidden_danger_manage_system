@@ -28,8 +28,13 @@ public class UserController {
      * 修改密码页面跳转
      */
     @RequestMapping("/password.html")
-    public Object userPage() {
+    public Object userPasswordPage() {
         return "user/password";
+    }
+
+    @RequestMapping("/user.html")
+    public Object userPage(){
+        return "user/user";
     }
 
     /**
