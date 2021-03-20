@@ -81,7 +81,11 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, UserRole> implement
     }
 
     @Override
+    @Transactional
     public R deleteRole(Long id) {
+        //删除角色前，删除所有资源与该角色的绑定
+        roleMenuMapper.delete(new QueryWrapper<RoleMenu>().eq("role_id",id));
+
         if (this.removeById(id)) {
             return ReturnConstants.SUCCESS;
         } else{

@@ -19,6 +19,7 @@ import com.mysql.cj.util.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
@@ -135,7 +136,11 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     }
 
     @Override
+    @Transactional
     public R deleteMenu(Long id) {
+        //删除资源前，删除所有角色与该资源的绑定
+        roleMenuMapper.delete(new QueryWrapper<RoleMenu>().eq("menu_id",id));
+
         if (this.removeById(id)) {
             return ReturnConstants.SUCCESS;
         } else {
