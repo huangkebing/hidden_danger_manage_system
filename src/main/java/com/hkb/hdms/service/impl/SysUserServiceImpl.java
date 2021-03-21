@@ -1,11 +1,13 @@
 package com.hkb.hdms.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hkb.hdms.base.R;
 import com.hkb.hdms.base.Constants;
 import com.hkb.hdms.base.ReturnConstants;
 import com.hkb.hdms.mapper.UserMapper;
+import com.hkb.hdms.model.dto.UserDto;
 import com.hkb.hdms.model.pojo.User;
 import com.hkb.hdms.service.SysUserService;
 import com.mysql.cj.util.StringUtils;
@@ -13,6 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author huangkebing
@@ -23,9 +28,12 @@ public class SysUserServiceImpl extends ServiceImpl<UserMapper, User> implements
 
     private final HttpSession session;
 
+    private final UserMapper userMapper;
+
     @Autowired
-    public SysUserServiceImpl(HttpSession session) {
+    public SysUserServiceImpl(HttpSession session, UserMapper userMapper) {
         this.session = session;
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -54,5 +62,21 @@ public class SysUserServiceImpl extends ServiceImpl<UserMapper, User> implements
         else {
             return ReturnConstants.FAILURE;
         }
+    }
+
+    @Override
+    public Map<String, Object> getUser(int limit, int page) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("code",0);
+        map.put("msg","");
+        if (page < 1){
+            page = 1;
+        }
+        Page<UserDto> UserPage = new Page<>(page, limit);
+        List<UserDto> userDtos = userMapper.selectUsers(UserPage);
+
+        map.put("count",UserPage.getTotal());
+        map.put("data",userDtos);
+        return map;
     }
 }

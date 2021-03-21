@@ -1,0 +1,25 @@
+package com.hkb.hdms.model.dto;
+
+import com.hkb.hdms.model.pojo.UserRole;
+import lombok.Data;
+
+import java.util.Date;
+
+/**
+ * hdms_user表 dto
+ *
+ * @author huangkebing
+ * 2021/03/21
+ */
+@Data
+public class UserDto {
+    private Long id;
+
+    private String email;
+
+    private UserRole role;
+
+    private Integer live;
+
+    private Date create;
+}

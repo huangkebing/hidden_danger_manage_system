@@ -25,8 +25,13 @@ public class User {
 
     private Integer role;
 
-    @TableField("`group`")
-    private String group;
+    private Integer live;
+
+    private String avatar;
+
+    private String mobile;
+
+    private String remark;
 
     @TableField(value = "`create`", fill = FieldFill.INSERT)
     private Date create;

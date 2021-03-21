@@ -7,22 +7,24 @@ import com.hkb.hdms.model.pojo.RoleMenu;
 import com.hkb.hdms.model.vo.MenuTreeVo;
 import com.hkb.hdms.service.MenuService;
 import com.hkb.hdms.service.RoleService;
+import com.hkb.hdms.service.SysUserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
+import java.util.Map;
 
 @SpringBootTest
 class HdmsApplicationTests {
 
     @Autowired
-    private MenuService menuService;
+    private SysUserService sysUserService;
 
     @Test
     void contextLoads() {
-        List<MenuTreeVo> menuWithRole = menuService.getMenuWithRole(5L);
-        System.out.println(JSON.toJSONString(menuWithRole));
+        Map<String, Object> user = sysUserService.getUser(15, 1);
+        System.out.println(JSON.toJSONString(user));
 
     }
 

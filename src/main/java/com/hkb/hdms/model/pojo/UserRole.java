@@ -21,6 +21,8 @@ public class UserRole {
 
     private String description;
 
+    private Integer question;
+
     @TableField(value = "`create`", fill = FieldFill.INSERT)
     private Date create;
 

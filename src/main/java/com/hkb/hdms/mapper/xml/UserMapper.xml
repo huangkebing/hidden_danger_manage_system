@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hkb.hdms.mapper.UserMapper">
-
+    <resultMap id="selectMap" type="com.hkb.hdms.model.dto.UserDto">
+        <result column="id" property="id"/>
+        <result column="email" property="email"/>
+        <result column="live" property="live"/>
+        <result column="create" property="create"/>
+        <association property="role" javaType="com.hkb.hdms.model.pojo.UserRole">
+            <result column="rid" property="id"/>
+            <result column="name" property="name"/>
+            <result column="question" property="question"/>
+        </association>
+    </resultMap>
+    <select id="selectUsers" resultMap="selectMap">
+        select u.id, u.email, u.live, u.`create`, r.id 'rid', r.name, r.question
+        from hdms.hdms_user as u,
+             hdms_role as r
+        where u.role = r.id
+    </select>
 </mapper>

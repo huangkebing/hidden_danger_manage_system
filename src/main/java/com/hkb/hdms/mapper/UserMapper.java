@@ -1,8 +1,12 @@
 package com.hkb.hdms.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.hkb.hdms.model.dto.UserDto;
 import com.hkb.hdms.model.pojo.User;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * @author huangkebing
@@ -10,4 +14,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface UserMapper extends BaseMapper<User> {
+    List<UserDto> selectUsers(Page<UserDto> page);
 }
