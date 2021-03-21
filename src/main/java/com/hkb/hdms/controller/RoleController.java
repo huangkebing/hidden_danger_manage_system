@@ -43,6 +43,12 @@ public class RoleController {
         return roleService.getRoles(limit, page);
     }
 
+    @GetMapping("/getAllRole")
+    @ResponseBody
+    public Object getAllRole(){
+        return roleService.getAllRole();
+    }
+
     /**
      * 增加角色接口
      */

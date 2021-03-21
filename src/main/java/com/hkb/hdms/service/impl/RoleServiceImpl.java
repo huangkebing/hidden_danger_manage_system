@@ -55,6 +55,11 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, UserRole> implement
     }
 
     @Override
+    public List<UserRole> getAllRole() {
+        return this.list(null);
+    }
+
+    @Override
     public R addRole(UserRole role) {
         if(StringUtils.isNullOrEmpty(role.getName())){
             return ReturnConstants.PARAMS_EMPTY;
