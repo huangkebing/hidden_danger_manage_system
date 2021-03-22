@@ -74,7 +74,7 @@ public class SysUserServiceImpl extends ServiceImpl<UserMapper, User> implements
     }
 
     @Override
-    public Map<String, Object> getUser(int limit, int page) {
+    public Map<String, Object> getUser(User user, int limit, int page) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("code", 0);
         map.put("msg", "");
@@ -82,7 +82,7 @@ public class SysUserServiceImpl extends ServiceImpl<UserMapper, User> implements
             page = 1;
         }
         Page<UserDto> UserPage = new Page<>(page, limit);
-        List<UserDto> userDtos = userMapper.selectUsers(UserPage);
+        List<UserDto> userDtos = userMapper.selectUsers(UserPage, user);
 
         map.put("count", UserPage.getTotal());
         map.put("data", userDtos);

@@ -26,19 +26,25 @@
                         <div class="layui-inline">
                             <label class="layui-form-label">邮箱</label>
                             <div class="layui-input-inline">
-                                <input type="text" name="username" autocomplete="off" class="layui-input">
+                                <input type="text" name="email" autocomplete="off" class="layui-input">
                             </div>
                         </div>
                         <div class="layui-inline">
                             <label class="layui-form-label">角色</label>
                             <div class="layui-input-inline">
-                                <input type="text" name="sex" autocomplete="off" class="layui-input">
+                                <select class="layui-form-select" name="role" id="roleSearch" lay-verify="" lay-search>
+                                    <option value="" selected>请选择(可搜索)</option>
+                                </select>
                             </div>
                         </div>
                         <div class="layui-inline">
                             <label class="layui-form-label">账号状态</label>
                             <div class="layui-input-inline">
-                                <input type="text" name="city" autocomplete="off" class="layui-input">
+                                <select class="layui-form-select" name="live" id="liveSearch" lay-verify="">
+                                    <option value="" selected>请选择</option>
+                                    <option value="1">已激活</option>
+                                    <option value="0">冻结中</option>
+                                </select>
                             </div>
                         </div>
                         <div class="layui-inline">
@@ -128,6 +134,7 @@
                 for (var index = 0;index < result.length;index++){
                     var dataTmp = result[index];
                     $('#role').append(new Option(dataTmp.name,dataTmp.id));//往下拉菜单里添加元素
+                    $('#roleSearch').append(new Option(dataTmp.name,dataTmp.id));//往下拉菜单里添加元素
                 }
                 form.render();
             }
@@ -158,19 +165,14 @@
         // 监听搜索操作
         form.on('submit(data-search-btn)', function (data) {
             var result = JSON.stringify(data.field);
-            layer.alert(result, {
-                title: '最终的搜索信息'
-            });
 
             //执行搜索重载
             table.reload('userTable', {
                 page: {
                     curr: 1
-                }
-                , where: {
-                    searchParams: result
-                }
-            }, 'data');
+                },
+                where: data.field
+            });
 
             return false;
         });

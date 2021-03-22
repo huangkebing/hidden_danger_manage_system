@@ -13,7 +13,7 @@ import java.util.Map;
 public interface SysUserService extends IService<User> {
     R resetPassword(String old, String now, String check);
 
-    Map<String, Object> getUser(int limit, int page);
+    Map<String, Object> getUser(User user, int limit, int page);
 
     R addUser(User user);
 

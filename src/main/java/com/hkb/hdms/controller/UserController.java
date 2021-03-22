@@ -53,8 +53,8 @@ public class UserController {
 
     @GetMapping("/getUser")
     @ResponseBody
-    public Object getUser(int limit,int page){
-        return sysUserService.getUser(limit, page);
+    public Object getUser(User user,int limit,int page){
+        return sysUserService.getUser(user, limit, page);
     }
 
     @PostMapping("/addUser")
