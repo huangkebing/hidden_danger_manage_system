@@ -15,7 +15,7 @@ public class Constants {
     public static final String LOGIN_FAILURE_URL_PASSWORD = "/login.html?error2";
 
     //邮箱后缀
-    public static final String EMAIL_SUFFIX = "@qq.com";
+    public static final String EMAIL_SUFFIX = "@163.com";
 
     public static final String LOGIN_USER_KEY = "loginUser";
 

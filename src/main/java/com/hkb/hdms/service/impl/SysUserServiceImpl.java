@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.hkb.hdms.base.MailConstants;
 import com.hkb.hdms.base.R;
 import com.hkb.hdms.base.Constants;
 import com.hkb.hdms.base.ReturnConstants;
@@ -12,6 +13,7 @@ import com.hkb.hdms.model.dto.UserDto;
 import com.hkb.hdms.model.pojo.User;
 import com.hkb.hdms.service.SysUserService;
 import com.hkb.hdms.utils.PasswordUtil;
+import com.hkb.hdms.utils.impl.RegisterMailSender;
 import com.mysql.cj.util.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,10 +36,13 @@ public class SysUserServiceImpl extends ServiceImpl<UserMapper, User> implements
 
     private final UserMapper userMapper;
 
+    private final RegisterMailSender mailSender;
+
     @Autowired
-    public SysUserServiceImpl(HttpSession session, UserMapper userMapper) {
+    public SysUserServiceImpl(HttpSession session, UserMapper userMapper, RegisterMailSender mailSender) {
         this.session = session;
         this.userMapper = userMapper;
+        this.mailSender = mailSender;
     }
 
     @Override
@@ -46,8 +51,9 @@ public class SysUserServiceImpl extends ServiceImpl<UserMapper, User> implements
             return ReturnConstants.PARAMS_EMPTY;
         }
         User loginUser = (User) session.getAttribute(Constants.LOGIN_USER_KEY);
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         //旧密码不匹配
-        if (!loginUser.getPassword().equals(old)) {
+        if (!passwordEncoder.matches(old, loginUser.getPassword())) {
             return ReturnConstants.OLD_PASSWORD_ERROR;
         }
         //两次密码不匹配
@@ -58,7 +64,7 @@ public class SysUserServiceImpl extends ServiceImpl<UserMapper, User> implements
         UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", loginUser.getId());
         User user = new User();
-        user.setPassword(now);
+        user.setPassword(passwordEncoder.encode(now));
         //修改
         if (this.update(user, updateWrapper)) {
             return ReturnConstants.SUCCESS;
@@ -94,9 +100,11 @@ public class SysUserServiceImpl extends ServiceImpl<UserMapper, User> implements
         }
 
         user.setName(user.getEmail().substring(0, user.getEmail().length() - 8));
-        user.setPassword(new BCryptPasswordEncoder().encode(PasswordUtil.getPassword()));
+        String password = PasswordUtil.getPassword();
+        user.setPassword(new BCryptPasswordEncoder().encode(password));
 
         if (this.save(user)) {
+            mailSender.sendMail(MailConstants.REGISTER,new String[]{password},user.getEmail());
             return ReturnConstants.SUCCESS;
         } else {
             return ReturnConstants.FAILURE;

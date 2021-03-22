@@ -63,8 +63,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             Collection<GrantedAuthority> authorities = getAuthorities(queryUser);
             boolean live = queryUser.getLive() == 1;
             userDetails = new org.springframework.security.core.userdetails.User(
-                    username, new BCryptPasswordEncoder().encode(password),
-                    true, true, true, live, authorities);
+                    username, password, true, true, true, live, authorities);
         }
         return userDetails;
     }

@@ -8,8 +8,9 @@ package com.hkb.hdms.utils;
  */
 public interface MailSender {
     /**
+     * @param subject 邮件主题
      * @param to      目标邮箱
      * @param message 邮件信息
      */
-    void sendMail(String message, String... to);
+    void sendMail(String subject, String[] message, String... to);
 }

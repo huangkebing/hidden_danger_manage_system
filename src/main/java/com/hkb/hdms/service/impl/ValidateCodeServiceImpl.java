@@ -2,6 +2,7 @@ package com.hkb.hdms.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.hkb.hdms.base.MailConstants;
 import com.hkb.hdms.base.R;
 import com.hkb.hdms.base.Constants;
 import com.hkb.hdms.base.ReturnConstants;
@@ -10,7 +11,7 @@ import com.hkb.hdms.model.ValidateCode;
 import com.hkb.hdms.model.pojo.User;
 import com.hkb.hdms.service.ValidateCodeService;
 import com.hkb.hdms.utils.ValidateCodeGenerator;
-import com.hkb.hdms.utils.ValidateCodeMailSender;
+import com.hkb.hdms.utils.impl.ValidateCodeMailSender;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -57,7 +58,7 @@ public class ValidateCodeServiceImpl extends ServiceImpl<UserMapper, User> imple
         session.setAttribute(Constants.VALIDATE_CODE_KEY,code);
 
         //发送验证码到目标邮箱
-        mailSender.sendMail(code.getCode(),toMail);
+        mailSender.sendMail(MailConstants.VALIDATE_CODE,new String[]{code.getCode()},toMail);
         return ReturnConstants.SUCCESS;
     }
 }
