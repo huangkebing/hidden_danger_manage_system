@@ -9,6 +9,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" th:href="@{/layuimini/lib/layui-v2.5.5/css/layui.css}" media="all">
     <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
+    <style>
+        .layui-form-select dl { max-height:120px; }
+    </style>
 </head>
 <body>
 <div class="layuimini-container">
@@ -59,9 +62,9 @@
         <!--操作栏-->
         <script type="text/html" id="currentTableBar">
             {{#  if(d.role.question == 1){ }}
-            <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="active">分配类型</a>
+            <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="active">分配隐患</a>
             {{#  } }}
-            <a class="layui-btn layui-btn-warm layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-warm layui-btn-xs data-count-edit" lay-event="edit">修改</a>
             <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
         </script>
 
@@ -77,19 +80,19 @@
         <!--用户新增、修改表单-->
         <form id="operateUser" class="layui-form" style="display: none">
             <div class="layui-form-item" style="margin-top: 20px">
-                <label class="layui-form-label">用户邮箱<span style="color: red"> *</span></label>
+                <label class="layui-form-label">用户角色<span style="color: red"> *</span></label>
                 <div class="layui-input-block" style="width: 300px;">
-                    <input type="text" name="name" id="name" lay-verify="required" lay-reqtext="请输入角色名称" placeholder="角色名称"
-                           autocomplete="off" class="layui-input">
+                    <select class="layui-form-select" name="role" id="role" lay-verify="" lay-search>
+                        <option value="" selected>请选择(可搜索)</option>
+                    </select>
                 </div>
             </div>
 
-            <div class="layui-form-item">
-                <label class="layui-form-label">用户角色<span style="color: red"> *</span></label>
+            <div class="layui-form-item" style="margin-top: 10px">
+                <label class="layui-form-label">用户邮箱<span style="color: red"> *</span></label>
                 <div class="layui-input-block" style="width: 300px;">
-                    <select name="role" id="role" lay-verify="" lay-search>
-                        <option value="" selected>请选择(可搜索)</option>
-                    </select>
+                    <input type="text" name="email" id="email" lay-verify="required" lay-reqtext="请输入用户邮箱" placeholder="用户邮箱"
+                           autocomplete="off" style="width: 225px;display: inline-block" class="layui-input"> @163.com
                 </div>
             </div>
 
@@ -106,16 +109,22 @@
 <script th:src="@{/layuimini/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
 <script th:src="@{/js/url.js}"></script>
 <script th:inline="none">
-    layui.use(['form', 'table'], function () {
+    layui.use(['form', 'table', 'layer'], function () {
         var $ = layui.jquery,
             form = layui.form,
             table = layui.table;
+            layer = layui.layer;
 
+        var currPage = 1;
+        var res = 1;
+        var currObj;
+        var flag = 0;
+
+        //动态生成角色下拉框
         $.ajax({
             url: basePath + "/role/getAllRole",    //后台数据请求地址
             type: "GET",
             success: function(result){
-                console.log(result);
                 for (var index = 0;index < result.length;index++){
                     var dataTmp = result[index];
                     $('#role').append(new Option(dataTmp.name,dataTmp.id));//往下拉菜单里添加元素
@@ -124,7 +133,7 @@
             }
         });
 
-        table.render({
+        var userTable = table.render({
             elem: '#userTable',
             url: basePath + '/user/getUser',
             toolbar: '#toolbar',
@@ -171,10 +180,11 @@
          */
         table.on('toolbar(userTableFilter)', function (obj) {
             if (obj.event === 'add') {  // 监听添加操作
+                flag = 0;
                 var index = layer.open({
                     title: '添加用户',
                     type: 1,
-                    area: ['450px', '280px'],
+                    area: ['450px', '240px'],
                     content: $("#operateUser"),
                     cancel: function(layero,index){
                         $("#reset").click();
@@ -183,34 +193,161 @@
             }
         });
 
-        //监听表格复选框选择
-        table.on('checkbox(userTableFilter)', function (obj) {
-            console.log(obj)
-        });
 
         table.on('tool(userTableFilter)', function (obj) {
+            currObj = obj;
             var data = obj.data;
             if (obj.event === 'edit') {
-
+                flag = 1;
+                $("#role").val(obj.data.role.id);
+                var email = obj.data.email;
+                $("#email").val(email.substr(0, email.length - 8));
+                $("#email").attr("disabled",true);
+                form.render();
                 var index = layer.open({
-                    title: '编辑用户',
-                    type: 2,
-                    shade: 0.2,
-                    maxmin:true,
-                    shadeClose: true,
-                    area: ['100%', '100%'],
-                    content: '../page/table/edit.html',
+                    title: '修改用户',
+                    type: 1,
+                    area: ['450px', '240px'],
+                    content: $("#operateUser"),
+                    cancel: function(layero,index){
+                        $("#email").removeAttr("disabled");
+                        $("#reset").click();
+                    }
                 });
-                $(window).on("resize", function () {
-                    layer.full(index);
-                });
-                return false;
             } else if (obj.event === 'delete') {
-                layer.confirm('真的删除行么', function (index) {
-                    obj.del();
+                layer.confirm('你确定要删除该用户吗?', {icon: 3, title: '提示'}, function (index) {
+                    $.ajax({
+                        type: "POST",
+                        url: basePath + "/user/deleteUser",
+                        data: {
+                            id : data.id
+                        },
+                        success: function (result) {
+                            if(result.code === 0){
+                                layer.msg("删除用户成功！",{icon: 1});
+                                userTable.reload({
+                                    page :{
+                                        curr : currPage
+                                    }
+                                });
+                            }
+                            else{
+                                layer.msg(result.message,{icon: 2});
+                            }
+                        },
+                        error: function () {
+                            layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                        }
+                    });
                     layer.close(index);
                 });
+            } else if (obj.event === 'active'){
+                $.ajax({
+                    type: "POST",
+                    url: basePath + "/user/userState",
+                    data: {
+                        id : obj.data.id,
+                        live : 1
+                    },
+                    success: function (result) {
+                        if(result.code === 0){
+                            layer.msg("激活用户成功！",{icon: 1});
+                            userTable.reload();
+                        }
+                        else{
+                            layer.msg(result.message,{icon: 2});
+                        }
+                    },
+                    error: function () {
+                        layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                    }
+                });
+            } else if (obj.event === 'frozen'){
+                $.ajax({
+                    type: "POST",
+                    url: basePath + "/user/userState",
+                    data: {
+                        id : obj.data.id,
+                        live : 0
+                    },
+                    success: function (result) {
+                        if(result.code === 0){
+                            layer.msg("冻结用户成功！",{icon: 1});
+                            userTable.reload();
+                        }
+                        else{
+                            layer.msg(result.message,{icon: 2});
+                        }
+                    },
+                    error: function () {
+                        layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                    }
+                });
             }
+        });
+
+        //表单提交
+        form.on('submit(operate)', function (data) {
+            if($("#role").val() === ""){
+                layer.msg("请选择角色!",{icon: 2});
+                return false;
+            }
+            //新增提交
+            if(flag === 0){
+                $.ajax({
+                    type: "POST",
+                    url: basePath + "/user/addUser",
+                    data: {
+                        email : data.field.email + "@163.com",
+                        role : data.field.role
+                    },
+                    success: function (result) {
+                        if(result.code === 0){
+                            layer.closeAll();
+                            $("#reset").click();
+                            layer.msg("新增用户成功！",{icon: 1});
+                            userTable.reload();
+                        }
+                        else{
+                            layer.msg(result.message,{icon: 2});
+                        }
+                    },
+                    error: function () {
+                        layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                    }
+                });
+            }
+            //修改提交
+            else if(flag === 1){
+                $.ajax({
+                    type: "POST",
+                    url: basePath + "/user/updateUser",
+                    data: {
+                        id : currObj.data.id,
+                        role : data.field.role
+                    },
+                    success: function (result) {
+                        if(result.code === 0){
+                            layer.closeAll();
+                            $("#email").removeAttr("disabled");
+                            $("#reset").click();
+                            layer.msg("修改用户成功！",{icon: 1});
+                            userTable.reload({
+                                page : {
+                                    curr : currPage
+                                }
+                            });
+                        }
+                        else{
+                            layer.msg(result.message,{icon: 2});
+                        }
+                    },
+                    error: function () {
+                        layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                    }
+                });
+            }
+            return false;
         });
 
     });

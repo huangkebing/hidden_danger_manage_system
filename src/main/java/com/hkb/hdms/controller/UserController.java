@@ -1,5 +1,6 @@
 package com.hkb.hdms.controller;
 
+import com.hkb.hdms.model.pojo.User;
 import com.hkb.hdms.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -54,5 +55,38 @@ public class UserController {
     @ResponseBody
     public Object getUser(int limit,int page){
         return sysUserService.getUser(limit, page);
+    }
+
+    @PostMapping("/addUser")
+    @ResponseBody
+    public Object addUser(String email, Integer role){
+        User user = new User();
+        user.setEmail(email);
+        user.setRole(role);
+        return sysUserService.addUser(user);
+    }
+
+    @PostMapping("/userState")
+    @ResponseBody
+    public Object userState(Long id, int live){
+        User user = new User();
+        user.setId(id);
+        user.setLive(live);
+        return sysUserService.updateUser(user);
+    }
+
+    @PostMapping("/updateUser")
+    @ResponseBody
+    public Object updateUser(Long id, int role){
+        User user = new User();
+        user.setId(id);
+        user.setRole(role);
+        return sysUserService.updateUser(user);
+    }
+
+    @PostMapping("/deleteUser")
+    @ResponseBody
+    public Object deleteUser(Long id){
+        return sysUserService.deleteUser(id);
     }
 }

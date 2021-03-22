@@ -27,8 +27,6 @@ public class User {
 
     private Integer live;
 
-    private String avatar;
-
     private String mobile;
 
     private String remark;

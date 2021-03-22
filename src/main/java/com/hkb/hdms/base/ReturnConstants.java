@@ -18,4 +18,6 @@ public class ReturnConstants {
     public static final R OLD_PASSWORD_ERROR = new R(3, "旧的密码错误，请检查密码");
 
     public static final R PASSWORD_NOT_SAME = new R(4, "两次密码不一致，请检查密码");
+
+    public static final R EMAIL_EXIST = new R(5, "该邮箱已存在");
 }

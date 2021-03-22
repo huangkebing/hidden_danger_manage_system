@@ -96,7 +96,7 @@
                 {type: "numbers", width: 50},
                 {field: 'name', title: '角色名称'},
                 {field: 'description', title: '备注'},
-                {field: 'question', title: '问题类型分配', width:120, align: 'center', templet: function (d) {
+                {field: 'question', title: '隐患类型分配', width:120, align: 'center', templet: function (d) {
                         if (d.question == 1) {
                             return '<span class="layui-badge layui-bg-blue">参与分配</span>';
                         } else {
@@ -181,7 +181,7 @@
                         },
                         success: function (result) {
                             if(result.code === 0){
-                                layer.msg("删除资源成功！",{icon: 1});
+                                layer.msg("删除用户成功！",{icon: 1});
                                 roleTable.reload({
                                     page :{
                                         curr : currPage
@@ -236,8 +236,6 @@
             }
             //修改提交
             else if(flag === 1){
-                console.log(currObj)
-                let checkStatus = table.checkStatus('menuTable');
                 $.ajax({
                     type: "POST",
                     url: basePath + "/role/updateRole",

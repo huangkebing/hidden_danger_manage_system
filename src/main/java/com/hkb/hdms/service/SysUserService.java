@@ -14,4 +14,10 @@ public interface SysUserService extends IService<User> {
     R resetPassword(String old, String now, String check);
 
     Map<String, Object> getUser(int limit, int page);
+
+    R addUser(User user);
+
+    R updateUser(User user);
+
+    R deleteUser(Long id);
 }
