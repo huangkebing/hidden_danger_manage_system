@@ -87,9 +87,14 @@
                 type: "GET",
                 url: basePath + "/login/validateCode/" + toMail,
                 success: function (result) {
-                    layer.msg('验证码发送成功!', {icon: 1});
-                    content = $("#sendCode").html();
-                    time();
+                    if(result.code == 0){
+                        layer.msg('验证码发送成功!', {icon: 1});
+                        content = $("#sendCode").html();
+                        time();
+                    }
+                    else {
+                        layer.msg(result.message, {icon: 2});
+                    }
                 },
                 error: function () {
                     layer.msg('系统错误，请联系系统管理员', {icon: 2});

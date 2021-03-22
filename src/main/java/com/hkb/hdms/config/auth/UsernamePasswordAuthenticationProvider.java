@@ -43,6 +43,9 @@ public class UsernamePasswordAuthenticationProvider implements AuthenticationPro
         if (Objects.isNull(userDetails)){
             throw new BadCredentialsException("该邮箱不存在");
         }
+        if(!userDetails.isAccountNonLocked()){
+            throw new BadCredentialsException("该账号已被冻结，请联系系统管理员");
+        }
         if (!passwordEncoder.matches(password,userDetails.getPassword())){
             throw new BadCredentialsException("密码错误");
         }

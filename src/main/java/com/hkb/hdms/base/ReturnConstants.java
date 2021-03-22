@@ -20,4 +20,6 @@ public class ReturnConstants {
     public static final R PASSWORD_NOT_SAME = new R(4, "两次密码不一致，请检查密码");
 
     public static final R EMAIL_EXIST = new R(5, "该邮箱已存在");
+
+    public static final R ACCOUNT_FROZEN = new R(6, "该账号已被冻结，请联系系统管理员");
 }

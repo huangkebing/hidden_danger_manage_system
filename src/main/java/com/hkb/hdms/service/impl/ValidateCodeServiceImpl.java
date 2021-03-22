@@ -45,6 +45,10 @@ public class ValidateCodeServiceImpl extends ServiceImpl<UserMapper, User> imple
         User result = this.getOne(new QueryWrapper<User>().eq("email", toMail));
         if(ObjectUtils.isEmpty(result)){
             return ReturnConstants.EMAIL_NOT_EXIST;
+        } else{
+            if (result.getLive() == 0){
+                return ReturnConstants.ACCOUNT_FROZEN;
+            }
         }
 
         ValidateCode code = codeGenerator.generator(toMail);
