@@ -39,6 +39,10 @@ public class UserController {
         return "user/user";
     }
 
+    @RequestMapping("/userInfo.html")
+    public Object userInfoPage(){
+        return "user/userInfo";
+    }
     /**
      * 修改密码接口
      * @param old 旧密码
@@ -88,5 +92,11 @@ public class UserController {
     @ResponseBody
     public Object deleteUser(Long id){
         return sysUserService.deleteUser(id);
+    }
+
+    @PostMapping("/updateUserInfo")
+    @ResponseBody
+    public Object updateUserInfo(User user){
+        return sysUserService.updateUserInfo(user);
     }
 }

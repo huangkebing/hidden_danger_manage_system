@@ -20,4 +20,6 @@ public interface SysUserService extends IService<User> {
     R updateUser(User user);
 
     R deleteUser(Long id);
+
+    R updateUserInfo(User user);
 }

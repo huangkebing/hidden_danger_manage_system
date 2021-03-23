@@ -3,7 +3,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
-    <title>修改密码</title>
+    <title>基本资料</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -19,23 +19,21 @@
 
         <div class="layui-form layuimini-form">
             <div class="layui-form-item">
-                <label class="layui-form-label required">旧的密码</label>
+                <label class="layui-form-label required">账号昵称</label>
                 <div class="layui-input-block">
-                    <input type="password" name="old" lay-verify="required" lay-reqtext="旧的密码不能为空" placeholder="请输入旧的密码"  value="" class="layui-input">
-                    <tip>填写自己账号的旧的密码。</tip>
-                </div>
-            </div>
-
-            <div class="layui-form-item">
-                <label class="layui-form-label required">新的密码</label>
-                <div class="layui-input-block">
-                    <input type="password" name="now" id="now" lay-verify="required" lay-reqtext="新的密码不能为空" placeholder="请输入新的密码"  value="" class="layui-input">
+                    <input type="text" name="name" placeholder="请输入账号昵称" th:value="${session.loginUser.name}" lay-verify="required" lay-reqtext="账号昵称不能为空" class="layui-input">
                 </div>
             </div>
             <div class="layui-form-item">
-                <label class="layui-form-label required">确认密码</label>
+                <label class="layui-form-label">手机</label>
                 <div class="layui-input-block">
-                    <input type="password" name="check" id="check" lay-verify="required" lay-reqtext="新的密码不能为空" placeholder="请输入新的密码"  value="" class="layui-input">
+                    <input type="number" name="mobile" autocomplete="off" placeholder="请输入手机" class="layui-input" th:value="${session.loginUser.mobile}">
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">座右铭</label>
+                <div class="layui-input-block">
+                    <textarea name="remark" class="layui-textarea" th:value="${session.loginUser.remark}" autocomplete="off" placeholder="请输入座右铭"></textarea>
                 </div>
             </div>
 
@@ -48,9 +46,9 @@
     </div>
 </div>
 <script th:src="@{/layuimini/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
+<script th:src="@{/js/url.js}"></script>
 <script th:src="@{/layuimini/js/lay-config.js}" charset="utf-8"></script>
 <script th:src="@{/layuimini/lib/jquery-3.4.1/jquery-3.4.1.min.js}"></script>
-<script th:src="@{/js/url.js}"></script>
 <script>
     layui.use(['form','miniTab'], function () {
         var form = layui.form,
@@ -59,26 +57,18 @@
 
         //监听提交
         form.on('submit(saveBtn)', function (data) {
-            var now = $("#now").val();
-            if(now.length < 6 || now.length > 20){
-                layer.msg("密码长度必须为6~20位",{icon: 2});
-                return false;
-            }
-            if($("#check").val() !== now){
-                layer.msg("两次密码不一致",{icon: 2});
-                return false;
-            }
             $.ajax({
                 type: "POST",
-                url: basePath + "/user/resetPassword",
+                url: basePath + "/user/updateUserInfo",
                 data: data.field,
                 success: function (result) {
                     if(result.code === 0){
-                        let index = layer.alert("修改密码成功，请重新登录！", {
+                        var index = layer.alert("个人信息修改成功", {
                             title: '提示'
                         }, function () {
                             layer.close(index);
-                            window.parent.toLogin();
+                            window.parent.reload();
+                            miniTab.deleteCurrentByIframe();
                         });
                     }
                     else{
@@ -89,6 +79,7 @@
                     layer.msg('系统错误，请联系系统管理员',{icon: 2});
                 }
             });
+            return false;
         });
 
     });

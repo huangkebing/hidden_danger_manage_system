@@ -131,4 +131,19 @@ public class SysUserServiceImpl extends ServiceImpl<UserMapper, User> implements
             return ReturnConstants.FAILURE;
         }
     }
+
+    @Override
+    public R updateUserInfo(User user) {
+        User loginUser = (User) session.getAttribute(Constants.LOGIN_USER_KEY);
+        UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id",loginUser.getId());
+        if (this.update(user,updateWrapper)) {
+            session.removeAttribute(Constants.LOGIN_USER_KEY);
+            User newUser = this.getById(loginUser.getId());
+            session.setAttribute(Constants.LOGIN_USER_KEY,newUser);
+            return ReturnConstants.SUCCESS;
+        } else{
+            return ReturnConstants.FAILURE;
+        }
+    }
 }
