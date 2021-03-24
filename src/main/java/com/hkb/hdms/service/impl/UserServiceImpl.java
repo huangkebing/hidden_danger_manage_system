@@ -61,6 +61,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             String password = queryUser.getPassword();
             //获取权限
             Collection<GrantedAuthority> authorities = getAuthorities(queryUser);
+            //账号是否冻结
             boolean live = queryUser.getLive() == 1;
             userDetails = new org.springframework.security.core.userdetails.User(
                     username, password, true, true, true, live, authorities);
