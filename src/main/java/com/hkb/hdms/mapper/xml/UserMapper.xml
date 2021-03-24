@@ -14,9 +14,9 @@
     </resultMap>
     <select id="selectUsers" parameterType="com.hkb.hdms.model.pojo.User" resultMap="selectMap">
         select u.id, u.email, u.live, u.`create`, r.id 'rid', r.name, r.question
-        from hdms.hdms_user as u,
+        from hdms.hdms_user as u left join
         hdms_role as r
-        where u.role = r.id
+        on u.role = r.id
         <if test="user.email != null and user.email != ''">
             and u.email = #{user.email}
         </if>

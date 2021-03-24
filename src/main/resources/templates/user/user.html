@@ -67,8 +67,10 @@
 
         <!--操作栏-->
         <script type="text/html" id="currentTableBar">
-            {{#  if(d.role.question == 1){ }}
-            <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="active">分配隐患</a>
+            {{#  if(d.role != null){ }}
+                {{#  if(d.role.question == 1){ }}
+                <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="active">分配隐患</a>
+                {{#  } }}
             {{#  } }}
             <a class="layui-btn layui-btn-warm layui-btn-xs data-count-edit" lay-event="edit">修改</a>
             <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
@@ -148,8 +150,13 @@
             cols: [[
                 {type: "numbers", width: 50},
                 {field: 'email', title: '邮箱'},
-                {field: 'name', title: '角色', templet:
-                        "<div>{{d.role.name}}</div>"
+                {field: 'name', title: '角色', templet: function (d) {
+                        if (d.role == null) {
+                            return '<div>角色不存在</div>';
+                        } else {
+                            return '<div>'+ d.role.name + '</div>';
+                        }
+                    }
                 },
                 {field: 'create', title: '创建时间', templet:
                         "<div>{{layui.util.toDateString(d.create, 'yyyy-MM-dd HH:mm:ss')}}</div>"
@@ -205,7 +212,10 @@
             var data = obj.data;
             if (obj.event === 'edit') {
                 flag = 1;
-                $("#role").val(obj.data.role.id);
+                console.log(obj.data.role);
+                if(obj.data.role !== undefined){
+                    $("#role").val(obj.data.role.id);
+                }
                 var email = obj.data.email;
                 $("#email").val(email.substr(0, email.length - 8));
                 $("#email").attr("disabled",true);
