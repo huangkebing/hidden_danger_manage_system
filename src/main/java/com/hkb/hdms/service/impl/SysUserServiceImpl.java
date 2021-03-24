@@ -104,7 +104,7 @@ public class SysUserServiceImpl extends ServiceImpl<UserMapper, User> implements
         user.setPassword(new BCryptPasswordEncoder().encode(password));
 
         if (this.save(user)) {
-            mailSender.sendMail(MailConstants.REGISTER,new String[]{password},user.getEmail());
+            mailSender.sendMail(MailConstants.REGISTER, new String[]{password}, user.getEmail());
             return ReturnConstants.SUCCESS;
         } else {
             return ReturnConstants.FAILURE;
@@ -136,13 +136,13 @@ public class SysUserServiceImpl extends ServiceImpl<UserMapper, User> implements
     public R updateUserInfo(User user) {
         User loginUser = (User) session.getAttribute(Constants.LOGIN_USER_KEY);
         UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("id",loginUser.getId());
-        if (this.update(user,updateWrapper)) {
+        updateWrapper.eq("id", loginUser.getId());
+        if (this.update(user, updateWrapper)) {
             session.removeAttribute(Constants.LOGIN_USER_KEY);
             User newUser = this.getById(loginUser.getId());
-            session.setAttribute(Constants.LOGIN_USER_KEY,newUser);
+            session.setAttribute(Constants.LOGIN_USER_KEY, newUser);
             return ReturnConstants.SUCCESS;
-        } else{
+        } else {
             return ReturnConstants.FAILURE;
         }
     }

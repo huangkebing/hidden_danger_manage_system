@@ -64,7 +64,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -75,7 +75,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public RememberMeServices getRememberMeServices(){
+    public RememberMeServices getRememberMeServices() {
         PersistentTokenBasedRememberMeServices rememberMeServices = new PersistentTokenBasedRememberMeServices("emailCookie", userService, persistentTokenRepository());
         rememberMeServices.setTokenValiditySeconds(24 * 60 * 60);
         rememberMeServices.setParameter("remember");
@@ -83,7 +83,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public AuthenticationFailureHandler getAuthenticationFailureHandler(){
+    public AuthenticationFailureHandler getAuthenticationFailureHandler() {
         return new SimpleUrlAuthenticationFailureHandler(Constants.LOGIN_FAILURE_URL_EMAIL);
     }
 
@@ -100,8 +100,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         emailAuthenticationProcessingFilter.setRememberMeServices(getRememberMeServices());
 
         http.authorizeRequests()
-                .antMatchers("/login.html","/login/**").permitAll()
-                .antMatchers("/css/**","/images/**","/js/**","/layuimini/**").permitAll()
+                .antMatchers("/login.html", "/login/**").permitAll()
+                .antMatchers("/css/**", "/images/**", "/js/**", "/layuimini/**").permitAll()
                 .anyRequest().authenticated();
 
         // 登录配置
@@ -112,7 +112,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .loginProcessingUrl("/login/password") // 登陆表单提交请求
                 .defaultSuccessUrl("/index.html")// 设置默认登录成功后跳转的页面
                 .failureUrl(Constants.LOGIN_FAILURE_URL_PASSWORD);
-
 
 
         http.headers().contentTypeOptions().disable();

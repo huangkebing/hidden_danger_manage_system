@@ -19,6 +19,7 @@ public class ValidateCodeMailSender extends AbstractMailSender {
 
     /**
      * 根据message生成邮件正文
+     *
      * @param message 邮件动态的信息，本类中为登录的验证码
      */
     @Override

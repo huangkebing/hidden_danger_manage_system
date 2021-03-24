@@ -41,14 +41,14 @@ public class MenuTreeUtil {
         List<MenuTreeVo> retList = new ArrayList<>();
         for (MenuTreeVo parent : treeList) {
             //如果该资源和角色已绑定，check置为true
-            if(ownMenus.contains(parent.getId())){
+            if (ownMenus.contains(parent.getId())) {
                 parent.setChecked(true);
             }
 
             if (pid.equals(parent.getPid())) {
                 //最外一层默认展开
                 parent.setSpread(true);
-                retList.add(findChildren(parent,treeList));
+                retList.add(findChildren(parent, treeList));
             }
         }
         return retList;

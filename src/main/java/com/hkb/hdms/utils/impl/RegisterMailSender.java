@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
  * 2021/03/22
  */
 @Component
-public class RegisterMailSender extends AbstractMailSender{
+public class RegisterMailSender extends AbstractMailSender {
 
     @Autowired
     public RegisterMailSender(JavaMailSender sender) {

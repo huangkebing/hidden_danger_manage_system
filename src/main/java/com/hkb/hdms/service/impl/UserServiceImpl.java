@@ -41,7 +41,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public UserDetails loadUserByEmail(String email) {
         email += Constants.EMAIL_SUFFIX;
         User queryUser = this.getOne(new QueryWrapper<User>().eq("email", email));
-        session.setAttribute(Constants.LOGIN_USER_KEY,queryUser);
+        session.setAttribute(Constants.LOGIN_USER_KEY, queryUser);
         UserDetails userDetails = null;
         if (queryUser != null) {
             Collection<GrantedAuthority> authorities = getAuthorities(queryUser);
@@ -55,7 +55,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         username += Constants.EMAIL_SUFFIX;
         User queryUser = this.getOne(new QueryWrapper<User>().eq("email", username));
-        session.setAttribute(Constants.LOGIN_USER_KEY,queryUser);
+        session.setAttribute(Constants.LOGIN_USER_KEY, queryUser);
         UserDetails userDetails = null;
         if (queryUser != null) {
             String password = queryUser.getPassword();

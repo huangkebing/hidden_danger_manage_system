@@ -35,35 +35,37 @@ public class UserController {
     }
 
     @RequestMapping("/user.html")
-    public Object userPage(){
+    public Object userPage() {
         return "user/user";
     }
 
     @RequestMapping("/userInfo.html")
-    public Object userInfoPage(){
+    public Object userInfoPage() {
         return "user/userInfo";
     }
+
     /**
      * 修改密码接口
-     * @param old 旧密码
-     * @param now 新密码
+     *
+     * @param old   旧密码
+     * @param now   新密码
      * @param check 确认密码
-     * */
+     */
     @PostMapping("/resetPassword")
     @ResponseBody
-    public Object resetPassword(String old, String now,String check){
+    public Object resetPassword(String old, String now, String check) {
         return sysUserService.resetPassword(old, now, check);
     }
 
     @GetMapping("/getUser")
     @ResponseBody
-    public Object getUser(User user,int limit,int page){
+    public Object getUser(User user, int limit, int page) {
         return sysUserService.getUser(user, limit, page);
     }
 
     @PostMapping("/addUser")
     @ResponseBody
-    public Object addUser(String email, Integer role){
+    public Object addUser(String email, Integer role) {
         User user = new User();
         user.setEmail(email);
         user.setRole(role);
@@ -72,7 +74,7 @@ public class UserController {
 
     @PostMapping("/userState")
     @ResponseBody
-    public Object userState(Long id, int live){
+    public Object userState(Long id, int live) {
         User user = new User();
         user.setId(id);
         user.setLive(live);
@@ -81,7 +83,7 @@ public class UserController {
 
     @PostMapping("/updateUser")
     @ResponseBody
-    public Object updateUser(Long id, int role){
+    public Object updateUser(Long id, int role) {
         User user = new User();
         user.setId(id);
         user.setRole(role);
@@ -90,13 +92,13 @@ public class UserController {
 
     @PostMapping("/deleteUser")
     @ResponseBody
-    public Object deleteUser(Long id){
+    public Object deleteUser(Long id) {
         return sysUserService.deleteUser(id);
     }
 
     @PostMapping("/updateUserInfo")
     @ResponseBody
-    public Object updateUserInfo(User user){
+    public Object updateUserInfo(User user) {
         return sysUserService.updateUserInfo(user);
     }
 }

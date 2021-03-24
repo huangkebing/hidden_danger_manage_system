@@ -56,7 +56,7 @@ public class SystemController {
 
     @GetMapping("/getMenuWithRole/{roleId}")
     @ResponseBody
-    public Object getMenuWithRole(@PathVariable Long roleId){
+    public Object getMenuWithRole(@PathVariable Long roleId) {
         return menuService.getMenuWithRole(roleId);
     }
 
@@ -65,7 +65,7 @@ public class SystemController {
      */
     @PostMapping("/addMenu")
     @ResponseBody
-    public Object addMenu(Menu menu){
+    public Object addMenu(Menu menu) {
         return menuService.addMenu(menu);
     }
 
@@ -74,7 +74,7 @@ public class SystemController {
      */
     @PostMapping("/updateMenu")
     @ResponseBody
-    public Object updateMenu(Menu menu){
+    public Object updateMenu(Menu menu) {
         return menuService.updateMenu(menu);
     }
 
@@ -83,7 +83,7 @@ public class SystemController {
      */
     @PostMapping("/deleteMenu")
     @ResponseBody
-    public Object deleteMenu(Long id){
+    public Object deleteMenu(Long id) {
         return menuService.deleteMenu(id);
     }
 }

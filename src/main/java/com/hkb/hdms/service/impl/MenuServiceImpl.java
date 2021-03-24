@@ -40,7 +40,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     private final HttpSession session;
 
     private final MenuTreeUtil treeUtil;
-    
+
     private final RoleMenuMapper roleMenuMapper;
 
     @Autowired
@@ -127,8 +127,8 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
             return ReturnConstants.PARAMS_EMPTY;
         }
         UpdateWrapper<Menu> wrapper = new UpdateWrapper<>();
-        wrapper.eq("id",menu.getId());
-        if (this.update(menu,wrapper)) {
+        wrapper.eq("id", menu.getId());
+        if (this.update(menu, wrapper)) {
             return ReturnConstants.SUCCESS;
         } else {
             return ReturnConstants.FAILURE;
@@ -139,7 +139,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     @Transactional
     public R deleteMenu(Long id) {
         //删除资源前，删除所有角色与该资源的绑定
-        roleMenuMapper.delete(new QueryWrapper<RoleMenu>().eq("menu_id",id));
+        roleMenuMapper.delete(new QueryWrapper<RoleMenu>().eq("menu_id", id));
 
         if (this.removeById(id)) {
             return ReturnConstants.SUCCESS;
@@ -152,7 +152,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     public List<MenuTreeVo> getMenuWithRole(Long roleId) {
         //查询出所有的资源
         List<Menu> menus = this.list(new QueryWrapper<Menu>().orderByAsc("sort"));
-        
+
         //查询出roleId下绑定的资源
         List<RoleMenu> ownMenus = roleMenuMapper.selectList(new QueryWrapper<RoleMenu>().eq("role_id", roleId));
 

@@ -44,10 +44,10 @@ public class ValidateCodeServiceImpl extends ServiceImpl<UserMapper, User> imple
     public R createCode(String toMail) {
         //校验目标邮箱是否为本系统用户
         User result = this.getOne(new QueryWrapper<User>().eq("email", toMail));
-        if(ObjectUtils.isEmpty(result)){
+        if (ObjectUtils.isEmpty(result)) {
             return ReturnConstants.EMAIL_NOT_EXIST;
-        } else{
-            if (result.getLive() == 0){
+        } else {
+            if (result.getLive() == 0) {
                 return ReturnConstants.ACCOUNT_FROZEN;
             }
         }
@@ -55,10 +55,10 @@ public class ValidateCodeServiceImpl extends ServiceImpl<UserMapper, User> imple
         ValidateCode code = codeGenerator.generator(toMail);
 
         //验证码存入session中
-        session.setAttribute(Constants.VALIDATE_CODE_KEY,code);
+        session.setAttribute(Constants.VALIDATE_CODE_KEY, code);
 
         //发送验证码到目标邮箱
-        mailSender.sendMail(MailConstants.VALIDATE_CODE,new String[]{code.getCode()},toMail);
+        mailSender.sendMail(MailConstants.VALIDATE_CODE, new String[]{code.getCode()}, toMail);
         return ReturnConstants.SUCCESS;
     }
 }

@@ -25,18 +25,18 @@ public class LoginController {
     }
 
     @GetMapping("/login.html")
-    public String toLogin(){
+    public String toLogin() {
         return "login";
     }
 
     @GetMapping("/index.html")
-    public String toIndex(){
+    public String toIndex() {
         return "index";
     }
 
     @GetMapping("/login/validateCode/{toMail}")
     @ResponseBody
-    public Object validateCode(@PathVariable String toMail){
+    public Object validateCode(@PathVariable String toMail) {
         return validateCodeService.createCode(toMail + Constants.EMAIL_SUFFIX);
     }
 }

@@ -39,18 +39,18 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, UserRole> implement
     @Override
     public Map<String, Object> getRoles(int limit, int page) {
         HashMap<String, Object> map = new HashMap<>();
-        map.put("code",0);
-        map.put("msg","");
+        map.put("code", 0);
+        map.put("msg", "");
 
-        if (page < 1){
+        if (page < 1) {
             page = 1;
         }
         Page<UserRole> pageParam = new Page<>(page, limit);
         //分页无条件查询
         this.page(pageParam, null);
 
-        map.put("count",pageParam.getTotal());
-        map.put("data",pageParam.getRecords());
+        map.put("count", pageParam.getTotal());
+        map.put("data", pageParam.getRecords());
         return map;
     }
 
@@ -61,26 +61,26 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, UserRole> implement
 
     @Override
     public R addRole(UserRole role) {
-        if(StringUtils.isNullOrEmpty(role.getName())){
+        if (StringUtils.isNullOrEmpty(role.getName())) {
             return ReturnConstants.PARAMS_EMPTY;
         }
         if (this.save(role)) {
             return ReturnConstants.SUCCESS;
-        } else{
+        } else {
             return ReturnConstants.FAILURE;
         }
     }
 
     @Override
     public R updateRole(UserRole role) {
-        if(StringUtils.isNullOrEmpty(role.getName())){
+        if (StringUtils.isNullOrEmpty(role.getName())) {
             return ReturnConstants.PARAMS_EMPTY;
         }
         UpdateWrapper<UserRole> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("id",role.getId());
-        if (this.update(role,updateWrapper)) {
+        updateWrapper.eq("id", role.getId());
+        if (this.update(role, updateWrapper)) {
             return ReturnConstants.SUCCESS;
-        } else{
+        } else {
             return ReturnConstants.FAILURE;
         }
     }
@@ -89,11 +89,11 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, UserRole> implement
     @Transactional
     public R deleteRole(Long id) {
         //删除角色前，删除所有资源与该角色的绑定
-        roleMenuMapper.delete(new QueryWrapper<RoleMenu>().eq("role_id",id));
+        roleMenuMapper.delete(new QueryWrapper<RoleMenu>().eq("role_id", id));
 
         if (this.removeById(id)) {
             return ReturnConstants.SUCCESS;
-        } else{
+        } else {
             return ReturnConstants.FAILURE;
         }
     }
@@ -101,7 +101,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, UserRole> implement
     @Override
     @Transactional
     public R roleToMenu(Long roleId, String menuIds) {
-        if(menuIds == null){
+        if (menuIds == null) {
             return ReturnConstants.PARAMS_EMPTY;
         }
         //获取现在的资源ids
@@ -126,21 +126,21 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, UserRole> implement
                 roleMenuMapper.insert(roleMenu);
             }
 
-            if(deleteIds.size() > 0){
+            if (deleteIds.size() > 0) {
                 roleMenuMapper.deleteBatchIds(deleteIds);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new R(-1,e.getMessage());
+            return new R(-1, e.getMessage());
         }
         return ReturnConstants.SUCCESS;
     }
 
-    private List<Long> formatMenuIds(String menuIds){
+    private List<Long> formatMenuIds(String menuIds) {
         List<Long> res = new ArrayList<>();
         String[] strs = menuIds.split(",");
         for (String menuId : strs) {
-            if("".equals(menuId)){
+            if ("".equals(menuId)) {
                 continue;
             }
             res.add(Long.valueOf(menuId));

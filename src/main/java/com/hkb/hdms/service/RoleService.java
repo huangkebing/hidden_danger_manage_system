@@ -16,7 +16,7 @@ import java.util.Map;
  */
 @Repository
 public interface RoleService extends IService<UserRole> {
-    Map<String,Object> getRoles(int limit,int page);
+    Map<String, Object> getRoles(int limit, int page);
 
     List<UserRole> getAllRole();
 

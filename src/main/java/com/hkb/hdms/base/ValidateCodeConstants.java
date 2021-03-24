@@ -2,6 +2,7 @@ package com.hkb.hdms.base;
 
 /**
  * 邮箱验证码登录相关常量
+ *
  * @author huangkebing
  * 2021/03/06
  */

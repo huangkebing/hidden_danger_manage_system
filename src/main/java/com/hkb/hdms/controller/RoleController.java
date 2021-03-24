@@ -30,7 +30,7 @@ public class RoleController {
      * 跳转到角色管理页面
      */
     @RequestMapping("/role.html")
-    public Object rolePage(){
+    public Object rolePage() {
         return "role/role";
     }
 
@@ -39,13 +39,13 @@ public class RoleController {
      */
     @GetMapping("/getRole")
     @ResponseBody
-    public Object getRole(int limit, int page){
+    public Object getRole(int limit, int page) {
         return roleService.getRoles(limit, page);
     }
 
     @GetMapping("/getAllRole")
     @ResponseBody
-    public Object getAllRole(){
+    public Object getAllRole() {
         return roleService.getAllRole();
     }
 
@@ -54,7 +54,7 @@ public class RoleController {
      */
     @PostMapping("/addRole")
     @ResponseBody
-    public Object addRole(UserRole role){
+    public Object addRole(UserRole role) {
         return roleService.addRole(role);
     }
 
@@ -63,7 +63,7 @@ public class RoleController {
      */
     @PostMapping("/updateRole")
     @ResponseBody
-    public Object updateRole(UserRole role){
+    public Object updateRole(UserRole role) {
         return roleService.updateRole(role);
     }
 
@@ -72,7 +72,7 @@ public class RoleController {
      */
     @PostMapping("/deleteRole")
     @ResponseBody
-    public Object deleteRole(Long id){
+    public Object deleteRole(Long id) {
         return roleService.deleteRole(id);
     }
 
@@ -81,7 +81,7 @@ public class RoleController {
      */
     @PostMapping("/roleToMenu")
     @ResponseBody
-    public Object roleToMenu(Long roleId, String menuIds){
+    public Object roleToMenu(Long roleId, String menuIds) {
         return roleService.roleToMenu(roleId, menuIds);
     }
 }

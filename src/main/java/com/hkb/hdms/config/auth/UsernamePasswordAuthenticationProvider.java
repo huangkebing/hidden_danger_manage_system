@@ -40,13 +40,13 @@ public class UsernamePasswordAuthenticationProvider implements AuthenticationPro
         //获取userDetails
         UserDetails userDetails = userService.loadUserByUsername(username);
         //校验
-        if (Objects.isNull(userDetails)){
+        if (Objects.isNull(userDetails)) {
             throw new BadCredentialsException("该邮箱不存在");
         }
-        if(!userDetails.isAccountNonLocked()){
+        if (!userDetails.isAccountNonLocked()) {
             throw new BadCredentialsException("该账号已被冻结，请联系系统管理员");
         }
-        if (!passwordEncoder.matches(password,userDetails.getPassword())){
+        if (!passwordEncoder.matches(password, userDetails.getPassword())) {
             throw new BadCredentialsException("密码错误");
         }
         //返回经过认证的Authentication

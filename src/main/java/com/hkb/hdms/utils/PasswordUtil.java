@@ -9,7 +9,7 @@ import java.util.UUID;
  * 2021/03/22
  */
 public class PasswordUtil {
-    public static String getPassword(){
-        return UUID.randomUUID().toString().replaceAll("-","").substring(6,18);
+    public static String getPassword() {
+        return UUID.randomUUID().toString().replaceAll("-", "").substring(6, 18);
     }
 }
