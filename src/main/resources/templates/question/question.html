@@ -27,6 +27,32 @@
             <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
         </script>
 
+        <!--隐患类型新增、修改表单-->
+        <form id="operateQuestion" class="layui-form" style="display: none">
+            <div class="layui-form-item" style="margin-top: 20px">
+                <label class="layui-form-label">隐患类型<span style="color: red"> *</span></label>
+                <div class="layui-input-block" style="width: 300px;">
+                    <input type="text" name="name" id="name" lay-verify="required" lay-reqtext="请输入隐患类型" placeholder="隐患类型"
+                           autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">类型说明<span>&nbsp;&nbsp;</span></label>
+                <div class="layui-input-block" style="width: 300px;">
+                    <input type="text" name="description" id="description" placeholder="类型说明" autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item" style="margin-left: 70px">
+                <div class="layui-input-block">
+                    <button class="layui-btn" id="submit" style="padding: 0 20px" lay-submit="" lay-filter="operate">提交
+                    </button>
+                    <button type="reset" id="reset" style="visibility: hidden" class="layui-btn">重置</button>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 <script th:src="@{/layuimini/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
@@ -37,6 +63,12 @@
             form = layui.form,
             table = layui.table;
 
+        var currPage = 1;
+        var res = 1;
+        var currObj;
+
+        var flag = 0;
+
         var questionTable = table.render({
             elem: '#questionTable',
             url: basePath + '/question/getQuestion',
@@ -44,92 +76,145 @@
             defaultToolbar: ['filter', 'exports'],
             cols: [[
                 {type: "numbers", width: 50},
-                {field: 'name', title: '隐患类型'},
+                {field: 'name', title: '隐患类型', width:  150},
                 {field: 'description', title: '备注'},
-                {field: 'create', title: '创建时间', templet:
+                {field: 'create', title: '创建时间', width: 200, templet:
                         "<div>{{layui.util.toDateString(d.create, 'yyyy-MM-dd HH:mm:ss')}}</div>"
                 },
-                {title: '操作', minWidth: 150, toolbar: '#currentTableBar', align: "center"}
+                {title: '操作', width: 150, toolbar: '#currentTableBar', align: "center"}
             ]],
             limits: [10, 15, 20, 25, 50, 100],
             limit: 15,
-            page: true
+            page: true,
+            done: function (rest, curr) {
+                currPage = curr;
+                res = rest;
+            }
         });
 
-        // 监听搜索操作
-        form.on('submit(data-search-btn)', function (data) {
-            var result = JSON.stringify(data.field);
-            layer.alert(result, {
-                title: '最终的搜索信息'
-            });
-
-            //执行搜索重载
-            table.reload('questionTable', {
-                page: {
-                    curr: 1
-                }
-                , where: {
-                    searchParams: result
-                }
-            }, 'data');
-
-            return false;
-        });
 
         /**
          * toolbar监听事件
          */
         table.on('toolbar(questionTableFilter)', function (obj) {
             if (obj.event === 'add') {  // 监听添加操作
+                flag = 0;
                 var index = layer.open({
-                    title: '添加用户',
-                    type: 2,
-                    shade: 0.2,
-                    maxmin:true,
-                    shadeClose: true,
-                    area: ['100%', '100%'],
-                    content: '../page/table/add.html',
+                    title: '添加隐患类型',
+                    type: 1,
+                    area: ['450px', '230px'],
+                    content: $("#operateQuestion"),
+                    cancel: function(layero,index){
+                        $("#reset").click();
+                    }
                 });
-                $(window).on("resize", function () {
-                    layer.full(index);
-                });
-            } else if (obj.event === 'delete') {  // 监听删除操作
-                var checkStatus = table.checkStatus('questionTable')
-                    , data = checkStatus.data;
-                layer.alert(JSON.stringify(data));
             }
-        });
-
-        //监听表格复选框选择
-        table.on('checkbox(questionTableFilter)', function (obj) {
-            console.log(obj)
         });
 
         table.on('tool(questionTableFilter)', function (obj) {
+            currObj = obj;
             var data = obj.data;
             if (obj.event === 'edit') {
-
+                //渲染数据
+                $("#name").val(data.name);
+                $("#description").val(data.description);
+                flag = 1;
                 var index = layer.open({
-                    title: '编辑用户',
-                    type: 2,
-                    shade: 0.2,
-                    maxmin:true,
-                    shadeClose: true,
-                    area: ['100%', '100%'],
-                    content: '../page/table/edit.html',
+                    title: '修改角色',
+                    type: 1,
+                    area: ['450px', '230px'],
+                    content: $("#operateQuestion"),
+                    cancel: function(layero,index){
+                        $("#reset").click();
+                    }
                 });
-                $(window).on("resize", function () {
-                    layer.full(index);
-                });
-                return false;
             } else if (obj.event === 'delete') {
-                layer.confirm('真的删除行么', function (index) {
-                    obj.del();
+                layer.confirm('你确定要删除该隐患类型吗?', {icon: 3, title: '提示'}, function (index) {
+                    $.ajax({
+                        type: "POST",
+                        url: basePath + "/question/deleteQuestion",
+                        data: {
+                            id : data.id
+                        },
+                        success: function (result) {
+                            if(result.code === 0){
+                                layer.msg("删除隐患类型成功！",{icon: 1});
+                                questionTable.reload({
+                                    page :{
+                                        curr : currPage
+                                    }
+                                });
+                            }
+                            else{
+                                layer.msg(result.message,{icon: 2});
+                            }
+                        },
+                        error: function () {
+                            layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                        }
+                    });
                     layer.close(index);
                 });
             }
+            return false;
         });
 
+        //表单提交
+        form.on('submit(operate)', function (data) {
+            //新增提交
+            if(flag === 0){
+                $.ajax({
+                    type: "POST",
+                    url: basePath + "/question/addQuestion",
+                    data: data.field,
+                    success: function (result) {
+                        if(result.code === 0){
+                            layer.closeAll();
+                            $("#reset").click();
+                            layer.msg("新增隐患类型成功！",{icon: 1});
+                            questionTable.reload();
+                        }
+                        else{
+                            layer.msg(result.message,{icon: 2});
+                        }
+                    },
+                    error: function () {
+                        layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                    }
+                });
+            }
+            //修改提交
+            else if(flag === 1){
+                $.ajax({
+                    type: "POST",
+                    url: basePath + "/question/updateQuestion",
+                    data: {
+                        id : currObj.data.id,
+                        name : data.field.name,
+                        description : data.field.description,
+                    },
+                    success: function (result) {
+                        if(result.code === 0){
+                            layer.closeAll();
+                            $("#reset").click();
+                            layer.msg("修改隐患类型成功！",{icon: 1});
+                            questionTabl.reload({
+                                page : {
+                                    curr : currPage
+                                }
+                            });
+                        }
+                        else{
+                            layer.msg(result.message,{icon: 2});
+                        }
+                    },
+                    error: function () {
+                        layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                    }
+                });
+            }
+            return false;
+        });
     });
 </script>
 

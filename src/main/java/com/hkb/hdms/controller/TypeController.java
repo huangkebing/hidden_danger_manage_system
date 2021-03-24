@@ -1,9 +1,11 @@
 package com.hkb.hdms.controller;
 
+import com.hkb.hdms.model.pojo.Type;
 import com.hkb.hdms.service.TypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -38,4 +40,21 @@ public class TypeController {
         return typeService.getQuestion(limit, page);
     }
 
+    @PostMapping("/addQuestion")
+    @ResponseBody
+    public Object addQuestion(Type type){
+        return typeService.addType(type);
+    }
+
+    @PostMapping("/updateQuestion")
+    @ResponseBody
+    public Object updateQuestion(Type type){
+        return typeService.updateType(type);
+    }
+
+    @PostMapping("/deleteQuestion")
+    @ResponseBody
+    public Object deleteQuestion(Long id){
+        return typeService.deleteType(id);
+    }
 }

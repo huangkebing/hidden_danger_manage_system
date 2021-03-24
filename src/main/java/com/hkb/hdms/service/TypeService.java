@@ -1,6 +1,7 @@
 package com.hkb.hdms.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.hkb.hdms.base.R;
 import com.hkb.hdms.model.pojo.Type;
 
 import java.util.Map;
@@ -11,4 +12,10 @@ import java.util.Map;
  */
 public interface TypeService extends IService<Type> {
     Map<String, Object> getQuestion(int limit, int page);
+
+    R addType(Type type);
+
+    R updateType(Type type);
+
+    R deleteType(Long id);
 }
