@@ -4,10 +4,7 @@ import com.hkb.hdms.model.pojo.Type;
 import com.hkb.hdms.service.TypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 隐患相关接口
@@ -38,6 +35,12 @@ public class TypeController {
     @ResponseBody
     public Object getQuestion(int limit, int page) {
         return typeService.getQuestion(limit, page);
+    }
+
+    @GetMapping("/getQuestionWithUser/{userId}")
+    @ResponseBody
+    public Object getAllQuestion(@PathVariable Long userId){
+        return typeService.getQuestionWithUserId(userId);
     }
 
     @PostMapping("/addQuestion")

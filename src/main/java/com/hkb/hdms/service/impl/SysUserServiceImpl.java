@@ -9,8 +9,10 @@ import com.hkb.hdms.base.R;
 import com.hkb.hdms.base.Constants;
 import com.hkb.hdms.base.ReturnConstants;
 import com.hkb.hdms.mapper.UserMapper;
+import com.hkb.hdms.mapper.UserTypeMapper;
 import com.hkb.hdms.model.dto.UserDto;
 import com.hkb.hdms.model.pojo.User;
+import com.hkb.hdms.model.pojo.UserType;
 import com.hkb.hdms.service.SysUserService;
 import com.hkb.hdms.utils.PasswordUtil;
 import com.hkb.hdms.utils.impl.RegisterMailSender;
@@ -19,11 +21,14 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author huangkebing
@@ -38,11 +43,14 @@ public class SysUserServiceImpl extends ServiceImpl<UserMapper, User> implements
 
     private final RegisterMailSender mailSender;
 
+    private final UserTypeMapper userTypeMapper;
+
     @Autowired
-    public SysUserServiceImpl(HttpSession session, UserMapper userMapper, RegisterMailSender mailSender) {
+    public SysUserServiceImpl(HttpSession session, UserMapper userMapper, RegisterMailSender mailSender, UserTypeMapper userTypeMapper) {
         this.session = session;
         this.userMapper = userMapper;
         this.mailSender = mailSender;
+        this.userTypeMapper = userTypeMapper;
     }
 
     @Override
@@ -145,5 +153,54 @@ public class SysUserServiceImpl extends ServiceImpl<UserMapper, User> implements
         } else {
             return ReturnConstants.FAILURE;
         }
+    }
+
+    @Override
+    @Transactional
+    public R userToQuestion(Long userId, String questionIds) {
+        if (StringUtils.isNullOrEmpty(questionIds)) {
+            return ReturnConstants.PARAMS_EMPTY;
+        }
+
+        List<Long> newTypeIds = formatQuestionIds(questionIds);
+
+        List<UserType> oldTypes = userTypeMapper.selectList(new QueryWrapper<UserType>().eq("user_id", userId));
+        List<Long> oldTypeIds = oldTypes.stream().map(UserType::getTypeId).collect(Collectors.toList());
+
+        List<Long> addTypeIds = newTypeIds.stream().filter(typeId -> !oldTypeIds.contains(typeId)).collect(Collectors.toList());
+
+        List<Long> deleteTypeIds = oldTypes.stream()
+                .filter(userType -> !newTypeIds.contains(userType.getTypeId()))
+                .map(UserType::getId)
+                .collect(Collectors.toList());
+
+        try {
+            for (Long addTypeId : addTypeIds) {
+                UserType userType = new UserType();
+                userType.setUserId(userId);
+                userType.setTypeId(addTypeId);
+                userTypeMapper.insert(userType);
+            }
+
+            if(deleteTypeIds.size() > 0){
+                userTypeMapper.deleteBatchIds(deleteTypeIds);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new R(-1, e.getMessage());
+        }
+        return ReturnConstants.SUCCESS;
+    }
+
+    private List<Long> formatQuestionIds(String questionIds) {
+        List<Long> res = new ArrayList<>();
+        String[] strs = questionIds.split(",");
+        for (String questionId : strs) {
+            if ("".equals(questionId)) {
+                continue;
+            }
+            res.add(Long.valueOf(questionId));
+        }
+        return res;
     }
 }

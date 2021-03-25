@@ -58,3 +58,13 @@ create table `hdms_role_menu` (
     `modify` timestamp not null comment '修改时间',
     primary key (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+#用户-隐患类型绑定表
+create table `hdms_user_type` (
+    `id` int unsigned not null auto_increment comment 'id',
+    `user_id` int unsigned not null comment '用户id',
+    `type_id` int unsigned not null comment '类型id',
+    `create` timestamp not null comment '创建时间',
+    `modify` timestamp not null comment '修改时间',
+    primary key (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

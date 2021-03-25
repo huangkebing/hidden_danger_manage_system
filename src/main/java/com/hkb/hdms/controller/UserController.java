@@ -101,4 +101,10 @@ public class UserController {
     public Object updateUserInfo(User user) {
         return sysUserService.updateUserInfo(user);
     }
+
+    @PostMapping("/userToQuestion")
+    @ResponseBody
+    public Object userToQuestion(Long userId, String questionIds){
+        return sysUserService.userToQuestion(userId, questionIds);
+    }
 }

@@ -11,6 +11,9 @@
     <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
     <style>
         .layui-form-select dl { max-height:120px; }
+        .layui-form-checkbox {
+            margin-bottom: 5px;
+        }
     </style>
 </head>
 <body>
@@ -69,7 +72,7 @@
         <script type="text/html" id="currentTableBar">
             {{#  if(d.role != null){ }}
                 {{#  if(d.role.question == 1){ }}
-                <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="active">分配隐患</a>
+                <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="question">分配隐患</a>
                 {{#  } }}
             {{#  } }}
             <a class="layui-btn layui-btn-warm layui-btn-xs data-count-edit" lay-event="edit">修改</a>
@@ -112,6 +115,14 @@
                 </div>
             </div>
         </form>
+
+        <div id="typeDiv" class="layui-form" style="display: none" lay-filter="typeToUser">
+            <div id="typeCheckBox" style="margin-top: 20px;margin-left: 20px">
+
+            </div>
+            <button style="padding: 0 20px;position: absolute;top: 20px;right: 20px"
+                    class="layui-btn" id="menuSubmit" type="button" >提交</button>
+        </div>
     </div>
 </div>
 <script th:src="@{/layuimini/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
@@ -141,6 +152,25 @@
                 form.render();
             }
         });
+
+        function renderBox() {
+            $.ajax({
+                url: basePath + "/question/getQuestionWithUser/" + currObj.data.id,    //后台数据请求地址
+                type: "GET",
+                success: function(result){
+                    $("#typeCheckBox").empty();
+                    for (var index = 0;index < result.length;index++){
+                        var dataTmp = result[index];
+                        if(dataTmp.checked === true){
+                            $("#typeCheckBox").append('<input type="checkbox" style="margin-bottom: 5px" name="type" value="'+ dataTmp.id +'" title="'+ dataTmp.name+'" checked><br>')
+                        } else {
+                            $("#typeCheckBox").append('<input type="checkbox" style="margin-bottom: 5px" name="type" value="'+ dataTmp.id +'" title="'+ dataTmp.name+'"><br>')
+                        }
+                    }
+                    form.render();
+                }
+            });
+        }
 
         var userTable = table.render({
             elem: '#userTable',
@@ -299,6 +329,14 @@
                         layer.msg('系统错误，请联系系统管理员',{icon: 2});
                     }
                 });
+            } else if (obj.event === 'question'){
+                renderBox();
+                var index = layer.open({
+                    title: '用户分配隐患类型',
+                    type: 1,
+                    area: ['300px', '400px'],
+                    content: $("#typeDiv")
+                });
             }
         });
 
@@ -366,6 +404,33 @@
             return false;
         });
 
+        $("#menuSubmit").click(function () {
+            var standards = "";
+            $("input:checkbox[name='type']:checked").each(function() {
+                standards += $(this).val() + ',';
+            });
+            $.ajax({
+                type: "POST",
+                url: basePath + "/user/userToQuestion",
+                data: {
+                    userId : currObj.data.id,
+                    questionIds : standards
+                },
+                success: function (result) {
+                    if(result.code === 0){
+                        layer.closeAll();
+                        layer.msg("用户分配隐患类型成功！",{icon: 1});
+                    }
+                    else{
+                        layer.msg(result.message,{icon: 2});
+                    }
+                },
+                error: function () {
+                    layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                }
+            });
+            console.log(standards);
+        })
     });
 </script>
 
