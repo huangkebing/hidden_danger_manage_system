@@ -67,9 +67,8 @@
     </form>
 
     <div id="menuTreeDiv" style="display: none">
-        <div id="menuTree" class="demo-tree demo-tree-box"></div>
-        <button style="padding: 0 20px;position: absolute;top: 20px;right: 20px"
-                class="layui-btn" id="menuSubmit" type="button" >提交</button>
+        <div id="menuTree" class="demo-tree demo-tree-box" style="margin-bottom: 80px"></div>
+
     </div>
 </div>
 <script th:src="@{/layuimini/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
@@ -204,7 +203,32 @@
                     title: '角色授权',
                     type: 1,
                     area: ['300px', '400px'],
-                    content: $("#menuTreeDiv")
+                    content: $("#menuTreeDiv"),
+                    btn: ['提交'],
+                    btnAlign: 'c',
+                    yes: function(){
+                        var checkedId = getCheckedId(tree.getChecked("menuTree"));
+                        $.ajax({
+                            type: "POST",
+                            url: basePath + "/role/roleToMenu",
+                            data: {
+                                roleId : currObj.data.id,
+                                menuIds : checkedId
+                            },
+                            success: function (result) {
+                                if(result.code === 0){
+                                    layer.closeAll();
+                                    layer.msg("角色授权成功！",{icon: 1});
+                                }
+                                else{
+                                    layer.msg(result.message,{icon: 2});
+                                }
+                            },
+                            error: function () {
+                                layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                            }
+                        });
+                    }
                 });
             }
             return false;
@@ -286,29 +310,6 @@
             return id;
         }
 
-        $("#menuSubmit").click(function () {
-            var checkedId = getCheckedId(tree.getChecked("menuTree"));
-            $.ajax({
-                type: "POST",
-                url: basePath + "/role/roleToMenu",
-                data: {
-                    roleId : currObj.data.id,
-                    menuIds : checkedId
-                },
-                success: function (result) {
-                    if(result.code === 0){
-                        layer.closeAll();
-                        layer.msg("角色授权成功！",{icon: 1});
-                    }
-                    else{
-                        layer.msg(result.message,{icon: 2});
-                    }
-                },
-                error: function () {
-                    layer.msg('系统错误，请联系系统管理员',{icon: 2});
-                }
-            });
-        })
     });
 </script>
 

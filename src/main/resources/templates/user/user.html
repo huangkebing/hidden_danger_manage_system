@@ -117,11 +117,12 @@
         </form>
 
         <div id="typeDiv" class="layui-form" style="display: none" lay-filter="typeToUser">
-            <div id="typeCheckBox" style="margin-top: 20px;margin-left: 20px">
-
+            <div id="typeCheckBox" style="margin-top: 20px;margin-left: 40px">
+                <div class="layui-col-xs6" id="leftDiv">
+                </div>
+                <div class="layui-col-xs6" id="rightDiv">
+                </div>
             </div>
-            <button style="padding: 0 20px;position: absolute;top: 20px;right: 20px"
-                    class="layui-btn" id="menuSubmit" type="button" >提交</button>
         </div>
     </div>
 </div>
@@ -158,13 +159,22 @@
                 url: basePath + "/question/getQuestionWithUser/" + currObj.data.id,    //后台数据请求地址
                 type: "GET",
                 success: function(result){
-                    $("#typeCheckBox").empty();
+                    $("#leftDiv").empty();
+                    $("#rightDiv").empty();
                     for (var index = 0;index < result.length;index++){
                         var dataTmp = result[index];
-                        if(dataTmp.checked === true){
-                            $("#typeCheckBox").append('<input type="checkbox" style="margin-bottom: 5px" name="type" value="'+ dataTmp.id +'" title="'+ dataTmp.name+'" checked><br>')
+                        if(index % 2 === 0){
+                            if(dataTmp.checked === true){
+                                $("#leftDiv").append('<input type="checkbox" style="margin-bottom: 5px" name="type" value="'+ dataTmp.id +'" title="'+ dataTmp.name+'" checked><br>')
+                            } else {
+                                $("#leftDiv").append('<input type="checkbox" style="margin-bottom: 5px" name="type" value="'+ dataTmp.id +'" title="'+ dataTmp.name+'"><br>')
+                            }
                         } else {
-                            $("#typeCheckBox").append('<input type="checkbox" style="margin-bottom: 5px" name="type" value="'+ dataTmp.id +'" title="'+ dataTmp.name+'"><br>')
+                            if(dataTmp.checked === true){
+                                $("#rightDiv").append('<input type="checkbox" style="margin-bottom: 5px" name="type" value="'+ dataTmp.id +'" title="'+ dataTmp.name+'" checked><br>')
+                            } else {
+                                $("#rightDiv").append('<input type="checkbox" style="margin-bottom: 5px" name="type" value="'+ dataTmp.id +'" title="'+ dataTmp.name+'"><br>')
+                            }
                         }
                     }
                     form.render();
@@ -334,8 +344,36 @@
                 var index = layer.open({
                     title: '用户分配隐患类型',
                     type: 1,
-                    area: ['300px', '400px'],
-                    content: $("#typeDiv")
+                    area: ['320px', '400px'],
+                    content: $("#typeDiv"),
+                    btn: ['提交'],
+                    btnAlign: 'c',
+                    yes: function(){
+                        var standards = "";
+                        $("input:checkbox[name='type']:checked").each(function() {
+                            standards += $(this).val() + ',';
+                        });
+                        $.ajax({
+                            type: "POST",
+                            url: basePath + "/user/userToQuestion",
+                            data: {
+                                userId : currObj.data.id,
+                                questionIds : standards
+                            },
+                            success: function (result) {
+                                if(result.code === 0){
+                                    layer.closeAll();
+                                    layer.msg("用户分配隐患类型成功！",{icon: 1});
+                                }
+                                else{
+                                    layer.msg(result.message,{icon: 2});
+                                }
+                            },
+                            error: function () {
+                                layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                            }
+                        });
+                    }
                 });
             }
         });
@@ -403,34 +441,6 @@
             }
             return false;
         });
-
-        $("#menuSubmit").click(function () {
-            var standards = "";
-            $("input:checkbox[name='type']:checked").each(function() {
-                standards += $(this).val() + ',';
-            });
-            $.ajax({
-                type: "POST",
-                url: basePath + "/user/userToQuestion",
-                data: {
-                    userId : currObj.data.id,
-                    questionIds : standards
-                },
-                success: function (result) {
-                    if(result.code === 0){
-                        layer.closeAll();
-                        layer.msg("用户分配隐患类型成功！",{icon: 1});
-                    }
-                    else{
-                        layer.msg(result.message,{icon: 2});
-                    }
-                },
-                error: function () {
-                    layer.msg('系统错误，请联系系统管理员',{icon: 2});
-                }
-            });
-            console.log(standards);
-        })
     });
 </script>
 
