@@ -15,6 +15,7 @@ import com.hkb.hdms.service.TypeService;
 import com.mysql.cj.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -81,7 +82,10 @@ public class TypeServiceImpl extends ServiceImpl<TypeMapper, Type> implements Ty
     }
 
     @Override
+    @Transactional
     public R deleteType(Long id) {
+        userTypeMapper.delete(new QueryWrapper<UserType>().eq("type_id",id));
+
         if (this.removeById(id)) {
             return ReturnConstants.SUCCESS;
         } else {

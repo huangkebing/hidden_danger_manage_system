@@ -132,7 +132,10 @@ public class SysUserServiceImpl extends ServiceImpl<UserMapper, User> implements
     }
 
     @Override
+    @Transactional
     public R deleteUser(Long id) {
+        userTypeMapper.delete(new QueryWrapper<UserType>().eq("user_id",id));
+
         if (this.removeById(id)) {
             return ReturnConstants.SUCCESS;
         } else {
