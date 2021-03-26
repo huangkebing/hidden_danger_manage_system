@@ -101,7 +101,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.authorizeRequests()
                 .antMatchers("/login.html", "/login/**").permitAll()
-                .antMatchers("/css/**", "/images/**", "/js/**", "/layuimini/**", "/bpmnjs/**").permitAll()
+                .antMatchers("/css/**", "/images/**", "/js/**", "/layuimini/**", "/bpmnjs/**", "bpmn/**").permitAll()
                 .anyRequest().authenticated();
 
         // 登录配置

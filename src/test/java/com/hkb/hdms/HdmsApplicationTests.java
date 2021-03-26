@@ -14,10 +14,7 @@ class HdmsApplicationTests {
 
     @Test
     void contextLoads() {
-        User user = new User();
-        user.setEmail("huangkebing2@163.com");
-        user.setRole(5);
-        sysUserService.addUser(user);
+        System.out.println(System.getProperty("user.dir"));
     }
 
 }

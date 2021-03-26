@@ -24,4 +24,7 @@ public class Constants {
     public static final String ADMIN_INDEX = "system/test.html";
     public static final String OTHER_INDEX = "system/test.html";
     public static final String LOGO_PATH = "images/logo.png";
+
+    //bpmn上传路径
+    public static final String BPMN_PathMapping = "D:\\codewrite\\java\\hidden_danger_manage_system\\bpmn\\";
 }

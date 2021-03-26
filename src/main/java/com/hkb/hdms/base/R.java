@@ -5,8 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Map;
-
 /**
  * 统一数据格式
  *
@@ -23,7 +21,7 @@ public class R {
 
     private String message;
 
-    private Map<String, Object> data;
+    private Object data;
 
     public R(int code, String message) {
         this.code = code;

@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+#上传的bpmn文件
+bpmn
