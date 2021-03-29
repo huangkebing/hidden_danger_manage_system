@@ -29,6 +29,7 @@ spring:
     history-level: full
     # 校验流程文件，默认校验resources下的流程文件
     check-process-definitions: false
+    deployment-mode: never-fail
   #邮件配置
   mail:
     host: smtp.163.com

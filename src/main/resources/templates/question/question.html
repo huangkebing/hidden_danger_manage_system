@@ -63,8 +63,6 @@
             form = layui.form,
             table = layui.table;
 
-        var currPage = 1;
-        var res = 1;
         var currObj;
 
         var flag = 0;
@@ -87,8 +85,14 @@
             limit: 15,
             page: true,
             done: function (rest, curr) {
-                currPage = curr;
-                res = rest;
+                if (curr > 1 && rest.data.length === 0) {
+                    curr = curr - 1;
+                    table.reload('questionTable', {
+                        page: {
+                            curr: curr
+                        }
+                    }, 'data');
+                }
             }
         });
 
@@ -139,11 +143,7 @@
                         success: function (result) {
                             if(result.code === 0){
                                 layer.msg("删除隐患类型成功！",{icon: 1});
-                                questionTable.reload({
-                                    page :{
-                                        curr : currPage
-                                    }
-                                });
+                                questionTable.reload();
                             }
                             else{
                                 layer.msg(result.message,{icon: 2});
@@ -198,11 +198,7 @@
                             layer.closeAll();
                             $("#reset").click();
                             layer.msg("修改隐患类型成功！",{icon: 1});
-                            questionTabl.reload({
-                                page : {
-                                    curr : currPage
-                                }
-                            });
+                            questionTabl.reload();
                         }
                         else{
                             layer.msg(result.message,{icon: 2});

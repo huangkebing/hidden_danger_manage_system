@@ -71,9 +71,9 @@
         <!--操作栏-->
         <script type="text/html" id="currentTableBar">
             {{#  if(d.role != null){ }}
-                {{#  if(d.role.question == 1){ }}
-                <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="question">分配隐患</a>
-                {{#  } }}
+            {{#  if(d.role.question == 1){ }}
+            <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="question">分配隐患</a>
+            {{#  } }}
             {{#  } }}
             <a class="layui-btn layui-btn-warm layui-btn-xs data-count-edit" lay-event="edit">修改</a>
             <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
@@ -132,11 +132,9 @@
     layui.use(['form', 'table', 'layer'], function () {
         var $ = layui.jquery,
             form = layui.form,
-            table = layui.table;
+            table = layui.table,
             layer = layui.layer;
 
-        var currPage = 1;
-        var res = 1;
         var currObj;
         var flag = 0;
 
@@ -208,8 +206,14 @@
             limit: 15,
             page: true,
             done: function (rest, curr) {
-                currPage = curr;
-                res = rest;
+                if (curr > 1 && rest.data.length === 0) {
+                    curr = curr - 1;
+                    table.reload('userTable', {
+                        page: {
+                            curr: curr
+                        }
+                    }, 'data');
+                }
             }
         });
 
@@ -281,11 +285,7 @@
                         success: function (result) {
                             if(result.code === 0){
                                 layer.msg("删除用户成功！",{icon: 1});
-                                userTable.reload({
-                                    page :{
-                                        curr : currPage
-                                    }
-                                });
+                                userTable.reload();
                             }
                             else{
                                 layer.msg(result.message,{icon: 2});
@@ -424,11 +424,7 @@
                             $("#email").removeAttr("disabled");
                             $("#reset").click();
                             layer.msg("修改用户成功！",{icon: 1});
-                            userTable.reload({
-                                page : {
-                                    curr : currPage
-                                }
-                            });
+                            userTable.reload();
                         }
                         else{
                             layer.msg(result.message,{icon: 2});

@@ -78,10 +78,8 @@
         var $ = layui.jquery,
             form = layui.form,
             table = layui.table;
-            tree = layui.tree;
+        tree = layui.tree;
 
-        var currPage = 1;
-        var res = 1;
         var currObj;
 
         var flag = 0;
@@ -104,7 +102,7 @@
                     }
                 },
                 {field: 'create', title: '创建时间', templet:
-                    "<div>{{layui.util.toDateString(d.create, 'yyyy-MM-dd HH:mm:ss')}}</div>"
+                        "<div>{{layui.util.toDateString(d.create, 'yyyy-MM-dd HH:mm:ss')}}</div>"
                 },
                 {title: '操作', minWidth: 180, toolbar: '#roleTableBar', align: "center"}
             ]],
@@ -112,8 +110,14 @@
             limit: 15,
             page: true,
             done: function (rest, curr) {
-                currPage = curr;
-                res = rest;
+                if (curr > 1 && rest.data.length === 0) {
+                    curr = curr - 1;
+                    table.reload('roleTable', {
+                        page: {
+                            curr: curr
+                        }
+                    }, 'data');
+                }
             }
         });
 
@@ -181,11 +185,7 @@
                         success: function (result) {
                             if(result.code === 0){
                                 layer.msg("删除角色成功！",{icon: 1});
-                                roleTable.reload({
-                                    page :{
-                                        curr : currPage
-                                    }
-                                });
+                                roleTable.reload();
                             }
                             else{
                                 layer.msg(result.message,{icon: 2});
@@ -274,11 +274,7 @@
                             layer.closeAll();
                             $("#reset").click();
                             layer.msg("修改角色成功！",{icon: 1});
-                            roleTable.reload({
-                                page : {
-                                    curr : currPage
-                                }
-                            });
+                            roleTable.reload();
                         }
                         else{
                             layer.msg(result.message,{icon: 2});
