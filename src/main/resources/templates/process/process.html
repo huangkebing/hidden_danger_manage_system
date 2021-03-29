@@ -46,14 +46,14 @@
             </div>
         </script>
 
-        <table class="layui-hide" id="modelTable" lay-filter="modelTableFilter"></table>
+        <table class="layui-hide" id="processTable" lay-filter="processTableFilter"></table>
 
         <script type="text/html" id="fileBar">
             <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="exportxml">导出</a>
             <a class="layui-btn layui-btn-xs" lay-event="showphoto">预览</a>
         </script>
 
-        <script type="text/html" id="modelTableBar">
+        <script type="text/html" id="processTableBar">
             {{#  if(d.suspended === true){ }}
             <a class="layui-btn layui-btn-xs" lay-event="active">激活</a>
             {{#  } else { }}
@@ -77,8 +77,8 @@
 
         var currObj;
 
-        var modelTable = table.render({
-            elem: '#modelTable',
+        var processTable = table.render({
+            elem: '#processTable',
             url: basePath + '/process/getProcesses',
             toolbar: '#toolbar',
             defaultToolbar: ['filter', 'exports'],
@@ -104,7 +104,7 @@
                 {field: 'version', title: '流程版本', width: 100 ,align: 'center'},
                 {field: 'deploymentID', title: '部署id', width: 300},
                 {title: '模型查看', minWidth: 150, toolbar: '#fileBar', align: "center"},
-                {title: '操作', minWidth: 180, toolbar: '#modelTableBar', align: "center", fixed: 'right'}
+                {title: '操作', minWidth: 180, toolbar: '#processTableBar', align: "center", fixed: 'right'}
             ]],
             limits: [10, 15, 20, 25, 50, 100],
             limit: 15,
@@ -112,7 +112,7 @@
             done: function (rest, curr) {
                 if (curr > 1 && rest.data.length === 0) {
                     curr = curr - 1;
-                    table.reload('modelTable', {
+                    table.reload('processTable', {
                         page: {
                             curr: curr
                         }
@@ -129,7 +129,7 @@
             });
 
             //执行搜索重载
-            table.reload('modelTable', {
+            table.reload('processTable', {
                 page: {
                     curr: 1
                 }
@@ -144,7 +144,7 @@
         /**
          * toolbar监听事件
          */
-        table.on('toolbar(modelTableFilter)', function (obj) {
+        table.on('toolbar(processTableFilter)', function (obj) {
             if (obj.event === 'add') {  // 监听添加操作
                 var index = layer.open({
                     title: '添加用户',
@@ -166,7 +166,7 @@
             }
         });
 
-        table.on('tool(modelTableFilter)', function (obj) {
+        table.on('tool(processTableFilter)', function (obj) {
             var data = obj.data;
             if (obj.event === 'update') {
                 miniTab.openNewTabByIframe({
@@ -174,17 +174,17 @@
                     title:"修改流程",
                 });
             } else if (obj.event === 'delete') {
-                layer.confirm('确定删除该模型吗？', {icon: 3, title: '提示'}, function (index) {
+                layer.confirm('确定删除该流程吗？同个部署id下的流程都会被删除，请慎重！', {icon: 3, title: '提示'}, function (index) {
                     $.ajax({
                         type: "POST",
-                        url: basePath + "/processDefine/deleteModel",
+                        url: basePath + "/process/deleteProcess",
                         data: {
-                            modelId : data.id
+                            deploymentId : data.deploymentID
                         },
                         success: function (result) {
                             if(result.code === 0){
-                                layer.msg("删除模型成功！",{icon: 1});
-                                modelTable.reload();
+                                layer.msg("删除流程成功！",{icon: 1});
+                                processTable.reload();
                             }
                             else{
                                 layer.msg(result.message,{icon: 2});
@@ -197,7 +197,7 @@
                     layer.close(index);
                 });
             } else if (obj.event === 'showphoto'){
-                var src = basePath + "/processDefine/getImage/" + data.id;
+                var src = basePath + "/process/getProcessImage/" + data.processDefinitionID;
                 layer.open({
                     title: '模型流程图',
                     type: 1,
@@ -206,7 +206,7 @@
                     shadeClose: true,
                     area: ['100%', '100%'],
                     shadeClose: true,
-                    content: '<p style="text-align:center"><img src='+src+' onerror=this.style.display="none" ></p>'
+                    content: '<iframe src="'+ src+'" width="100%" height="100%"></iframe>'
                 });
             } else if (obj.event === 'exportxml'){
                 window.open(basePath + "/process/exportXML/" + data.deploymentID + "/" + data.resourceName);

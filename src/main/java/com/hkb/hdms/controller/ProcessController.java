@@ -1,6 +1,7 @@
 package com.hkb.hdms.controller;
 
 import com.hkb.hdms.service.ProcessService;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -8,9 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 
 /**
  * 流程定义相关接口
@@ -84,4 +83,25 @@ public class ProcessController {
         }
     }
 
+    @RequestMapping("/getProcessImage/{processId}")
+    public void getProcessImage(HttpServletResponse response, @PathVariable String processId){
+        InputStream processImage = processService.getProcessImage(processId);
+        try {
+            byte[] imageBytes = IOUtils.toByteArray(processImage);
+            response.setContentType("text/xml"); // 设置返回的文件类型
+            OutputStream os = response.getOutputStream();
+            os.write(imageBytes);
+            os.flush();
+            os.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    @PostMapping("/deleteProcess")
+    @ResponseBody
+    public Object deleteProcess(String deploymentId){
+        return processService.deleteProcess(deploymentId);
+    }
 }

@@ -5,9 +5,12 @@ import com.hkb.hdms.base.R;
 import com.hkb.hdms.base.ReturnConstants;
 import com.hkb.hdms.service.ProcessService;
 import com.hkb.hdms.utils.UUIDUtil;
+import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
+import org.activiti.image.ProcessDiagramGenerator;
+import org.activiti.image.impl.DefaultProcessDiagramGenerator;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -122,5 +125,18 @@ public class ProcessServiceImpl implements ProcessService {
         List<ProcessDefinition> res = list.stream().filter(processDefinition -> resourceName.equals(processDefinition.getResourceName())).collect(Collectors.toList());
 
         return res.get(0).getName() == null ? "未命名" : res.get(0).getName();
+    }
+
+    @Override
+    public R deleteProcess(String deploymentId) {
+        repositoryService.deleteDeployment(deploymentId, true);
+        return ReturnConstants.SUCCESS;
+    }
+
+    @Override
+    public InputStream getProcessImage(String processId) {
+        BpmnModel bpmnModel = repositoryService.getBpmnModel(processId);
+        ProcessDiagramGenerator ge = new DefaultProcessDiagramGenerator();
+        return ge.generateDiagram(bpmnModel,"宋体", "宋体", "宋体");
     }
 }
