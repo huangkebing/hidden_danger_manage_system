@@ -14,7 +14,7 @@ import com.hkb.hdms.model.dto.UserDto;
 import com.hkb.hdms.model.pojo.User;
 import com.hkb.hdms.model.pojo.UserType;
 import com.hkb.hdms.service.SysUserService;
-import com.hkb.hdms.utils.PasswordUtil;
+import com.hkb.hdms.utils.UUIDUtil;
 import com.hkb.hdms.utils.impl.RegisterMailSender;
 import com.mysql.cj.util.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -108,7 +108,7 @@ public class SysUserServiceImpl extends ServiceImpl<UserMapper, User> implements
         }
 
         user.setName(user.getEmail().substring(0, user.getEmail().length() - 8));
-        String password = PasswordUtil.getPassword();
+        String password = UUIDUtil.getUUID();
         user.setPassword(new BCryptPasswordEncoder().encode(password));
 
         if (this.save(user)) {

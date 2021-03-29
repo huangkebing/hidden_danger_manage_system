@@ -32,18 +32,6 @@
                             </div>
                         </div>
                         <div class="layui-inline">
-                            <label class="layui-form-label">用户城市</label>
-                            <div class="layui-input-inline">
-                                <input type="text" name="city" autocomplete="off" class="layui-input">
-                            </div>
-                        </div>
-                        <div class="layui-inline">
-                            <label class="layui-form-label">用户职业</label>
-                            <div class="layui-input-inline">
-                                <input type="text" name="classify" autocomplete="off" class="layui-input">
-                            </div>
-                        </div>
-                        <div class="layui-inline">
                             <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
                         </div>
                     </div>
@@ -51,18 +39,27 @@
             </div>
         </fieldset>
 
-        <script type="text/html" id="toolbarDemo">
+        <script type="text/html" id="toolbar">
             <div class="layui-btn-container">
-                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 添加 </button>
-                <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 删除 </button>
-                <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="edit">在线编辑流程</button>
+                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add">上传流程文件</button>
+                <button class="layui-btn layui-btn-sm data-delete-btn" lay-event="edit">在线编辑流程</button>
             </div>
         </script>
 
-        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+        <table class="layui-hide" id="modelTable" lay-filter="modelTableFilter"></table>
 
-        <script type="text/html" id="currentTableBar">
-            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
+        <script type="text/html" id="fileBar">
+            <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="exportxml">导出</a>
+            <a class="layui-btn layui-btn-xs" lay-event="showphoto">预览</a>
+        </script>
+
+        <script type="text/html" id="modelTableBar">
+            {{#  if(d.suspended === true){ }}
+            <a class="layui-btn layui-btn-xs" lay-event="active">激活</a>
+            {{#  } else { }}
+            <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="frozen">挂起</a>
+            {{#  } }}
+            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="update">修改</a>
             <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
         </script>
 
@@ -76,34 +73,52 @@
         var $ = layui.jquery,
             form = layui.form,
             table = layui.table;
-            miniTab = layui.miniTab;
+        miniTab = layui.miniTab;
 
-        table.render({
-            elem: '#currentTableId',
-            url: '../api/table.json',
-            toolbar: '#toolbarDemo',
-            defaultToolbar: ['filter', 'exports', 'print', {
-                title: '提示',
-                layEvent: 'LAYTABLE_TIPS',
-                icon: 'layui-icon-tips'
-            }],
+        var currObj;
+
+        var modelTable = table.render({
+            elem: '#modelTable',
+            url: basePath + '/process/getProcesses',
+            toolbar: '#toolbar',
+            defaultToolbar: ['filter', 'exports'],
             cols: [[
-                {type: "checkbox", width: 50},
-                {field: 'id', width: 80, title: 'ID', sort: true},
-                {field: 'username', width: 80, title: '用户名'},
-                {field: 'sex', width: 80, title: '性别', sort: true},
-                {field: 'city', width: 80, title: '城市'},
-                {field: 'sign', title: '签名', minWidth: 150},
-                {field: 'experience', width: 80, title: '积分', sort: true},
-                {field: 'score', width: 80, title: '评分', sort: true},
-                {field: 'classify', width: 80, title: '职业'},
-                {field: 'wealth', width: 135, title: '财富', sort: true},
-                {title: '操作', minWidth: 150, toolbar: '#currentTableBar', align: "center"}
+                {type: 'numbers', width: 50, fixed: 'left'},
+                {field: 'name', title: '流程名称', width: 200, templet: function (d) {
+                        if (d.name === undefined) {
+                            return '<div>流程无名称</div>';
+                        } else {
+                            return '<div>'+d.name+'</div>';
+                        }
+                    }
+                },
+                {field: 'key', title: '流程KEY', width: 150},
+                {field: 'suspended', title: '流程状态', width:100, align: 'center', templet: function (d) {
+                        if (d.suspended === false) {
+                            return '<span class="layui-badge layui-bg-green">运行</span>';
+                        } else {
+                            return '<span class="layui-badge layui-bg-orange">冻结</span>';
+                        }
+                    }
+                },
+                {field: 'version', title: '流程版本', width: 100 ,align: 'center'},
+                {field: 'deploymentID', title: '部署id', width: 300},
+                {title: '模型查看', minWidth: 150, toolbar: '#fileBar', align: "center"},
+                {title: '操作', minWidth: 180, toolbar: '#modelTableBar', align: "center", fixed: 'right'}
             ]],
             limits: [10, 15, 20, 25, 50, 100],
             limit: 15,
             page: true,
-            skin: 'line'
+            done: function (rest, curr) {
+                if (curr > 1 && rest.data.length === 0) {
+                    curr = curr - 1;
+                    table.reload('modelTable', {
+                        page: {
+                            curr: curr
+                        }
+                    }, 'data');
+                }
+            }
         });
 
         // 监听搜索操作
@@ -114,7 +129,7 @@
             });
 
             //执行搜索重载
-            table.reload('currentTableId', {
+            table.reload('modelTable', {
                 page: {
                     curr: 1
                 }
@@ -129,7 +144,7 @@
         /**
          * toolbar监听事件
          */
-        table.on('toolbar(currentTableFilter)', function (obj) {
+        table.on('toolbar(modelTableFilter)', function (obj) {
             if (obj.event === 'add') {  // 监听添加操作
                 var index = layer.open({
                     title: '添加用户',
@@ -143,10 +158,6 @@
                 $(window).on("resize", function () {
                     layer.full(index);
                 });
-            } else if (obj.event === 'delete') {  // 监听删除操作
-                var checkStatus = table.checkStatus('currentTableId')
-                    , data = checkStatus.data;
-                layer.alert(JSON.stringify(data));
             } else if (obj.event === 'edit'){
                 miniTab.openNewTabByIframe({
                     href: basePath + "/bpmnjs/dist/processEdit.html?type=addBpmn",
@@ -155,34 +166,52 @@
             }
         });
 
-        //监听表格复选框选择
-        table.on('checkbox(currentTableFilter)', function (obj) {
-            console.log(obj)
-        });
-
-        table.on('tool(currentTableFilter)', function (obj) {
+        table.on('tool(modelTableFilter)', function (obj) {
             var data = obj.data;
-            if (obj.event === 'edit') {
-
-                var index = layer.open({
-                    title: '编辑用户',
-                    type: 2,
+            if (obj.event === 'update') {
+                miniTab.openNewTabByIframe({
+                    href: basePath + "/modeler.html?modelId=" + data.id,
+                    title:"修改流程",
+                });
+            } else if (obj.event === 'delete') {
+                layer.confirm('确定删除该模型吗？', {icon: 3, title: '提示'}, function (index) {
+                    $.ajax({
+                        type: "POST",
+                        url: basePath + "/processDefine/deleteModel",
+                        data: {
+                            modelId : data.id
+                        },
+                        success: function (result) {
+                            if(result.code === 0){
+                                layer.msg("删除模型成功！",{icon: 1});
+                                modelTable.reload();
+                            }
+                            else{
+                                layer.msg(result.message,{icon: 2});
+                            }
+                        },
+                        error: function () {
+                            layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                        }
+                    });
+                    layer.close(index);
+                });
+            } else if (obj.event === 'showphoto'){
+                var src = basePath + "/processDefine/getImage/" + data.id;
+                layer.open({
+                    title: '模型流程图',
+                    type: 1,
                     shade: 0.2,
                     maxmin:true,
                     shadeClose: true,
                     area: ['100%', '100%'],
-                    content: '../page/table/edit.html',
+                    shadeClose: true,
+                    content: '<p style="text-align:center"><img src='+src+' onerror=this.style.display="none" ></p>'
                 });
-                $(window).on("resize", function () {
-                    layer.full(index);
-                });
-                return false;
-            } else if (obj.event === 'delete') {
-                layer.confirm('真的删除行么', function (index) {
-                    obj.del();
-                    layer.close(index);
-                });
+            } else if (obj.event === 'exportxml'){
+                window.open(basePath + "/process/exportXML/" + data.deploymentID + "/" + data.resourceName);
             }
+            return false;
         });
 
     });

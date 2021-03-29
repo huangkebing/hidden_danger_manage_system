@@ -8,8 +8,8 @@ import java.util.UUID;
  * @author huangkebing
  * 2021/03/22
  */
-public class PasswordUtil {
-    public static String getPassword() {
+public class UUIDUtil {
+    public static String getUUID() {
         return UUID.randomUUID().toString().replaceAll("-", "").substring(6, 18);
     }
 }
