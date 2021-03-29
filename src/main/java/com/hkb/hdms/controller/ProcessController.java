@@ -1,6 +1,6 @@
 package com.hkb.hdms.controller;
 
-import com.hkb.hdms.service.ProcessDefinitionService;
+import com.hkb.hdms.service.ProcessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,14 +16,14 @@ import org.springframework.web.multipart.MultipartFile;
  * 2021/03/26
  */
 @Controller
-@RequestMapping("/processDefine")
-public class ProcessDefinitionController {
+@RequestMapping("/process")
+public class ProcessController {
 
-    private final ProcessDefinitionService processDefinitionService;
+    private final ProcessService processService;
 
     @Autowired
-    public ProcessDefinitionController(ProcessDefinitionService processDefinitionService) {
-        this.processDefinitionService = processDefinitionService;
+    public ProcessController(ProcessService processService) {
+        this.processService = processService;
     }
 
     @RequestMapping("/process.html")
@@ -34,6 +34,6 @@ public class ProcessDefinitionController {
     @PostMapping("/upload")
     @ResponseBody
     public Object upload(@RequestParam("processFile") MultipartFile multipartFile){
-        return processDefinitionService.upload(multipartFile);
+        return processService.upload(multipartFile);
     }
 }

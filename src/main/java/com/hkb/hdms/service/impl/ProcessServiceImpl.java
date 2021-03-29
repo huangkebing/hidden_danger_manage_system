@@ -3,7 +3,7 @@ package com.hkb.hdms.service.impl;
 import com.hkb.hdms.base.Constants;
 import com.hkb.hdms.base.R;
 import com.hkb.hdms.base.ReturnConstants;
-import com.hkb.hdms.service.ProcessDefinitionService;
+import com.hkb.hdms.service.ProcessService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,7 +16,7 @@ import java.util.UUID;
  * 2021/03/26
  */
 @Service
-public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
+public class ProcessServiceImpl implements ProcessService {
 
     @Override
     public R upload(MultipartFile processFile) {

@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
  * @author huangkebing
  * 2021/03/26
  */
-public interface ProcessDefinitionService {
+public interface ProcessService {
 
     R upload(MultipartFile processFile);
 }
