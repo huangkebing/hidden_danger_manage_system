@@ -21,6 +21,8 @@ public class Type {
 
     private String description;
 
+    private String processId;
+
     @TableField(value = "`create`", fill = FieldFill.INSERT)
     private Date create;
 

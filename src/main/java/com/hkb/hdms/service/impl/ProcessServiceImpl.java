@@ -151,6 +151,26 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
+    public List<Map<String, Object>> queryAllProcesses() {
+        List<Map<String, Object>> listMap= new ArrayList<>();
+        List<ProcessDefinition> definitions = repositoryService.createProcessDefinitionQuery().list();
+        definitions.sort((y,x)->x.getVersion()-y.getVersion());
+
+        for (ProcessDefinition pd : definitions) {
+            if(pd.isSuspended()){
+                continue;
+            }
+            HashMap<String, Object> hashMap = new HashMap<>();
+            hashMap.put("processDefinitionID", pd.getId());
+            hashMap.put("name", pd.getName());
+            hashMap.put("key", pd.getKey());
+            hashMap.put("version", pd.getVersion());
+            listMap.add(hashMap);
+        }
+        return listMap;
+    }
+
+    @Override
     public byte[] getXMLBytes(String deploymentId, String resourceName) {
         InputStream stream = repositoryService.getResourceAsStream(deploymentId, resourceName);
         try {

@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hkb.hdms.mapper.TypeMapper">
-
+    <resultMap id="selectMap" type="com.hkb.hdms.model.vo.QueryTypeVo">
+        <result column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="description" property="description"/>
+        <result column="process_id" property="processId"/>
+        <result column="create" property="create"/>
+        <result column="modify" property="modify"/>
+        <result column="KEY_" property="processKey"/>
+        <result column="NAME_" property="processName"/>
+        <result column="VERSION_" property="processVersion"/>
+    </resultMap>
+    <select id="selectTypes" resultMap="selectMap">
+        select t.* , p.KEY_, p.NAME_, p.VERSION_
+        from hdms_type as t left join
+        ACT_RE_PROCDEF as p
+        on t.process_id = p.ID_
+    </select>
 </mapper>

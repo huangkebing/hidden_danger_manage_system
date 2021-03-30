@@ -9,6 +9,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" th:href="@{/layuimini/lib/layui-v2.5.5/css/layui.css}" media="all">
     <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
+    <style>
+        .layui-form-select dl { max-height:120px; }
+    </style>
 </head>
 <body>
 <div class="layuimini-container">
@@ -38,6 +41,15 @@
             </div>
 
             <div class="layui-form-item">
+                <label class="layui-form-label">隐患流程<span style="color: red"> *</span></label>
+                <div class="layui-input-block" style="width: 300px;">
+                    <select class="layui-form-select" name="processId" id="processId" lay-verify="" lay-search>
+                        <option value="" selected>请选择(可搜索)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
                 <label class="layui-form-label">类型说明<span>&nbsp;&nbsp;</span></label>
                 <div class="layui-input-block" style="width: 300px;">
                     <input type="text" name="description" id="description" placeholder="类型说明" autocomplete="off"
@@ -58,14 +70,30 @@
 <script th:src="@{/layuimini/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
 <script th:src="@{/js/url.js}"></script>
 <script th:inline="none">
-    layui.use(['form', 'table'], function () {
+    layui.use(['form', 'table', 'form'], function () {
         var $ = layui.jquery,
             form = layui.form,
-            table = layui.table;
+            table = layui.table,
+            from = layui.form;
 
         var currObj;
-
         var flag = 0;
+
+        $.ajax({
+            url: basePath + "/process/getAllProcesses",    //后台数据请求地址
+            type: "GET",
+            success: function(result){
+                for (var index = 0;index < result.length;index++){
+                    var dataTmp = result[index];
+                    if(dataTmp.name === undefined){
+                        $('#processId').append(new Option("未命名("+ dataTmp.key + ",v" + dataTmp.version + ")",dataTmp.processDefinitionID));//往下拉菜单里添加元素
+                    } else {
+                        $('#processId').append(new Option(dataTmp.name + "("+ dataTmp.key + ",v" + dataTmp.version + ")",dataTmp.processDefinitionID));//往下拉菜单里添加元素
+                    }
+                }
+                form.render();
+            }
+        });
 
         var questionTable = table.render({
             elem: '#questionTable',
@@ -76,6 +104,17 @@
                 {type: "numbers", width: 50},
                 {field: 'name', title: '隐患类型', width:  150},
                 {field: 'description', title: '备注'},
+                {field: 'process', title: '隐患处理流程', templet: function (d) {
+                    if(d.processId == "" || d.processKey == null){
+                        return '<div>隐患处理流程不存在</div>';
+                    } else {
+                        if(d.processName == undefined){
+                            return '<div>未命名' + '(' + d.processKey + ',v' + d.processVersion + ')' + '</div>'
+                        } else{
+                            return '<div>' + d.processName + '(' + d.processKey + ',v' + d.processVersion + ')' + '</div>'
+                        }
+                    }
+                }},
                 {field: 'create', title: '创建时间', width: 200, templet:
                         "<div>{{layui.util.toDateString(d.create, 'yyyy-MM-dd HH:mm:ss')}}</div>"
                 },
@@ -106,7 +145,7 @@
                 var index = layer.open({
                     title: '添加隐患类型',
                     type: 1,
-                    area: ['450px', '230px'],
+                    area: ['450px', '280px'],
                     content: $("#operateQuestion"),
                     cancel: function(layero,index){
                         $("#reset").click();
@@ -122,11 +161,15 @@
                 //渲染数据
                 $("#name").val(data.name);
                 $("#description").val(data.description);
+                if(data.processId !== "" && data.processKey !== undefined){
+                     $("#processId").val(data.processId);
+                }
+                form.render();
                 flag = 1;
                 var index = layer.open({
-                    title: '修改角色',
+                    title: '修改隐患类型',
                     type: 1,
-                    area: ['450px', '230px'],
+                    area: ['450px', '280px'],
                     content: $("#operateQuestion"),
                     cancel: function(layero,index){
                         $("#reset").click();
@@ -161,6 +204,10 @@
 
         //表单提交
         form.on('submit(operate)', function (data) {
+            if($("#processId").val() === ""){
+                layer.msg("请选择隐患处理流程!",{icon: 2});
+                return false;
+            }
             //新增提交
             if(flag === 0){
                 $.ajax({
@@ -192,13 +239,14 @@
                         id : currObj.data.id,
                         name : data.field.name,
                         description : data.field.description,
+                        processId : data.field.processId
                     },
                     success: function (result) {
                         if(result.code === 0){
                             layer.closeAll();
                             $("#reset").click();
                             layer.msg("修改隐患类型成功！",{icon: 1});
-                            questionTabl.reload();
+                            questionTable.reload();
                         }
                         else{
                             layer.msg(result.message,{icon: 2});

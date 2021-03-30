@@ -29,22 +29,24 @@ public class ProcessController {
     }
 
     @RequestMapping("/process.html")
-    public Object processPage(){
+    public Object processPage() {
         return "process/process";
     }
 
     /**
      * 上传bpmn文件，用于编辑器导入文件使用
-     * @param  multipartFile 文件
+     *
+     * @param multipartFile 文件
      */
     @PostMapping("/upload")
     @ResponseBody
-    public Object upload(@RequestParam("processFile") MultipartFile multipartFile){
+    public Object upload(@RequestParam("processFile") MultipartFile multipartFile) {
         return processService.upload(multipartFile);
     }
 
     /**
      * 通过String部署流程
+     *
      * @param stringBPMN 流程bpmn
      */
     @PostMapping("/addDeploymentByString")
@@ -56,21 +58,27 @@ public class ProcessController {
 
     @PostMapping("/addDeploymentByFile")
     @ResponseBody
-    public Object uploadStreamAndDeployment(@RequestParam("processFile") MultipartFile processFile) {
+    public Object addDeploymentByFile(@RequestParam("processFile") MultipartFile processFile) {
         return processService.deployByFile(processFile);
     }
 
     @GetMapping("/getProcesses")
     @ResponseBody
     public Object getProcesses(@RequestParam(required = false) String processName,
-                               @RequestParam(required = false) String processKey, int limit, int page){
+                               @RequestParam(required = false) String processKey, int limit, int page) {
         return processService.queryProcesses(processName, processKey, limit, page);
+    }
+
+    @GetMapping("/getAllProcesses")
+    @ResponseBody
+    public Object getAllProcesses() {
+        return processService.queryAllProcesses();
     }
 
     @RequestMapping("/exportXML/{deploymentId}/{resourceName}")
     public void exportXML(@PathVariable("deploymentId") String deploymentId,
                           @PathVariable String resourceName,
-                          HttpServletResponse response){
+                          HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json; charset=utf-8");
         try {
@@ -92,7 +100,7 @@ public class ProcessController {
     }
 
     @RequestMapping("/getDefineXML")
-    public void getDefineXML(String deploymentId, String resourceName, HttpServletResponse response){
+    public void getDefineXML(String deploymentId, String resourceName, HttpServletResponse response) {
         try {
             byte[] xmlBytes = processService.getXMLBytes(deploymentId, resourceName);
             response.setContentType("text/xml");
@@ -104,7 +112,7 @@ public class ProcessController {
     }
 
     @RequestMapping("/getProcessImage/{processId}")
-    public void getProcessImage(HttpServletResponse response, @PathVariable String processId){
+    public void getProcessImage(HttpServletResponse response, @PathVariable String processId) {
         InputStream processImage = processService.getProcessImage(processId);
         try {
             byte[] imageBytes = IOUtils.toByteArray(processImage);
@@ -121,19 +129,19 @@ public class ProcessController {
 
     @PostMapping("/deleteProcess")
     @ResponseBody
-    public Object deleteProcess(String deploymentId){
+    public Object deleteProcess(String deploymentId) {
         return processService.deleteProcess(deploymentId);
     }
 
     @PostMapping("/activeProcess")
     @ResponseBody
-    public Object activeProcess(String processId){
+    public Object activeProcess(String processId) {
         return processService.activeProcess(processId);
     }
 
     @PostMapping("/suspendProcess")
     @ResponseBody
-    public Object suspendProcess(String processId){
+    public Object suspendProcess(String processId) {
         return processService.suspendProcess(processId);
     }
 }

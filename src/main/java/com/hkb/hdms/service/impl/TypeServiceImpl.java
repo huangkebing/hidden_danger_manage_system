@@ -10,6 +10,7 @@ import com.hkb.hdms.mapper.TypeMapper;
 import com.hkb.hdms.mapper.UserTypeMapper;
 import com.hkb.hdms.model.pojo.Type;
 import com.hkb.hdms.model.pojo.UserType;
+import com.hkb.hdms.model.vo.QueryTypeVo;
 import com.hkb.hdms.model.vo.TypeVo;
 import com.hkb.hdms.service.TypeService;
 import com.mysql.cj.util.StringUtils;
@@ -32,9 +33,12 @@ public class TypeServiceImpl extends ServiceImpl<TypeMapper, Type> implements Ty
 
     private final UserTypeMapper userTypeMapper;
 
+    private final TypeMapper typeMapper;
+
     @Autowired
-    public TypeServiceImpl(UserTypeMapper userTypeMapper) {
+    public TypeServiceImpl(UserTypeMapper userTypeMapper, TypeMapper typeMapper) {
         this.userTypeMapper = userTypeMapper;
+        this.typeMapper = typeMapper;
     }
 
     @Override
@@ -47,11 +51,11 @@ public class TypeServiceImpl extends ServiceImpl<TypeMapper, Type> implements Ty
             page = 1;
         }
 
-        Page<Type> pageParam = new Page<>(page, limit);
-        this.page(pageParam, null);
+        Page<QueryTypeVo> pageParam = new Page<>(page, limit);
+        List<QueryTypeVo> queryTypeVos = typeMapper.selectTypes(pageParam);
 
         map.put("count", pageParam.getTotal());
-        map.put("data", pageParam.getRecords());
+        map.put("data", queryTypeVos);
         return map;
     }
 

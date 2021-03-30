@@ -4,6 +4,7 @@ import com.hkb.hdms.base.R;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,6 +20,8 @@ public interface ProcessService {
     R deployByFile(MultipartFile processFile);
 
     Map<String, Object> queryProcesses(String processName, String processKey, int limit, int page);
+
+    List<Map<String, Object>> queryAllProcesses();
 
     byte[] getXMLBytes(String deploymentId, String resourceName);
 
