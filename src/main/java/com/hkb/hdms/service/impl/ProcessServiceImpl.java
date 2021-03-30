@@ -13,6 +13,7 @@ import org.activiti.engine.repository.ProcessDefinition;
 import org.activiti.engine.repository.ProcessDefinitionQuery;
 import org.activiti.image.ProcessDiagramGenerator;
 import org.activiti.image.impl.DefaultProcessDiagramGenerator;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.zip.ZipInputStream;
 
 /**
  * @author huangkebing
@@ -62,7 +64,7 @@ public class ProcessServiceImpl implements ProcessService {
             processFile.transferTo(file);
         } catch (Exception e) {
             e.printStackTrace();
-            return new R(-1,e.getMessage());
+            return ReturnConstants.FAILURE;
         }
         return new R(0, "SUCCESS", fileName);
     }
@@ -75,6 +77,34 @@ public class ProcessServiceImpl implements ProcessService {
                 .deploy();
 
         return new R(0, "SUCCESS", deployment.getName());
+    }
+
+    @Override
+    public R deployByFile(MultipartFile processFile) {
+        String fileName = processFile.getOriginalFilename();
+        try {
+            InputStream fileInputStream = processFile.getInputStream();
+            String extension = FilenameUtils.getExtension(fileName);
+
+            if ("zip".equals(extension)) {
+                ZipInputStream zip = new ZipInputStream(fileInputStream);
+                repositoryService.createDeployment()
+                        .addZipInputStream(zip)
+                        .name(UUIDUtil.getUUID())
+                        .deploy();
+            } else if("bpmn".equals(extension)){
+                repositoryService.createDeployment()
+                        .addInputStream(fileName, fileInputStream)
+                        .name(UUIDUtil.getUUID())
+                        .deploy();
+            } else {
+                return ReturnConstants.FILE_TYPE_ERROR;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ReturnConstants.FAILURE;
+        }
+        return ReturnConstants.SUCCESS;
     }
 
     @Override
@@ -124,7 +154,9 @@ public class ProcessServiceImpl implements ProcessService {
     public byte[] getXMLBytes(String deploymentId, String resourceName) {
         InputStream stream = repositoryService.getResourceAsStream(deploymentId, resourceName);
         try {
-           return IOUtils.toByteArray(stream);
+            byte[] bytes = IOUtils.toByteArray(stream);
+            stream.close();
+            return bytes;
         } catch (IOException e) {
             e.printStackTrace();
             return new byte[0];

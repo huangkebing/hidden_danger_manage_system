@@ -194,7 +194,7 @@ public class SysUserServiceImpl extends ServiceImpl<UserMapper, User> implements
             }
         } catch (Exception e) {
             e.printStackTrace();
-            return new R(-1, e.getMessage());
+            return ReturnConstants.FAILURE;
         }
         return ReturnConstants.SUCCESS;
     }

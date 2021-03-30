@@ -19,6 +19,7 @@ create table hdms_type(
     `id` int unsigned not null auto_increment comment '分组id',
     `name` varchar(15) not null comment '分组名',
     `description` varchar(100) not null comment '隐患分类说明',
+    `process_id` varchar(64) not null comment '流程定义id',
     `create` timestamp not null comment '创建时间',
     `modify` timestamp not null comment '修改时间',
     primary key (id)

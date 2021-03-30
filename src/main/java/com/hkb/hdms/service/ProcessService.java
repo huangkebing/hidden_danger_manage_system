@@ -16,6 +16,8 @@ public interface ProcessService {
 
     R deployByString(String stringBPMN);
 
+    R deployByFile(MultipartFile processFile);
+
     Map<String, Object> queryProcesses(String processName, String processKey, int limit, int page);
 
     byte[] getXMLBytes(String deploymentId, String resourceName);

@@ -53,6 +53,13 @@ public class ProcessController {
         return processService.deployByString(stringBPMN);
     }
 
+
+    @PostMapping("/addDeploymentByFile")
+    @ResponseBody
+    public Object uploadStreamAndDeployment(@RequestParam("processFile") MultipartFile processFile) {
+        return processService.deployByFile(processFile);
+    }
+
     @GetMapping("/getProcesses")
     @ResponseBody
     public Object getProcesses(@RequestParam(required = false) String processName,
@@ -70,7 +77,7 @@ public class ProcessController {
             byte[] xmlBytes = processService.getXMLBytes(deploymentId, resourceName);
             ByteArrayInputStream in = new ByteArrayInputStream(xmlBytes);
             IOUtils.copy(in, response.getOutputStream());
-            String filename = processService.getXMLFileName(deploymentId, resourceName) + ".bpmn20.xml";
+            String filename = processService.getXMLFileName(deploymentId, resourceName) + ".bpmn";
             response.setHeader("Content-Disposition", "attachment; filename=" + java.net.URLEncoder.encode(filename, "UTF-8"));
             response.flushBuffer();
         } catch (IOException e) {
@@ -84,11 +91,24 @@ public class ProcessController {
         }
     }
 
+    @RequestMapping("/getDefineXML")
+    public void getDefineXML(String deploymentId, String resourceName, HttpServletResponse response){
+        try {
+            byte[] xmlBytes = processService.getXMLBytes(deploymentId, resourceName);
+            response.setContentType("text/xml");
+            OutputStream outputStream = response.getOutputStream();
+            outputStream.write(xmlBytes);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @RequestMapping("/getProcessImage/{processId}")
     public void getProcessImage(HttpServletResponse response, @PathVariable String processId){
         InputStream processImage = processService.getProcessImage(processId);
         try {
             byte[] imageBytes = IOUtils.toByteArray(processImage);
+            processImage.close();
             response.setContentType("text/xml"); // 设置返回的文件类型
             OutputStream os = response.getOutputStream();
             os.write(imageBytes);

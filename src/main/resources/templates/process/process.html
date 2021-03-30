@@ -9,6 +9,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" th:href="@{/layuimini/lib/layui-v2.5.5/css/layui.css}" media="all">
     <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
+    <style>
+        .layui-upload-file{
+            display: block !important;
+            position: absolute;
+            left: 52%;
+            top: 0;
+            width: 103px;
+            height: 38px;
+            z-index: 99;
+        }
+    </style>
 </head>
 <body>
 <div class="layuimini-container">
@@ -63,6 +74,21 @@
             <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
         </script>
 
+        <form id="ProcessUploadForm" lay-filter="ProcessUploadForm" class="layui-form" enctype="multipart/form-data" style="display: none">
+            <div class="layui-form-item" style="margin-top: 20px">
+                <label class="layui-form-label required">上传文件<span style="color: red"> *</span></label>
+                <div class="layui-input-block">
+                    <input  id="fileName" placeholder="" class="layui-input DialogInput"
+                            lay-verType="tips" disabled style="width: 160px;display: inline-block"/>
+                    <button type="button" class="layui-btn DialogBtn" id="uploadBpmn"><i class="layui-icon"></i>上传文件</button>
+                    <input class="layui-upload-file" type="file" accept="" name="processFile" id="uploadFile">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <span style="margin-left: 30px;color: grey">可以上传BPMN文件(.bpmn)，也可以上传BPMN文件压缩包(.zip)</span>
+            </div>
+
+        </form>
     </div>
 </div>
 <script th:src="@{/layuimini/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
@@ -140,16 +166,61 @@
         table.on('toolbar(processTableFilter)', function (obj) {
             if (obj.event === 'add') {  // 监听添加操作
                 var index = layer.open({
-                    title: '添加用户',
-                    type: 2,
-                    shade: 0.2,
-                    maxmin:true,
-                    shadeClose: true,
-                    area: ['100%', '100%'],
-                    content: '../page/table/add.html',
-                });
-                $(window).on("resize", function () {
-                    layer.full(index);
+                    type: 1,
+                    title: '上传BPMN',
+                    content: $('#ProcessUploadForm'),
+                    area: ['450px', '210px'],
+                    btn: ['提交'],
+                    btnAlign: 'c',
+                    yes: function(){
+                        var fileObj = document.getElementById("uploadFile").files[0];
+                        if (typeof (fileObj) == "undefined" || fileObj.size <= 0) {
+                            layer.msg('请上传文件',{icon : 2});
+                            return;
+                        };
+                        var index= fileObj.name.lastIndexOf(".");
+                        var ext = fileObj.name.substr(index+1);
+                        if(ext !== "bpmn" && ext !== "zip"){
+                            layer.msg('只支持bpmn和zip格式的文件',{icon : 2});
+                            return;
+                        }
+                        var formFile = new FormData();
+                        formFile.append('processFile',fileObj);
+                        $.ajax({
+                            type: "POST",
+                            url: basePath + "/process/addDeploymentByFile",
+                            data: formFile,
+                            processData : false,
+                            contentType: false,
+                            success: function (result) {
+                                if(result.code === 0){
+                                    layer.closeAll();
+                                    layer.msg("文件部署成功！",{icon: 1});
+                                    processTable.reload();
+                                }
+                                else{
+                                    layer.msg(result.message,{icon: 2});
+                                }
+                            },
+                            error: function () {
+                                layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                            }
+                        });
+                    },
+                    success: function (layero, dIndex) {
+                        var $fileName =$("#fileName");
+                        $fileName.val("");
+                        $("#uploadFile").on("change",function (e) {
+                            var e = e || window.event;
+                            var files = e.target.files;
+                            if(files.length>0){
+                                var fileName = files[0].name;
+                                $fileName.val(fileName);
+                            }else{
+                                $fileName.val("");
+                            }
+                        });
+                    }
                 });
             } else if (obj.event === 'edit'){
                 miniTab.openNewTabByIframe({
@@ -163,7 +234,7 @@
             var data = obj.data;
             if (obj.event === 'update') {
                 miniTab.openNewTabByIframe({
-                    href: basePath + "/modeler.html?modelId=" + data.id,
+                    href: basePath + "/bpmnjs/dist/processEdit.html?type=editBpmn&deploymentFileUUID=" + data.deploymentID+ "&deploymentName=" + encodeURI(data.resourceName),
                     title:"修改流程",
                 });
             } else if (obj.event === 'delete') {
