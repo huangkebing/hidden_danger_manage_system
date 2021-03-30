@@ -165,7 +165,7 @@ public class SysUserServiceImpl extends ServiceImpl<UserMapper, User> implements
     @Override
     @Transactional
     public R userToQuestion(Long userId, String questionIds) {
-        if (StringUtils.isNullOrEmpty(questionIds)) {
+        if (questionIds == null) {
             return ReturnConstants.PARAMS_EMPTY;
         }
 
