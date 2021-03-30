@@ -5,10 +5,12 @@ import com.hkb.hdms.base.R;
 import com.hkb.hdms.base.ReturnConstants;
 import com.hkb.hdms.service.ProcessService;
 import com.hkb.hdms.utils.UUIDUtil;
+import com.mysql.cj.util.StringUtils;
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
+import org.activiti.engine.repository.ProcessDefinitionQuery;
 import org.activiti.image.ProcessDiagramGenerator;
 import org.activiti.image.impl.DefaultProcessDiagramGenerator;
 import org.apache.commons.io.IOUtils;
@@ -76,7 +78,7 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
-    public Map<String, Object> queryProcesses(int limit, int page) {
+    public Map<String, Object> queryProcesses(String processName, String processKey, int limit, int page) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("code", 0);
         map.put("msg", "");
@@ -86,7 +88,17 @@ public class ProcessServiceImpl implements ProcessService {
         }
 
         page = (page - 1) * limit;
-        List<ProcessDefinition> definitions = repositoryService.createProcessDefinitionQuery().listPage(page, limit);
+
+        ProcessDefinitionQuery query = repositoryService.createProcessDefinitionQuery();
+        if(!StringUtils.isNullOrEmpty(processName)){
+            query.processDefinitionNameLike("%" + processName + "%");
+        }
+
+        if(!StringUtils.isNullOrEmpty(processKey)){
+            query.processDefinitionKeyLike("%" + processKey + "%");
+        }
+
+        List<ProcessDefinition> definitions = query.listPage(page, limit);
 
         definitions.sort((y,x)->x.getVersion()-y.getVersion());
 
@@ -138,5 +150,17 @@ public class ProcessServiceImpl implements ProcessService {
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processId);
         ProcessDiagramGenerator ge = new DefaultProcessDiagramGenerator();
         return ge.generateDiagram(bpmnModel,"宋体", "宋体", "宋体");
+    }
+
+    @Override
+    public R activeProcess(String processId) {
+        repositoryService.activateProcessDefinitionById(processId);
+        return ReturnConstants.SUCCESS;
+    }
+
+    @Override
+    public R suspendProcess(String processId) {
+        repositoryService.suspendProcessDefinitionById(processId);
+        return ReturnConstants.SUCCESS;
     }
 }

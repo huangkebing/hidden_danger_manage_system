@@ -90,6 +90,10 @@ public class SysUserServiceImpl extends ServiceImpl<UserMapper, User> implements
             page = 1;
         }
         Page<UserDto> UserPage = new Page<>(page, limit);
+
+        if(!StringUtils.isNullOrEmpty(user.getEmail())){
+            user.setEmail("%" + user.getEmail() + "%");
+        }
         List<UserDto> userDtos = userMapper.selectUsers(UserPage, user);
 
         map.put("count", UserPage.getTotal());

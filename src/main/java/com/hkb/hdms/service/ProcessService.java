@@ -16,7 +16,7 @@ public interface ProcessService {
 
     R deployByString(String stringBPMN);
 
-    Map<String, Object> queryProcesses(int limit, int page);
+    Map<String, Object> queryProcesses(String processName, String processKey, int limit, int page);
 
     byte[] getXMLBytes(String deploymentId, String resourceName);
 
@@ -25,4 +25,8 @@ public interface ProcessService {
     R deleteProcess(String deploymentId);
 
     InputStream getProcessImage(String processId);
+
+    R activeProcess(String processId);
+
+    R suspendProcess(String processId);
 }

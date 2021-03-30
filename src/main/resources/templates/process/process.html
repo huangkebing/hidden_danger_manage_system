@@ -20,15 +20,15 @@
                 <form class="layui-form layui-form-pane" action="">
                     <div class="layui-form-item">
                         <div class="layui-inline">
-                            <label class="layui-form-label">用户姓名</label>
+                            <label class="layui-form-label">流程名称</label>
                             <div class="layui-input-inline">
-                                <input type="text" name="username" autocomplete="off" class="layui-input">
+                                <input type="text" name="processName" autocomplete="off" class="layui-input">
                             </div>
                         </div>
                         <div class="layui-inline">
-                            <label class="layui-form-label">用户性别</label>
+                            <label class="layui-form-label">流程KEY</label>
                             <div class="layui-input-inline">
-                                <input type="text" name="sex" autocomplete="off" class="layui-input">
+                                <input type="text" name="processKey" autocomplete="off" class="layui-input">
                             </div>
                         </div>
                         <div class="layui-inline">
@@ -57,7 +57,7 @@
             {{#  if(d.suspended === true){ }}
             <a class="layui-btn layui-btn-xs" lay-event="active">激活</a>
             {{#  } else { }}
-            <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="frozen">挂起</a>
+            <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="suspend">挂起</a>
             {{#  } }}
             <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="update">修改</a>
             <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
@@ -123,19 +123,12 @@
 
         // 监听搜索操作
         form.on('submit(data-search-btn)', function (data) {
-            var result = JSON.stringify(data.field);
-            layer.alert(result, {
-                title: '最终的搜索信息'
-            });
-
             //执行搜索重载
             table.reload('processTable', {
                 page: {
                     curr: 1
-                }
-                , where: {
-                    searchParams: result
-                }
+                },
+                where: data.field
             }, 'data');
 
             return false;
@@ -210,6 +203,52 @@
                 });
             } else if (obj.event === 'exportxml'){
                 window.open(basePath + "/process/exportXML/" + data.deploymentID + "/" + data.resourceName);
+            } else if (obj.event === 'active'){
+                layer.confirm('确定激活该流程吗？', {icon: 3, title: '提示'}, function (index) {
+                    $.ajax({
+                        type: "POST",
+                        url: basePath + "/process/activeProcess",
+                        data: {
+                            processId : data.processDefinitionID
+                        },
+                        success: function (result) {
+                            if(result.code === 0){
+                                layer.msg("激活流程成功！",{icon: 1});
+                                processTable.reload();
+                            }
+                            else{
+                                layer.msg(result.message,{icon: 2});
+                            }
+                        },
+                        error: function () {
+                            layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                        }
+                    });
+                    layer.close(index);
+                });
+            } else if (obj.event === 'suspend'){
+                layer.confirm('确定挂起该流程吗？', {icon: 3, title: '提示'}, function (index) {
+                    $.ajax({
+                        type: "POST",
+                        url: basePath + "/process/suspendProcess",
+                        data: {
+                            processId : data.processDefinitionID
+                        },
+                        success: function (result) {
+                            if(result.code === 0){
+                                layer.msg("挂起流程成功！",{icon: 1});
+                                processTable.reload();
+                            }
+                            else{
+                                layer.msg(result.message,{icon: 2});
+                            }
+                        },
+                        error: function () {
+                            layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                        }
+                    });
+                    layer.close(index);
+                });
             }
             return false;
         });

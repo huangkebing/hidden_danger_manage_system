@@ -55,8 +55,9 @@ public class ProcessController {
 
     @GetMapping("/getProcesses")
     @ResponseBody
-    public Object getProcesses(int limit, int page){
-        return processService.queryProcesses(limit, page);
+    public Object getProcesses(@RequestParam(required = false) String processName,
+                               @RequestParam(required = false) String processKey, int limit, int page){
+        return processService.queryProcesses(processName, processKey, limit, page);
     }
 
     @RequestMapping("/exportXML/{deploymentId}/{resourceName}")
@@ -98,10 +99,21 @@ public class ProcessController {
         }
     }
 
-
     @PostMapping("/deleteProcess")
     @ResponseBody
     public Object deleteProcess(String deploymentId){
         return processService.deleteProcess(deploymentId);
+    }
+
+    @PostMapping("/activeProcess")
+    @ResponseBody
+    public Object activeProcess(String processId){
+        return processService.activeProcess(processId);
+    }
+
+    @PostMapping("/suspendProcess")
+    @ResponseBody
+    public Object suspendProcess(String processId){
+        return processService.suspendProcess(processId);
     }
 }

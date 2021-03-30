@@ -17,14 +17,16 @@
         from hdms.hdms_user as u left join
         hdms_role as r
         on u.role = r.id
-        <if test="user.email != null and user.email != ''">
-            and u.email = #{user.email}
-        </if>
-        <if test="user.role != null and user.role != ''">
-            and u.role = #{user.role}
-        </if>
-        <if test="user.live != null and user.live != ''">
-            and u.live = #{user.live}
-        </if>
+        <where>
+            <if test="user.email != null and user.email != ''">
+                and u.email like #{user.email}
+            </if>
+            <if test="user.role != null and user.role != ''">
+                and u.role = #{user.role}
+            </if>
+            <if test="user.live != null and user.live != ''">
+                and u.live = #{user.live}
+            </if>
+        </where>
     </select>
 </mapper>
