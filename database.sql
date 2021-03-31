@@ -69,3 +69,15 @@ create table `hdms_user_type` (
     `modify` timestamp not null comment '修改时间',
     primary key (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+#流程节点-用户id绑定表
+create table `hdms_process_node_role` (
+    `id` int unsigned not null auto_increment comment 'id',
+    `node_id` varchar(128) not null comment '流程节点id',
+    `process_id` varchar(64) not null comment '流程定义id',
+    `name` varchar(64) default '' not null comment '节点名称',
+    `role_id` int unsigned not null default 0 comment '角色id，默认0代表仅发起人',
+    `create` timestamp not null comment '创建时间',
+    `modify` timestamp not null comment '修改时间',
+    primary key (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

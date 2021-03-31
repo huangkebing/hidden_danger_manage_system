@@ -1,6 +1,7 @@
 package com.hkb.hdms.service;
 
 import com.hkb.hdms.base.R;
+import org.activiti.engine.repository.Deployment;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
@@ -34,4 +35,6 @@ public interface ProcessService {
     R activeProcess(String processId);
 
     R suspendProcess(String processId);
+
+    void processNodeWithRole(Deployment deployment);
 }

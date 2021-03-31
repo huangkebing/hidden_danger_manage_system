@@ -1,5 +1,6 @@
 package com.hkb.hdms.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.hkb.hdms.base.Constants;
 import com.hkb.hdms.base.R;
 import com.hkb.hdms.base.ReturnConstants;
@@ -7,6 +8,8 @@ import com.hkb.hdms.service.ProcessService;
 import com.hkb.hdms.utils.UUIDUtil;
 import com.mysql.cj.util.StringUtils;
 import org.activiti.bpmn.model.BpmnModel;
+import org.activiti.bpmn.model.FlowElement;
+import org.activiti.bpmn.model.UserTask;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
@@ -76,24 +79,27 @@ public class ProcessServiceImpl implements ProcessService {
                 .name(UUIDUtil.getUUID())
                 .deploy();
 
-        return new R(0, "SUCCESS", deployment.getName());
+        //初始化流程节点和角色之间的绑定
+        processNodeWithRole(deployment);
+        return ReturnConstants.SUCCESS;
     }
 
     @Override
     public R deployByFile(MultipartFile processFile) {
         String fileName = processFile.getOriginalFilename();
+        Deployment deployment;
         try {
             InputStream fileInputStream = processFile.getInputStream();
             String extension = FilenameUtils.getExtension(fileName);
 
             if ("zip".equals(extension)) {
                 ZipInputStream zip = new ZipInputStream(fileInputStream);
-                repositoryService.createDeployment()
+                deployment = repositoryService.createDeployment()
                         .addZipInputStream(zip)
                         .name(UUIDUtil.getUUID())
                         .deploy();
             } else if("bpmn".equals(extension)){
-                repositoryService.createDeployment()
+                deployment = repositoryService.createDeployment()
                         .addInputStream(fileName, fileInputStream)
                         .name(UUIDUtil.getUUID())
                         .deploy();
@@ -104,6 +110,8 @@ public class ProcessServiceImpl implements ProcessService {
             e.printStackTrace();
             return ReturnConstants.FAILURE;
         }
+        //初始化流程节点和角色之间的绑定
+        processNodeWithRole(deployment);
         return ReturnConstants.SUCCESS;
     }
 
@@ -214,5 +222,22 @@ public class ProcessServiceImpl implements ProcessService {
     public R suspendProcess(String processId) {
         repositoryService.suspendProcessDefinitionById(processId);
         return ReturnConstants.SUCCESS;
+    }
+
+    @Override
+    public void processNodeWithRole(Deployment deployment) {
+        List<ProcessDefinition> definitions = repositoryService.createProcessDefinitionQuery().deploymentId(deployment.getId()).list();
+
+        for (ProcessDefinition definition : definitions) {
+            BpmnModel bpmnModel = repositoryService.getBpmnModel(definition.getId());
+            if(bpmnModel != null) {
+                Collection<FlowElement> flowElements = bpmnModel.getMainProcess().getFlowElements();
+                for (FlowElement flowElement : flowElements) {
+                    if(flowElement.getClass().equals(UserTask.class)){
+                        System.out.println("flowelement id:" + flowElement.getId() + "  name:" + flowElement.getName() + "   class:" + flowElement.getClass().toString());
+                    }
+                }
+            }
+        }
     }
 }
