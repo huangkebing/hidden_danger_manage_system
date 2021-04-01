@@ -60,17 +60,18 @@
         <table class="layui-hide" id="processTable" lay-filter="processTableFilter"></table>
 
         <script type="text/html" id="fileBar">
-            <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="exportxml">导出</a>
-            <a class="layui-btn layui-btn-xs" lay-event="showphoto">预览</a>
+            <a class="layui-btn layui-btn-xs" lay-event="exportxml">导出</a>
+            <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="showphoto">预览</a>
         </script>
 
         <script type="text/html" id="processTableBar">
+            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="node">节点管理</a>
             {{#  if(d.suspended === true){ }}
-            <a class="layui-btn layui-btn-xs" lay-event="active">激活</a>
+            <a class="layui-btn layui-btn-xs" style="background-color:#19CAAD;" lay-event="active">激活</a>
             {{#  } else { }}
-            <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="suspend">挂起</a>
+            <a class="layui-btn layui-btn-xs" style="background-color: #ECAD9E" lay-event="suspend">挂起</a>
             {{#  } }}
-            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="update">修改</a>
+            <a class="layui-btn layui-btn-warm layui-btn-xs data-count-edit" lay-event="update">修改</a>
             <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
         </script>
 
@@ -121,16 +122,16 @@
                 {field: 'key', title: '流程KEY', width: 150},
                 {field: 'suspended', title: '流程状态', width:100, align: 'center', templet: function (d) {
                         if (d.suspended === false) {
-                            return '<span class="layui-badge layui-bg-green">运行</span>';
+                            return '<span class="layui-badge" style="background-color:#19CAAD;">运行</span>';
                         } else {
-                            return '<span class="layui-badge layui-bg-orange">冻结</span>';
+                            return '<span class="layui-badge" style="background-color: #ECAD9E">冻结</span>';
                         }
                     }
                 },
                 {field: 'version', title: '流程版本', width: 100 ,align: 'center'},
                 {field: 'deploymentID', title: '部署id', width: 300},
                 {title: '模型查看', minWidth: 150, toolbar: '#fileBar', align: "center"},
-                {title: '操作', minWidth: 180, toolbar: '#processTableBar', align: "center", fixed: 'right'}
+                {title: '操作', width: 240, toolbar: '#processTableBar', align: "center", fixed: 'right'}
             ]],
             limits: [10, 15, 20, 25, 50, 100],
             limit: 15,
@@ -319,6 +320,11 @@
                         }
                     });
                     layer.close(index);
+                });
+            } else if (obj.event === 'node'){
+                miniTab.openNewTabByIframe({
+                    href: basePath + "/process/node.html/" + data.processDefinitionID,
+                    title: data.name + "节点管理",
                 });
             }
             return false;

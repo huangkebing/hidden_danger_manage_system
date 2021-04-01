@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -31,6 +32,14 @@ public class ProcessController {
     @RequestMapping("/process.html")
     public Object processPage() {
         return "process/process";
+    }
+
+    @RequestMapping("/node.html/{processId}")
+    public Object nodePage(@PathVariable String processId){
+        ModelAndView model = new ModelAndView();
+        model.addObject("processId",processId);
+        model.setViewName("process/node");
+        return model;
     }
 
     /**
@@ -143,5 +152,11 @@ public class ProcessController {
     @ResponseBody
     public Object suspendProcess(String processId) {
         return processService.suspendProcess(processId);
+    }
+
+    @GetMapping("/getProcessNode/{processId}")
+    @ResponseBody
+    public Object getProcessNode(@PathVariable String processId) {
+        return processService.queryProcessNode(processId);
     }
 }

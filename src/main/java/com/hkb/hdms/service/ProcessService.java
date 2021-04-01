@@ -37,4 +37,6 @@ public interface ProcessService {
     R suspendProcess(String processId);
 
     void processNodeWithRole(Deployment deployment);
+
+    Map<String, Object> queryProcessNode(String processId);
 }

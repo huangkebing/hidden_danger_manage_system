@@ -1,9 +1,11 @@
 package com.hkb.hdms.service.impl;
 
-import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.hkb.hdms.base.Constants;
 import com.hkb.hdms.base.R;
 import com.hkb.hdms.base.ReturnConstants;
+import com.hkb.hdms.mapper.ProcessNodeRoleMapper;
+import com.hkb.hdms.model.pojo.ProcessNodeRole;
 import com.hkb.hdms.service.ProcessService;
 import com.hkb.hdms.utils.UUIDUtil;
 import com.mysql.cj.util.StringUtils;
@@ -38,9 +40,12 @@ public class ProcessServiceImpl implements ProcessService {
 
     private final RepositoryService repositoryService;
 
+    private final ProcessNodeRoleMapper processNodeRoleMapper;
+
     @Autowired
-    public ProcessServiceImpl(RepositoryService repositoryService) {
+    public ProcessServiceImpl(RepositoryService repositoryService, ProcessNodeRoleMapper processNodeRoleMapper) {
         this.repositoryService = repositoryService;
+        this.processNodeRoleMapper = processNodeRoleMapper;
     }
 
     @Override
@@ -232,12 +237,27 @@ public class ProcessServiceImpl implements ProcessService {
             BpmnModel bpmnModel = repositoryService.getBpmnModel(definition.getId());
             if(bpmnModel != null) {
                 Collection<FlowElement> flowElements = bpmnModel.getMainProcess().getFlowElements();
-                for (FlowElement flowElement : flowElements) {
-                    if(flowElement.getClass().equals(UserTask.class)){
-                        System.out.println("flowelement id:" + flowElement.getId() + "  name:" + flowElement.getName() + "   class:" + flowElement.getClass().toString());
-                    }
+                List<FlowElement> userTasks = flowElements.stream().filter(flowElement -> flowElement.getClass().equals(UserTask.class)).collect(Collectors.toList());
+                for (FlowElement userTask : userTasks) {
+                    ProcessNodeRole processNodeRole = new ProcessNodeRole();
+                    processNodeRole.setRoleId(0L);
+                    processNodeRole.setNodeId(userTask.getId());
+                    processNodeRole.setName(userTask.getName());
+                    processNodeRole.setProcessId(definition.getId());
+                    processNodeRoleMapper.insert(processNodeRole);
                 }
             }
         }
+    }
+
+    @Override
+    public Map<String, Object> queryProcessNode(String processId) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("code", 0);
+        map.put("msg", "");
+
+        List<ProcessNodeRole> nodes = processNodeRoleMapper.selectList(new QueryWrapper<ProcessNodeRole>().eq("process_id", processId));
+        map.put("data", nodes);
+        return map;
     }
 }

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<!--suppress ALL-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" th:href="@{/layuimini/lib/layui-v2.5.5/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
+    <style>
+        .layui-layer-content {
+            overflow: visible!important;
+        }
+        .layui-form-select dl { max-height:200px; }
+        .layui-form-checkbox {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <table class="layui-hide" id="nodeTableId" lay-filter="nodeTableFilter"></table>
+
+        <script type="text/html" id="nodeTableBar">
+            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">修改处理人</a>
+        </script>
+
+        <form id="operateNode" class="layui-form" style="display: none">
+            <div class="layui-form-item" style="margin-top: 10px">
+                <label class="layui-form-label">节点名称<span style="color: red"> *</span></label>
+                <div class="layui-input-block" style="width: 300px;">
+                    <input type="text" name="name" id="name" lay-verify="required" lay-reqtext="请输入节点名称" placeholder="节点名称"
+                           autocomplete="off" disabled class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">处理人<span style="color: red"> *</span></label>
+                <div class="layui-input-block" style="width: 300px;">
+                    <select class="layui-form-select" name="role" id="role" lay-verify="" lay-search>
+                        <option value="" selected>请选择(可搜索)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item" style="margin-left: 70px">
+                <div class="layui-input-block">
+                    <button class="layui-btn" id="submit" style="padding: 0 20px" lay-submit="" lay-filter="operate">提交
+                    </button>
+                    <button type="reset" id="reset" style="visibility: hidden" class="layui-btn">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script th:src="@{/layuimini/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
+<script th:src="@{/layuimini/js/lay-config.js}" charset="utf-8"></script>
+<script th:src="@{/js/url.js}"></script>
+<script th:inline="javascript">
+    var processId = [[${processId}]]
+</script>
+<script th:inline="none">
+    
+    layui.use(['form', 'table'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table;
+
+        var currObj;
+
+        $.ajax({
+            url: basePath + "/role/getAllRole",    //后台数据请求地址
+            type: "GET",
+            success: function(result){
+                $("#role").append(new Option("发起人", 0));
+                for (var index = 0;index < result.length;index++){
+                    var dataTmp = result[index];
+                    $('#role').append(new Option(dataTmp.name,dataTmp.id));//往下拉菜单里添加元素
+                }
+                form.render();
+            }
+        });
+
+        table.render({
+            elem: '#nodeTableId',
+            url: basePath + '/process/getProcessNode/' + processId,
+            toolbar: '#toolbarDemo',
+            defaultToolbar: ['filter', 'exports'],
+            cols: [[
+                {type: "numbers", width: 50 , fixed: 'left'},
+                {field: 'name', width: 180, title: '节点名称', templet: function (d) {
+                    if(d.name == null || d.name == undefined){
+                        return '<div>未命名节点</div>'
+                    } else {
+                        return '<div>' + d.name + '</div>'
+                    }
+                }},
+                {field: 'roleName', width: 180, title: '处理人类型'},
+                {field: 'create', title: '创建时间',sort: true, templet:
+                        "<div>{{layui.util.toDateString(d.create, 'yyyy-MM-dd HH:mm:ss')}}</div>"
+                },
+                {field: 'modify', title: '修改时间',sort: true, templet:
+                        "<div>{{layui.util.toDateString(d.modify, 'yyyy-MM-dd HH:mm:ss')}}</div>"
+                },
+                {title: '操作', minWidth: 150, toolbar: '#nodeTableBar', align: "center"}
+            ]]
+        });
+
+
+        table.on('tool(nodeTableFilter)', function (obj) {
+            var data = obj.data;
+            currObj = obj;
+            if (obj.event === 'edit') {
+                $("#name").val(data.name);
+                $("#role").val(data.roleId);
+                form.render();
+                var index = layer.open({
+                    title: '修改节点处理人',
+                    type: 1,
+                    area: ['450px', '220px'],
+                    content: $("#operateNode"),
+                    cancel: function(layero,index){
+                        $("#reset").click();
+                    }
+                });
+                return false;
+            }
+        });
+
+    });
+</script>
+
+</body>
+</html>
