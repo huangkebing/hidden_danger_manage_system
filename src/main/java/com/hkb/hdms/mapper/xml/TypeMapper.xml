@@ -18,4 +18,11 @@
         ACT_RE_PROCDEF as p
         on t.process_id = p.ID_
     </select>
+
+    <select id="selectTypesWithUser" resultType="com.hkb.hdms.model.vo.TypeVo">
+        select t.id , t.name
+        from hdms_user_type as u ,
+             hdms_type as t
+             where u.type_id = t.id and u.user_id = #{userId}
+    </select>
 </mapper>

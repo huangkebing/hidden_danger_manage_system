@@ -4,11 +4,13 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.hkb.hdms.base.Constants;
 import com.hkb.hdms.base.R;
 import com.hkb.hdms.base.ReturnConstants;
 import com.hkb.hdms.mapper.TypeMapper;
 import com.hkb.hdms.mapper.UserTypeMapper;
 import com.hkb.hdms.model.pojo.Type;
+import com.hkb.hdms.model.pojo.User;
 import com.hkb.hdms.model.pojo.UserType;
 import com.hkb.hdms.model.vo.QueryTypeVo;
 import com.hkb.hdms.model.vo.TypeVo;
@@ -18,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,10 +38,13 @@ public class TypeServiceImpl extends ServiceImpl<TypeMapper, Type> implements Ty
 
     private final TypeMapper typeMapper;
 
+    private final HttpSession session;
+
     @Autowired
-    public TypeServiceImpl(UserTypeMapper userTypeMapper, TypeMapper typeMapper) {
+    public TypeServiceImpl(UserTypeMapper userTypeMapper, TypeMapper typeMapper, HttpSession session) {
         this.userTypeMapper = userTypeMapper;
         this.typeMapper = typeMapper;
+        this.session = session;
     }
 
     @Override
@@ -119,5 +125,11 @@ public class TypeServiceImpl extends ServiceImpl<TypeMapper, Type> implements Ty
         }
 
         return res;
+    }
+
+    @Override
+    public List<TypeVo> getQuestionFilterByUser() {
+        User user = (User) session.getAttribute(Constants.LOGIN_USER_KEY);
+        return typeMapper.selectTypesWithUser(user.getId());
     }
 }

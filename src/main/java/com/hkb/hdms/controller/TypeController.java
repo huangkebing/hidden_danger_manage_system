@@ -43,6 +43,12 @@ public class TypeController {
         return typeService.getQuestionWithUserId(userId);
     }
 
+    @GetMapping("/getQuestionFilterByUser")
+    @ResponseBody
+    public Object getQuestionFilterByUser(){
+        return typeService.getQuestionFilterByUser();
+    }
+
     @PostMapping("/addQuestion")
     @ResponseBody
     public Object addQuestion(Type type){

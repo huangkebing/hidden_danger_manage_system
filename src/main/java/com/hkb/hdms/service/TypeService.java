@@ -22,4 +22,6 @@ public interface TypeService extends IService<Type> {
     R deleteType(Long id);
 
     List<TypeVo> getQuestionWithUserId(Long userId);
+
+    List<TypeVo> getQuestionFilterByUser();
 }

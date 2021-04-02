@@ -14,49 +14,45 @@
 <body>
 <div class="layuimini-container">
     <div class="layuimini-main">
-
         <div class="layui-fluid">
             <div class="layui-card">
-                <div class="layui-card-body" style="padding-top: 40px;">
+                <div style="color: #666;margin-top: 30px;margin-bottom: 40px;padding-left: 30px;">
+                    <h3>说明</h3><br>
+                    <p>1.如果没有您想要创建的类型，请联系系统管理员授权</p><br>
+                </div>
+                <hr>
+                <div class="layui-card-body" style="padding-top: 20px;">
                     <div class="layui-carousel" id="stepForm" lay-filter="stepForm" style="margin: 0 auto;">
                         <div carousel-item>
                             <div>
                                 <form class="layui-form" style="margin: 0 auto;max-width: 460px;padding-top: 40px;">
                                     <div class="layui-form-item">
-                                        <label class="layui-form-label">游戏ID:</label>
+                                        <label class="layui-form-label">隐患名称:</label>
                                         <div class="layui-input-block">
                                             <input type="text" placeholder="请填写入款人游戏ID" class="layui-input" lay-verify="number" required />
 
                                         </div>
                                     </div>
                                     <div class="layui-form-item">
-                                        <label class="layui-form-label">入款金额:</label>
+                                        <label class="layui-form-label">隐患类型:</label>
                                         <div class="layui-input-block">
-                                            <input type="number" placeholder="请填写入款金额" value="" class="layui-input" lay-verify="number" required>
-                                        </div>
-                                    </div>
-                                    <div class="layui-form-item">
-                                        <label class="layui-form-label">入款类型:</label>
-                                        <div class="layui-input-block">
-                                            <select lay-verify="required">
-                                                <option value="1" selected>保险箱</option>
-                                                <option value="2">现金</option>
+                                            <select id="questionType" lay-verify="required">
+                                                <option value="" selected>请选择(可搜索)</option>
                                             </select>
                                         </div>
                                     </div>
                                     <div class="layui-form-item">
-                                        <label class="layui-form-label">入款方式:</label>
+                                        <label class="layui-form-label">优先级:</label>
                                         <div class="layui-input-block">
                                             <select lay-verify="required">
-                                                <option value="1" selected>人工入款</option>
-                                                <option value="2">修正</option>
-                                                <option value="3">活动</option>
-                                                <option value="4">佣金</option>
+                                                <option value="1">低</option>
+                                                <option value="2" selected>中</option>
+                                                <option value="3">高</option>
                                             </select>
                                         </div>
                                     </div>
                                     <div class="layui-form-item">
-                                        <label class="layui-form-label">备注说明:</label>
+                                        <label class="layui-form-label">隐患描述:</label>
                                         <div class="layui-input-block">
                                             <textarea placeholder="入款备注" value="" class="layui-textarea"></textarea>
                                         </div>
@@ -136,41 +132,44 @@
                             </div>
                         </div>
                     </div>
-                    <hr>
-                    <div style="color: #666;margin-top: 30px;margin-bottom: 40px;padding-left: 30px;">
-                        <h3>说明</h3><br>
-                        <h4>入款到保险箱</h4>
-                        <p>如果需要，这里可以放一些关于产品的常见问题说明。</p>
-                        <br><h4>入款到现金</h4>
-                        <p>如果需要，这里可以放一些关于产品的常见问题说明。</p>
-                    </div>
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 <script th:src="@{/layuimini/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
 <script th:src="@{/layuimini/js/lay-config.js}" charset="utf-8"></script>
 <script th:src="@{/js/url.js}"></script>
-<script th:inline="none">
+<script th:inline="javaScript">
     layui.use([ 'form', 'step'], function () {
         var $ = layui.$,
             form = layui.form,
             step = layui.step;
+
+        $.ajax({
+            url: basePath + "/question/getQuestionFilterByUser",    //后台数据请求地址
+            type: "GET",
+            success: function(result){
+                for (var index = 0;index < result.length;index++){
+                    var dataTmp = result[index];
+                    $('#questionType').append(new Option(dataTmp.name,dataTmp.id));//往下拉菜单里添加元素
+                }
+                form.render();
+            }
+        });
 
         step.render({
             elem: '#stepForm',
             filter: 'stepForm',
             width: '100%', //设置容器宽度
             stepWidth: '750px',
-            height: '500px',
+            height: '470px',
             stepItems: [{
-                title: '填写入款信息'
+                title: '隐患信息'
             }, {
-                title: '确认入款信息'
+                title: '信息确认'
             }, {
-                title: '完成'
+                title: '创建完成'
             }]
         });
 
