@@ -2,7 +2,7 @@ package com.hkb.hdms.controller;
 
 import com.hkb.hdms.model.pojo.ProcessNodeRole;
 import com.hkb.hdms.service.ProcessService;
-import org.apache.commons.io.FileUtils;
+import com.mysql.cj.util.StringUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -35,10 +35,15 @@ public class ProcessController {
         return "process/process";
     }
 
-    @RequestMapping("/node.html/{processId}")
-    public Object nodePage(@PathVariable String processId){
+    @RequestMapping("/node.html/{processId}/{processName}")
+    public Object nodePage(@PathVariable String processId, @PathVariable String processName){
         ModelAndView model = new ModelAndView();
         model.addObject("processId",processId);
+        if(StringUtils.isNullOrEmpty(processName) || "undefined".equals(processName)){
+            processName = "未命名";
+        }
+        processName += " 流程用户任务节点表";
+        model.addObject("processName", processName);
         model.setViewName("process/node");
         return model;
     }

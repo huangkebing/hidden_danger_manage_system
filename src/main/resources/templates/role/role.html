@@ -9,6 +9,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" th:href="@{/layuimini/lib/layui-v2.5.5/css/layui.css}" media="all">
     <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
+    <style>
+        body .btnStyle .layui-layer-btn a{background:#019688;border: #019688;padding: 4px 20px}
+    </style>
 </head>
 <body>
 <div class="layuimini-container">
@@ -90,10 +93,10 @@
             toolbar: '#toolbar',
             defaultToolbar: ['filter', 'exports'],
             cols: [[
-                {type: "numbers", width: 50},
-                {field: 'name', title: '角色名称'},
-                {field: 'description', title: '备注'},
-                {field: 'question', title: '隐患类型分配', width:120, align: 'center', templet: function (d) {
+                {type: "numbers", width: 50, fixed: 'left'},
+                {field: 'name', title: '角色名称',minWidth: 150},
+                {field: 'description', title: '备注',minWidth: 320},
+                {field: 'question', title: '隐患类型分配', minWidth:120, align: 'center', templet: function (d) {
                         if (d.question == 1) {
                             return '<span class="layui-badge" style="background-color:#19CAAD;">参与分配</span>';
                         } else {
@@ -101,10 +104,13 @@
                         }
                     }
                 },
-                {field: 'create', title: '创建时间', templet:
+                {field: 'create', title: '创建时间', width: 160,sort: true, templet:
                         "<div>{{layui.util.toDateString(d.create, 'yyyy-MM-dd HH:mm:ss')}}</div>"
                 },
-                {title: '操作', minWidth: 180, toolbar: '#roleTableBar', align: "center"}
+                {field: 'modify', title: '修改时间',width: 160,sort: true, templet:
+                        "<div>{{layui.util.toDateString(d.modify, 'yyyy-MM-dd HH:mm:ss')}}</div>"
+                },
+                {title: '操作', minWidth: 180, toolbar: '#roleTableBar', align: "center", fixed: 'right'}
             ]],
             limits: [10, 15, 20, 25, 50, 100],
             limit: 15,
@@ -205,6 +211,7 @@
                     area: ['300px', '400px'],
                     content: $("#menuTreeDiv"),
                     btn: ['提交'],
+                    skin: 'btnStyle',
                     btnAlign: 'c',
                     yes: function(){
                         var checkedId = getCheckedId(tree.getChecked("menuTree"));

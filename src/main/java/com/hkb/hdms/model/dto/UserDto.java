@@ -22,4 +22,6 @@ public class UserDto {
     private Integer live;
 
     private Date create;
+
+    private Date modify;
 }

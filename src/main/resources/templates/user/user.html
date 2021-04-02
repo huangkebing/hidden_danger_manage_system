@@ -14,6 +14,7 @@
         .layui-form-checkbox {
             margin-bottom: 5px;
         }
+        body .btnStyle .layui-layer-btn a{background:#019688;border: #019688;padding: 4px 20px}
     </style>
 </head>
 <body>
@@ -186,9 +187,9 @@
             toolbar: '#toolbar',
             defaultToolbar: ['filter', 'exports'],
             cols: [[
-                {type: "numbers", width: 50},
-                {field: 'email', title: '邮箱'},
-                {field: 'name', title: '角色', templet: function (d) {
+                {type: "numbers", width: 50,fixed: 'left'},
+                {field: 'email',minWidth: 240, title: '邮箱'},
+                {field: 'name',minWidth: 180, title: '角色', templet: function (d) {
                         if (d.role == null) {
                             return '<div>角色不存在</div>';
                         } else {
@@ -196,11 +197,14 @@
                         }
                     }
                 },
-                {field: 'create', title: '创建时间', templet:
+                {field: 'create', title: '创建时间', width: 160,sort: true,templet:
+                        "<div>{{layui.util.toDateString(d.create, 'yyyy-MM-dd HH:mm:ss')}}</div>"
+                },
+                {field: 'create', title: '创建时间', width: 160,sort: true,templet:
                         "<div>{{layui.util.toDateString(d.create, 'yyyy-MM-dd HH:mm:ss')}}</div>"
                 },
                 {title: '账号状态修改', width: 120, toolbar: '#userState', align: "center"},
-                {title: '操作', minWidth: 150, toolbar: '#currentTableBar', align: "center"}
+                {title: '操作', widthidth: 200, toolbar: '#currentTableBar', align: "center", fixed: 'right'}
             ]],
             limits: [10, 15, 20, 25, 50, 100],
             limit: 15,
@@ -348,6 +352,7 @@
                     content: $("#typeDiv"),
                     btn: ['提交'],
                     btnAlign: 'c',
+                    skin: 'btnStyle',
                     yes: function(){
                         var standards = "";
                         $("input:checkbox[name='type']:checked").each(function() {

@@ -323,8 +323,8 @@
                 });
             } else if (obj.event === 'node'){
                 miniTab.openNewTabByIframe({
-                    href: basePath + "/process/node.html/" + data.processDefinitionID,
-                    title: data.name + "节点管理",
+                    href: basePath + "/process/node.html/" + data.processDefinitionID + "/" + data.name,
+                    title: "节点管理",
                 });
             }
             return false;

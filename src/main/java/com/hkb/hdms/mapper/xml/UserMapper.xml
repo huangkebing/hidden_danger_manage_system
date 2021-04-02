@@ -6,6 +6,7 @@
         <result column="email" property="email"/>
         <result column="live" property="live"/>
         <result column="create" property="create"/>
+        <result column="modify" property="modify"/>
         <association property="role" javaType="com.hkb.hdms.model.pojo.UserRole">
             <result column="rid" property="id"/>
             <result column="name" property="name"/>
@@ -13,7 +14,7 @@
         </association>
     </resultMap>
     <select id="selectUsers" parameterType="com.hkb.hdms.model.pojo.User" resultMap="selectMap">
-        select u.id, u.email, u.live, u.`create`, r.id 'rid', r.name, r.question
+        select u.id, u.email, u.live, u.`create`, u.modify, r.id 'rid', r.name, r.question
         from hdms.hdms_user as u left join
         hdms_role as r
         on u.role = r.id

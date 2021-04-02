@@ -101,10 +101,10 @@
             toolbar: '#toolbar',
             defaultToolbar: ['filter', 'exports'],
             cols: [[
-                {type: "numbers", width: 50},
-                {field: 'name', title: '隐患类型', width:  150},
-                {field: 'description', title: '备注'},
-                {field: 'process', title: '隐患处理流程', templet: function (d) {
+                {type: "numbers", width: 50, fixed: 'left'},
+                {field: 'name', title: '隐患类型', minWidth:  150},
+                {field: 'description', title: '备注', minWidth: 350},
+                {field: 'process', title: '隐患处理流程',minWidth: 250, templet: function (d) {
                     if(d.processId == "" || d.processKey == null){
                         return '<div>隐患处理流程不存在</div>';
                     } else {
@@ -115,10 +115,13 @@
                         }
                     }
                 }},
-                {field: 'create', title: '创建时间', width: 200, templet:
+                {field: 'create', title: '创建时间',width: 160,sort: true, templet:
                         "<div>{{layui.util.toDateString(d.create, 'yyyy-MM-dd HH:mm:ss')}}</div>"
                 },
-                {title: '操作', width: 150, toolbar: '#currentTableBar', align: "center"}
+                {field: 'modify', title: '修改时间', width: 160,sort: true, templet:
+                        "<div>{{layui.util.toDateString(d.modify, 'yyyy-MM-dd HH:mm:ss')}}</div>"
+                },
+                {title: '操作', minWidth: 130, toolbar: '#currentTableBar', align: "center", fixed: 'right'}
             ]],
             limits: [10, 15, 20, 25, 50, 100],
             limit: 15,

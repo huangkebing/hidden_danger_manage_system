@@ -22,6 +22,12 @@
 <body>
 <div class="layuimini-container">
     <div class="layuimini-main">
+        <script type="text/html" id="toolbar">
+            <div class="layui-btn-container">
+                <span class="layui-card-header" style="font-size: 16px;font-weight: bold;"><i class="layui-icon layui-icon-form"></i><span th:text='${processName}'></span></span>
+            </div>
+        </script>
+
         <table class="layui-hide" id="nodeTableId" lay-filter="nodeTableFilter"></table>
 
         <script type="text/html" id="nodeTableBar">
@@ -63,7 +69,6 @@
     var processId = [[${processId}]]
 </script>
 <script th:inline="none">
-    
     layui.use(['form', 'table'], function () {
         var $ = layui.jquery,
             form = layui.form,
@@ -87,25 +92,25 @@
         var nodeTable = table.render({
             elem: '#nodeTableId',
             url: basePath + '/process/getProcessNode/' + processId,
-            toolbar: '#toolbarDemo',
+            toolbar: '#toolbar',
             defaultToolbar: ['filter', 'exports'],
             cols: [[
                 {type: "numbers", width: 50 , fixed: 'left'},
-                {field: 'name', width: 180, title: '节点名称', templet: function (d) {
+                {field: 'name', minWidth: 200, title: '节点名称', templet: function (d) {
                     if(d.name == null || d.name == undefined){
                         return '<div>未命名节点</div>'
                     } else {
                         return '<div>' + d.name + '</div>'
                     }
                 }},
-                {field: 'roleName', width: 180, title: '处理人类型'},
-                {field: 'create', title: '创建时间',sort: true, templet:
+                {field: 'roleName', minWidth: 200, title: '处理人类型'},
+                {field: 'create', title: '创建时间',width: 160,sort: true, templet:
                         "<div>{{layui.util.toDateString(d.create, 'yyyy-MM-dd HH:mm:ss')}}</div>"
                 },
-                {field: 'modify', title: '修改时间',sort: true, templet:
+                {field: 'modify', title: '修改时间',width: 160,sort: true, templet:
                         "<div>{{layui.util.toDateString(d.modify, 'yyyy-MM-dd HH:mm:ss')}}</div>"
                 },
-                {title: '操作', minWidth: 150, toolbar: '#nodeTableBar', align: "center"}
+                {title: '操作', width: 150, toolbar: '#nodeTableBar', align: "center",fixed: 'right'}
             ]]
         });
 
