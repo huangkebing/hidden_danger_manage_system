@@ -84,7 +84,7 @@
             }
         });
 
-        table.render({
+        var nodeTable = table.render({
             elem: '#nodeTableId',
             url: basePath + '/process/getProcessNode/' + processId,
             toolbar: '#toolbarDemo',
@@ -109,7 +109,6 @@
             ]]
         });
 
-
         table.on('tool(nodeTableFilter)', function (obj) {
             var data = obj.data;
             currObj = obj;
@@ -130,6 +129,37 @@
             }
         });
 
+        //表单提交
+        form.on('submit(operate)', function (data) {
+            if($("#role").val() === ""){
+                layer.msg("请选择角色!",{icon: 2});
+                return false;
+            }
+            //新增提交
+            $.ajax({
+                type: "POST",
+                url: basePath + "/process/updateNodeRole",
+                data: {
+                    nodeId : currObj.data.nodeId,
+                    roleId : data.field.role,
+                    roleName : $("#role").find("option:selected").text()
+                },
+                success: function (result) {
+                    if(result.code === 0){
+                        layer.closeAll();
+                        layer.msg("节点修改成功！",{icon: 1});
+                        nodeTable.reload();
+                    }
+                    else{
+                        layer.msg(result.message,{icon: 2});
+                    }
+                },
+                error: function () {
+                    layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                }
+            });
+            return false;
+        });
     });
 </script>
 

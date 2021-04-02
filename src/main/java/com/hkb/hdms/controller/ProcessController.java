@@ -1,5 +1,6 @@
 package com.hkb.hdms.controller;
 
+import com.hkb.hdms.model.pojo.ProcessNodeRole;
 import com.hkb.hdms.service.ProcessService;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -158,5 +159,11 @@ public class ProcessController {
     @ResponseBody
     public Object getProcessNode(@PathVariable String processId) {
         return processService.queryProcessNode(processId);
+    }
+
+    @PostMapping("/updateNodeRole")
+    @ResponseBody
+    public Object updateNodeRole(ProcessNodeRole processNodeRole){
+        return processService.updateNodeRole(processNodeRole);
     }
 }

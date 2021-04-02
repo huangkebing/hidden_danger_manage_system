@@ -6,8 +6,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hkb.hdms.base.R;
 import com.hkb.hdms.base.ReturnConstants;
+import com.hkb.hdms.mapper.ProcessNodeRoleMapper;
 import com.hkb.hdms.mapper.RoleMapper;
 import com.hkb.hdms.mapper.RoleMenuMapper;
+import com.hkb.hdms.model.pojo.ProcessNodeRole;
 import com.hkb.hdms.model.pojo.RoleMenu;
 import com.hkb.hdms.model.pojo.UserRole;
 import com.hkb.hdms.service.RoleService;
@@ -31,9 +33,12 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, UserRole> implement
 
     private final RoleMenuMapper roleMenuMapper;
 
+    private final ProcessNodeRoleMapper processNodeRoleMapper;
+
     @Autowired
-    public RoleServiceImpl(RoleMenuMapper roleMenuMapper) {
+    public RoleServiceImpl(RoleMenuMapper roleMenuMapper, ProcessNodeRoleMapper processNodeRoleMapper) {
         this.roleMenuMapper = roleMenuMapper;
+        this.processNodeRoleMapper = processNodeRoleMapper;
     }
 
     @Override
@@ -90,6 +95,11 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, UserRole> implement
     public R deleteRole(Long id) {
         //删除角色前，删除所有资源与该角色的绑定
         roleMenuMapper.delete(new QueryWrapper<RoleMenu>().eq("role_id", id));
+
+        ProcessNodeRole nodeRole = new ProcessNodeRole();
+        nodeRole.setRoleId(0L);
+        nodeRole.setRoleName("发起人");
+        processNodeRoleMapper.update(nodeRole, new UpdateWrapper<ProcessNodeRole>().eq("role_id",id));
 
         if (this.removeById(id)) {
             return ReturnConstants.SUCCESS;

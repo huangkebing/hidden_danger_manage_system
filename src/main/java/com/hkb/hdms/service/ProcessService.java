@@ -1,6 +1,7 @@
 package com.hkb.hdms.service;
 
 import com.hkb.hdms.base.R;
+import com.hkb.hdms.model.pojo.ProcessNodeRole;
 import org.activiti.engine.repository.Deployment;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,4 +40,6 @@ public interface ProcessService {
     void processNodeWithRole(Deployment deployment);
 
     Map<String, Object> queryProcessNode(String processId);
+
+    R updateNodeRole(ProcessNodeRole processNodeRole);
 }

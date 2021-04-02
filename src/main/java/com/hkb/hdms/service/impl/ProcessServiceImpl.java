@@ -1,6 +1,7 @@
 package com.hkb.hdms.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.hkb.hdms.base.Constants;
 import com.hkb.hdms.base.R;
 import com.hkb.hdms.base.ReturnConstants;
@@ -22,6 +23,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -205,7 +207,21 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
+    @Transactional
     public R deleteProcess(String deploymentId) {
+        List<ProcessDefinition> definitions = repositoryService.createProcessDefinitionQuery().deploymentId(deploymentId).list();
+
+        for (ProcessDefinition definition : definitions) {
+            BpmnModel bpmnModel = repositoryService.getBpmnModel(definition.getId());
+            if(bpmnModel != null) {
+                Collection<FlowElement> flowElements = bpmnModel.getMainProcess().getFlowElements();
+                List<String> userTasks = flowElements.stream()
+                        .filter(flowElement -> flowElement.getClass().equals(UserTask.class))
+                        .map(FlowElement::getId)
+                        .collect(Collectors.toList());
+                processNodeRoleMapper.delete(new QueryWrapper<ProcessNodeRole>().in("node_id",userTasks));
+            }
+        }
         repositoryService.deleteDeployment(deploymentId, true);
         return ReturnConstants.SUCCESS;
     }
@@ -259,5 +275,16 @@ public class ProcessServiceImpl implements ProcessService {
         List<ProcessNodeRole> nodes = processNodeRoleMapper.selectList(new QueryWrapper<ProcessNodeRole>().eq("process_id", processId));
         map.put("data", nodes);
         return map;
+    }
+
+    @Override
+    public R updateNodeRole(ProcessNodeRole processNodeRole) {
+        UpdateWrapper<ProcessNodeRole> wrapper = new UpdateWrapper<ProcessNodeRole>().eq("node_id", processNodeRole.getNodeId());
+        int update = processNodeRoleMapper.update(processNodeRole, wrapper);
+        if(update == 1){
+            return ReturnConstants.SUCCESS;
+        } else {
+            return ReturnConstants.FAILURE;
+        }
     }
 }
