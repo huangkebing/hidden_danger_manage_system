@@ -81,3 +81,15 @@ create table `hdms_process_node_role` (
     `modify` timestamp not null comment '修改时间',
     primary key (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+#问题表
+create table `hdms_problem` (
+    `id` int unsigned not null auto_increment comment 'id',
+    `name` varchar(128) not null comment '问题名称',
+    `description` varchar(1024) not null comment '问题描述',
+    `priority` int not null default 2 comment '优先级',
+    `instance_id` varchar(64) not null comment '流程实例id',
+    `create` timestamp not null comment '创建时间',
+    `modify` timestamp not null comment '修改时间',
+    primary key (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
