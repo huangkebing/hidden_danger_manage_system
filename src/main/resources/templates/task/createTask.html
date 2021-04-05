@@ -29,14 +29,13 @@
                                     <div class="layui-form-item">
                                         <label class="layui-form-label">隐患名称:</label>
                                         <div class="layui-input-block">
-                                            <input type="text" placeholder="请填写入款人游戏ID" class="layui-input" lay-verify="number" required />
-
+                                            <input type="text" name="name" placeholder="隐患名称" class="layui-input" lay-verify="required" lay-reqtext="请输入隐患名称" />
                                         </div>
                                     </div>
                                     <div class="layui-form-item">
                                         <label class="layui-form-label">隐患类型:</label>
                                         <div class="layui-input-block">
-                                            <select id="questionType" lay-verify="required">
+                                            <select id="questionType" name="typeId" lay-verify="required" lay-reqtext="请选择隐患类型">
                                                 <option value="" selected>请选择(可搜索)</option>
                                             </select>
                                         </div>
@@ -44,7 +43,7 @@
                                     <div class="layui-form-item">
                                         <label class="layui-form-label">优先级:</label>
                                         <div class="layui-input-block">
-                                            <select lay-verify="required">
+                                            <select lay-verify="required" name="priority" lay-reqtext="请选择优先级">
                                                 <option value="1">低</option>
                                                 <option value="2" selected>中</option>
                                                 <option value="3">高</option>
@@ -52,16 +51,11 @@
                                         </div>
                                     </div>
                                     <div class="layui-form-item">
-                                        <label class="layui-form-label">隐患描述:</label>
-                                        <div class="layui-input-block">
-                                            <textarea placeholder="入款备注" value="" class="layui-textarea"></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="layui-form-item">
                                         <div class="layui-input-block">
                                             <button class="layui-btn" lay-submit lay-filter="formStep">
                                                 &emsp;下一步&emsp;
                                             </button>
+                                            <button type="reset" id="reset1" style="visibility: hidden" class="layui-btn">重置</button>
                                         </div>
                                     </div>
                                 </form>
@@ -69,49 +63,18 @@
                             <div>
                                 <form class="layui-form" style="margin: 0 auto;max-width: 460px;padding-top: 40px;">
                                     <div class="layui-form-item">
-                                        <label class="layui-form-label">游戏ID:</label>
+                                        <label class="layui-form-label">隐患描述:</label>
                                         <div class="layui-input-block">
-                                            <div class="layui-form-mid layui-word-aux">639537</div>
-                                        </div>
-                                    </div>
-                                    <div class="layui-form-item">
-                                        <label class="layui-form-label">账户余额:</label>
-                                        <div class="layui-input-block">
-                                            <div class="layui-form-mid layui-word-aux">3000 元（保险箱：1000，现金：2000）</div>
-                                        </div>
-                                    </div>
-                                    <div class="layui-form-item">
-                                        <label class="layui-form-label">入款金额:</label>
-                                        <div class="layui-input-block">
-                                            <div class="layui-form-mid layui-word-aux">
-                                                <span style="font-size: 18px;color: #333;">1800 元</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="layui-form-item">
-                                        <label class="layui-form-label">入款类型:</label>
-                                        <div class="layui-input-block">
-                                            <div class="layui-form-mid layui-word-aux">保险箱</div>
-                                        </div>
-                                    </div>
-                                    <div class="layui-form-item">
-                                        <label class="layui-form-label">入款方式:</label>
-                                        <div class="layui-input-block">
-                                            <div class="layui-form-mid layui-word-aux">人工入款</div>
-                                        </div>
-                                    </div>
-                                    <div class="layui-form-item">
-                                        <label class="layui-form-label">备注说明:</label>
-                                        <div class="layui-input-block">
-                                            <div class="layui-form-mid layui-word-aux">备注说明</div>
+                                            <textarea name="description" placeholder="隐患描述" value="" class="layui-textarea"></textarea>
                                         </div>
                                     </div>
                                     <div class="layui-form-item">
                                         <div class="layui-input-block">
                                             <button type="button" class="layui-btn layui-btn-primary pre">上一步</button>
                                             <button class="layui-btn" lay-submit lay-filter="formStep2">
-                                                &emsp;确认入款&emsp;
+                                                &emsp;确认创建&emsp;
                                             </button>
+                                            <button type="reset" id="reset2" style="visibility: hidden" class="layui-btn">重置</button>
                                         </div>
                                     </div>
                                 </form>
@@ -121,13 +84,12 @@
                                     <i class="layui-icon layui-circle"
                                        style="color: white;font-size:30px;font-weight:bold;background: #52C41A;padding: 20px;line-height: 80px;">&#xe605;</i>
                                     <div style="font-size: 24px;color: #333;font-weight: 500;margin-top: 30px;">
-                                        入款成功
+                                        创建成功
                                     </div>
-                                    <div style="font-size: 14px;color: #666;margin-top: 20px;">预计两小时到账</div>
                                 </div>
                                 <div style="text-align: center;margin-top: 50px;">
-                                    <button class="layui-btn next">再入一笔</button>
-                                    <button class="layui-btn layui-btn-primary">查看账单</button>
+                                    <button class="layui-btn next">再建一个</button>
+                                    <button class="layui-btn layui-btn-primary">查看问题</button>
                                 </div>
                             </div>
                         </div>
@@ -145,6 +107,8 @@
         var $ = layui.$,
             form = layui.form,
             step = layui.step;
+
+        var baseData;
 
         $.ajax({
             url: basePath + "/question/getQuestionFilterByUser",    //后台数据请求地址
@@ -167,7 +131,7 @@
             stepItems: [{
                 title: '隐患信息'
             }, {
-                title: '信息确认'
+                title: '隐患描述'
             }, {
                 title: '创建完成'
             }]
@@ -175,12 +139,33 @@
 
 
         form.on('submit(formStep)', function (data) {
+            baseData = data;
             step.next('#stepForm');
             return false;
         });
 
         form.on('submit(formStep2)', function (data) {
-            step.next('#stepForm');
+            $.ajax({
+                type: "POST",
+                url: basePath + "/task/createTask",
+                data: {
+                    name : baseData.field.name,
+                    description : data.field.description,
+                    priority : baseData.field.priority,
+                    typeId : baseData.field.typeId
+                },
+                success: function (result) {
+                    if(result.code === 0){
+                        step.next('#stepForm');
+                    }
+                    else{
+                        layer.msg(result.message,{icon: 2});
+                    }
+                },
+                error: function () {
+                    layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                }
+            });
             return false;
         });
 
@@ -190,6 +175,8 @@
 
         $('.next').click(function () {
             step.next('#stepForm');
+            $("#reset1").click();
+            $("#reset2").click();
         });
     })
 </script>
