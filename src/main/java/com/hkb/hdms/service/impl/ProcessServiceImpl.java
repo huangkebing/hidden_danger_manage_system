@@ -250,6 +250,7 @@ public class ProcessServiceImpl implements ProcessService {
         List<ProcessDefinition> definitions = repositoryService.createProcessDefinitionQuery().deploymentId(deployment.getId()).list();
 
         for (ProcessDefinition definition : definitions) {
+
             BpmnModel bpmnModel = repositoryService.getBpmnModel(definition.getId());
             if(bpmnModel != null) {
                 Collection<FlowElement> flowElements = bpmnModel.getMainProcess().getFlowElements();
