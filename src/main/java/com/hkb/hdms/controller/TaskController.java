@@ -31,9 +31,9 @@ public class TaskController {
         return "task/createTask";
     }
 
-    @RequestMapping("/todoTask.html")
-    public Object todoTaskPage(){
-        return "task/todoTask";
+    @RequestMapping("/detailTask.html")
+    public Object detailTaskPage(){
+        return "task/detailTask";
     }
 
     @PostMapping("/createTask")
