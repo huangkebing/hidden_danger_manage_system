@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author huangkebing

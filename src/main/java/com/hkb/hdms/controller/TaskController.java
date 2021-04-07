@@ -4,6 +4,7 @@ import com.hkb.hdms.model.pojo.Problem;
 import com.hkb.hdms.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -30,9 +31,20 @@ public class TaskController {
         return "task/createTask";
     }
 
+    @RequestMapping("/todoTask.html")
+    public Object todoTaskPage(){
+        return "task/todoTask";
+    }
+
     @PostMapping("/createTask")
     @ResponseBody
     public Object createTask(Problem problem){
         return taskService.createTask(problem);
+    }
+
+    @GetMapping("/getMyTask")
+    @ResponseBody
+    public Object getMyTask(int page, int limit){
+        return taskService.getMyTask(page, limit);
     }
 }
