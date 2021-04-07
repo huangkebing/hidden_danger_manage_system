@@ -3,9 +3,11 @@ package com.hkb.hdms.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hkb.hdms.base.Constants;
+import com.hkb.hdms.mapper.TypeMapper;
 import com.hkb.hdms.mapper.UserMapper;
 import com.hkb.hdms.model.pojo.User;
 import com.hkb.hdms.model.pojo.UserRole;
+import com.hkb.hdms.model.vo.TypeVo;
 import com.hkb.hdms.service.RoleService;
 import com.hkb.hdms.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,8 @@ import org.springframework.stereotype.Component;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author huangkebing
@@ -31,10 +35,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     private final HttpSession session;
 
+    private final TypeMapper typeMapper;
+
     @Autowired
-    public UserServiceImpl(RoleService roleService, HttpSession session) {
+    public UserServiceImpl(RoleService roleService, HttpSession session, TypeMapper typeMapper) {
         this.roleService = roleService;
         this.session = session;
+        this.typeMapper = typeMapper;
     }
 
     @Override
@@ -53,7 +60,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        username += Constants.EMAIL_SUFFIX;
+        if(!username.contains(Constants.EMAIL_SUFFIX)){
+            username += Constants.EMAIL_SUFFIX;
+        }
         User queryUser = this.getOne(new QueryWrapper<User>().eq("email", username));
         session.setAttribute(Constants.LOGIN_USER_KEY, queryUser);
         UserDetails userDetails = null;
@@ -74,6 +83,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         ArrayList<GrantedAuthority> authorities = new ArrayList<>();
         UserRole role = roleService.getById(user.getRole());
         authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
+
+        if(role.getQuestion() == 0){
+            authorities.add(new SimpleGrantedAuthority("GROUP_" + "ALL"));
+
+        }
+        else{
+            List<TypeVo> typeVos = typeMapper.selectTypesWithUser(user.getId());
+            List<String> groups = typeVos.stream().map(TypeVo::getName).collect(Collectors.toList());
+            for (String group : groups) {
+                authorities.add(new SimpleGrantedAuthority("GROUP_" + group));
+            }
+        }
         return authorities;
     }
 }

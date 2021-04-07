@@ -11,7 +11,6 @@ import com.hkb.hdms.service.TypeService;
 import com.hkb.hdms.utils.TaskHandlerUtil;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.runtime.ProcessInstance;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -48,7 +47,7 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
             problem.setInstanceId(instance.getId());
         } catch (Exception e) {
             e.printStackTrace();
-            return new R(-1,"test");
+            return new R(-1, "test");
         }
 
         this.save(problem);

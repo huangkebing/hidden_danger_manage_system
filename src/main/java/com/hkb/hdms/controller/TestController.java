@@ -7,7 +7,10 @@ import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -15,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 初步集成activiti测试使用
@@ -60,7 +64,11 @@ public class TestController {
     @RequestMapping("/task")
     @ResponseBody
     public Object task(){
-        List<Task> tasks = taskService.createTaskQuery().processDefinitionKey("Process_1").list();
+        List<Task> tasks = taskService.createTaskQuery()
+                .processInstanceId("45025253-9750-11eb-b56e-9822ef207876")
+                .taskCandidateUser("yuanchengwei3@163.com")
+                .list();
+
         ArrayList<Map<String, Object>> res = new ArrayList<>();
         for (Task task : tasks) {
             HashMap<String, Object> map = new HashMap<>();
