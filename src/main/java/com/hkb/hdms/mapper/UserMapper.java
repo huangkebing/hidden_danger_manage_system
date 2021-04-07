@@ -16,4 +16,6 @@ import java.util.List;
 @Repository
 public interface UserMapper extends BaseMapper<User> {
     List<UserDto> selectUsers(Page<UserDto> page, @Param("user") User user);
+
+    List<User> selectUsersByTypeAndRole(Long roleId, Long typeId);
 }

@@ -44,7 +44,7 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
             //根据流程定义id发起流程实例
             instance = runtimeService.startProcessInstanceById(taskType.getProcessId());
             //绑定每个任务的操作人
-            taskHandlerUtil.setTaskHandler(instance.getId());
+            taskHandlerUtil.setTaskHandler(instance, problem.getTypeId());
             problem.setInstanceId(instance.getId());
         } catch (Exception e) {
             e.printStackTrace();

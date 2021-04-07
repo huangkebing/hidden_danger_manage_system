@@ -30,4 +30,10 @@
             </if>
         </where>
     </select>
+
+    <select id="selectUsersByTypeAndRole" resultType="com.hkb.hdms.model.pojo.User">
+        select u.*
+        from hdms.hdms_user as u , hdms_user_type as t
+        where u.id = t.user_id and  u.live = 1 and u.role = #{roleId} and t.type_id = #{typeId}
+    </select>
 </mapper>
