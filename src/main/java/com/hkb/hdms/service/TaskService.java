@@ -14,4 +14,8 @@ public interface TaskService extends IService<Problem> {
     R createTask(Problem problem);
 
     Map<String,Object> getMyTask(int page, int limit);
+
+    R getDetailTask(Long problemId);
+
+    R completeTask(String taskId);
 }

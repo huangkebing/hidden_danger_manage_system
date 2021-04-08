@@ -6,6 +6,55 @@
     <title>Title</title>
 </head>
 <body>
+    <div id="btnBar"></div>
 
+
+<script th:src="@{/layuimini/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
+<script th:src="@{/layuimini/lib/jquery-3.4.1/jquery-3.4.1.min.js}" charset="utf-8"></script>
+<script th:src="@{/layuimini/js/lay-config.js}" charset="utf-8"></script>
+<script th:src="@{/js/url.js}"></script>
+<script th:inline="javascript">
+    function task() {
+        var target = $(event.target);
+        $.ajax({
+            type: "POST",
+            url: basePath + "/task/completeTask",
+            data: {
+                taskId : target.val()
+            },
+            success: function (result) {
+                if(result.code === 0){
+                    layer.msg("处理隐患成功！",{icon: 1});
+                    parent.layui.table.reload('currentTableId');
+                }
+                else{
+                    layer.msg(result.message,{icon: 2});
+                }
+            },
+            error: function () {
+                layer.msg('系统错误，请联系系统管理员',{icon: 2});
+            }
+        });
+    }
+
+    layui.use(['form', 'table', 'miniTab'], function () {
+        $.ajax({
+            url: basePath + "/task/getDetailTask/" + [[${problemId}]],
+            type: "GET",
+            success: function(result){
+                var data = result.data;
+                for (var index = 0;index < data.task.length;index++){
+                    var dataTmp = data.task[index];
+                    $("#btnBar").append('<button type="button" onclick="task()" value="' + dataTmp.taskId + '">'+ dataTmp.taskName+'</button>');
+                }
+            }
+        });
+
+
+
+
+
+    });
+</script>
 </body>
 </html>

@@ -224,9 +224,17 @@
                     }
                 });
             } else if (obj.event === 'edit'){
-                miniTab.openNewTabByIframe({
-                    href: basePath + "/bpmnjs/dist/processEdit.html?type=addBpmn",
-                    title:"新增流程",
+                var index = layer.open({
+                    title: '新增流程',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin:true,
+                    shadeClose: true,
+                    area: ['100%', '100%'],
+                    content: basePath + "/bpmnjs/dist/processEdit.html?type=addBpmn",
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
                 });
             }
         });
@@ -234,9 +242,17 @@
         table.on('tool(processTableFilter)', function (obj) {
             var data = obj.data;
             if (obj.event === 'update') {
-                miniTab.openNewTabByIframe({
-                    href: basePath + "/bpmnjs/dist/processEdit.html?type=editBpmn&deploymentFileUUID=" + data.deploymentID+ "&deploymentName=" + encodeURI(data.resourceName),
-                    title:"修改流程",
+                var index = layer.open({
+                    title: '修改流程',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin:true,
+                    shadeClose: true,
+                    area: ['100%', '100%'],
+                    content: basePath + "/bpmnjs/dist/processEdit.html?type=editBpmn&deploymentFileUUID=" + data.deploymentID+ "&deploymentName=" + encodeURI(data.resourceName),
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
                 });
             } else if (obj.event === 'delete') {
                 layer.confirm('确定删除该流程吗？同个部署id下的流程都会被删除，请慎重！', {icon: 3, title: '提示'}, function (index) {

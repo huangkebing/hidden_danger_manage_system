@@ -4,10 +4,8 @@ import com.hkb.hdms.model.pojo.Problem;
 import com.hkb.hdms.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  * 流程实例相关接口
@@ -31,9 +29,12 @@ public class TaskController {
         return "task/createTask";
     }
 
-    @RequestMapping("/detailTask.html")
-    public Object detailTaskPage(){
-        return "task/detailTask";
+    @RequestMapping("/detailTask.html/{problemId}")
+    public Object detailTaskPage(@PathVariable Long problemId){
+        ModelAndView model = new ModelAndView();
+        model.addObject("problemId",problemId);
+        model.setViewName("task/detailTask");
+        return model;
     }
 
     @PostMapping("/createTask")
@@ -46,5 +47,17 @@ public class TaskController {
     @ResponseBody
     public Object getMyTask(int page, int limit){
         return taskService.getMyTask(page, limit);
+    }
+
+    @GetMapping("getDetailTask/{problemId}")
+    @ResponseBody
+    public Object getDetailTask(@PathVariable Long problemId){
+        return taskService.getDetailTask(problemId);
+    }
+
+    @PostMapping("/completeTask")
+    @ResponseBody
+    public Object completeTask(String taskId){
+        return taskService.completeTask(taskId);
     }
 }

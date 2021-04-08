@@ -62,7 +62,7 @@
             table = layui.table,
             miniTab = layui.miniTab;
 
-        table.render({
+        var taskTable = table.render({
             elem: '#currentTableId',
             url: basePath + '/task/getMyTask',
             toolbar: '#toolbarDemo',
@@ -90,9 +90,17 @@
         table.on('tool(todoTable)', function (obj) {
             var data = obj.data;
             if (obj.event === 'edit') {
-                miniTab.openNewTabByIframe({
-                    href: basePath + "/task/detailTask.html",
-                    title:"处理问题",
+                var index = layer.open({
+                    title: '处理问题',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin:true,
+                    shadeClose: true,
+                    area: ['100%', '100%'],
+                    content: basePath + "/task/detailTask.html/" + data.id,
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
                 });
                 return false;
             }
