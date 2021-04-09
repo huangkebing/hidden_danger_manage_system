@@ -30,6 +30,7 @@ class HdmsApplicationTests {
     void test(){
         String a = "${value == 1 && name != null}";
 
+        String b = "[a-zA-Z_][a-zA-Z0-9_]* *==|!=";
         Pattern compile = Pattern.compile("[a-zA-Z_][a-zA-Z0-9_]*");
 
         Matcher matcher = compile.matcher(a);

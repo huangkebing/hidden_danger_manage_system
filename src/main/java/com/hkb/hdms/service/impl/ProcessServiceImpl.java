@@ -9,6 +9,7 @@ import com.hkb.hdms.base.ReturnConstants;
 import com.hkb.hdms.mapper.ProcessNodeRoleMapper;
 import com.hkb.hdms.model.pojo.ProcessNodeRole;
 import com.hkb.hdms.service.ProcessService;
+import com.hkb.hdms.utils.ProcessUtil;
 import com.hkb.hdms.utils.UUIDUtil;
 import com.mysql.cj.util.StringUtils;
 import org.activiti.bpmn.model.BpmnModel;
@@ -48,10 +49,13 @@ public class ProcessServiceImpl implements ProcessService {
 
     private final ProcessNodeRoleMapper processNodeRoleMapper;
 
+    private final ProcessUtil processUtil;
+
     @Autowired
-    public ProcessServiceImpl(RepositoryService repositoryService, ProcessNodeRoleMapper processNodeRoleMapper) {
+    public ProcessServiceImpl(RepositoryService repositoryService, ProcessNodeRoleMapper processNodeRoleMapper, ProcessUtil processUtil) {
         this.repositoryService = repositoryService;
         this.processNodeRoleMapper = processNodeRoleMapper;
+        this.processUtil = processUtil;
     }
 
     @Override
@@ -90,8 +94,8 @@ public class ProcessServiceImpl implements ProcessService {
                 .name(UUIDUtil.getUUID())
                 .deploy();
 
-        //初始化流程节点和角色之间的绑定
-        processNodeWithRole(deployment);
+        //流程解析
+        processUtil.processAnalysis(deployment);
         return ReturnConstants.SUCCESS;
     }
 
@@ -121,8 +125,8 @@ public class ProcessServiceImpl implements ProcessService {
             e.printStackTrace();
             return ReturnConstants.FAILURE;
         }
-        //初始化流程节点和角色之间的绑定
-        processNodeWithRole(deployment);
+        //流程解析
+        processUtil.processAnalysis(deployment);
         return ReturnConstants.SUCCESS;
     }
 

@@ -93,3 +93,15 @@ create table `hdms_problem` (
     `modify` timestamp not null comment '修改时间',
     primary key (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+#流程变量-用户节点绑定表
+create table `hdms_process_variable` (
+     `id` int unsigned not null auto_increment comment 'id',
+     `node_id` varchar(128) not null comment '流程节点id',
+     `process_id` varchar(64) not null comment '流程定义id',
+     `name` varchar(64) default '' not null comment '变量名',
+     `type` int unsigned not null default 0 comment '变量类型，1=二元型，2=数值',
+     `create` timestamp not null comment '创建时间',
+     `modify` timestamp not null comment '修改时间',
+     primary key (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
