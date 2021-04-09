@@ -12,19 +12,21 @@ import com.hkb.hdms.model.pojo.User;
 import com.hkb.hdms.service.TaskService;
 import com.hkb.hdms.service.TypeService;
 import com.hkb.hdms.utils.TaskHandlerUtil;
+import org.activiti.engine.HistoryService;
 import org.activiti.engine.RuntimeService;
+import org.activiti.engine.history.HistoricProcessInstance;
+import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.runtime.ProcessInstanceQuery;
 import org.activiti.engine.task.Task;
+import org.activiti.engine.task.TaskInfo;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author huangkebing
@@ -39,6 +41,8 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
 
     private final org.activiti.engine.TaskService taskService;
 
+    private final HistoryService historyService;
+
     private final TaskHandlerUtil taskHandlerUtil;
 
     private final HttpSession session;
@@ -47,12 +51,15 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
     public TaskServiceImpl(TypeService typeService,
                            RuntimeService runtimeService,
                            TaskHandlerUtil taskHandlerUtil,
-                           org.activiti.engine.TaskService taskService, HttpSession session) {
+                           org.activiti.engine.TaskService taskService,
+                           HttpSession session,
+                           HistoryService historyService) {
         this.typeService = typeService;
         this.runtimeService = runtimeService;
         this.taskHandlerUtil = taskHandlerUtil;
         this.taskService = taskService;
         this.session = session;
+        this.historyService = historyService;
     }
 
     @Override
@@ -137,5 +144,36 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
             taskHandlerUtil.setTaskHandler(instance,problem.getTypeId());
         }
         return ReturnConstants.SUCCESS;
+    }
+
+    @Override
+    public void test(){
+        List<HistoricTaskInstance> list = historyService.createHistoricTaskInstanceQuery()
+                .processFinished().taskCandidateUser("yuanchengwei3@163.com").list();
+
+
+        List<HistoricProcessInstance> list2 = historyService.createNativeHistoricProcessInstanceQuery()
+                .sql("select distinct RES.PROC_INST_ID_, HPI.END_TIME_\n" +
+                        "from ACT_HI_TASKINST RES inner join ACT_HI_IDENTITYLINK HI\n" +
+                        "    on HI.TASK_ID_ = RES.ID_ inner join ACT_HI_PROCINST HPI\n" +
+                        "        ON RES.PROC_INST_ID_ = HPI.ID_\n" +
+                        "WHERE HPI.END_TIME_ is not null\n" +
+                        "  and RES.ASSIGNEE_ is null\n" +
+                        "  and HI.TYPE_ = 'candidate'\n" +
+                        "  and ( HI.USER_ID_ = 'yuanchengwei3@163.com' or HI.GROUP_ID_ IN ( '交通隐患' , '火灾隐患' ) )")
+                .list();
+
+        List<HistoricTaskInstance> list1 = historyService.createNativeHistoricTaskInstanceQuery()
+                .sql("select distinct RES.PROC_INST_ID_\n" +
+                        "from ACT_HI_TASKINST RES inner join ACT_HI_IDENTITYLINK HI\n" +
+                        "    on HI.TASK_ID_ = RES.ID_ inner join ACT_HI_PROCINST HPI\n" +
+                        "        ON RES.PROC_INST_ID_ = HPI.ID_\n" +
+                        "WHERE HPI.END_TIME_ is not null\n" +
+                        "  and RES.ASSIGNEE_ is null\n" +
+                        "  and HI.TYPE_ = 'candidate'\n" +
+                        "  and ( HI.USER_ID_ = 'yuanchengwei3@163.com' or HI.GROUP_ID_ IN ( '交通隐患' , '火灾隐患' ) )").list();
+
+
+        System.out.println(list2.size());
     }
 }

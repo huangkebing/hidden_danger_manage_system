@@ -60,4 +60,10 @@ public class TaskController {
     public Object completeTask(String taskId){
         return taskService.completeTask(taskId);
     }
+
+    @GetMapping("/historyTask")
+    @ResponseBody
+    public Object historyTask(int page, int limit){
+        return null;
+    }
 }

@@ -26,4 +26,6 @@ public class ReturnConstants {
     public static final R FILE_TYPE_ERROR = new R(7, "文件格式错误，只支持bpmn和zip");
 
     public static final R PROCESS_ERROR = new R(8, "该类型绑定的流程定义有误，请联系系统管理员处理");
+
+    public static final R EMAIL_ERROR = new R(9, "该邮箱不存在，请检查是否有误");
 }

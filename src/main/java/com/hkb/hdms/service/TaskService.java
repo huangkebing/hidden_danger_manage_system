@@ -18,4 +18,6 @@ public interface TaskService extends IService<Problem> {
     R getDetailTask(Long problemId);
 
     R completeTask(String taskId);
+
+    void test();
 }

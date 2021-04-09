@@ -42,4 +42,6 @@ public interface ProcessService {
     Map<String, Object> queryProcessNode(String processId);
 
     R updateNodeRole(ProcessNodeRole processNodeRole);
+
+    void test();
 }

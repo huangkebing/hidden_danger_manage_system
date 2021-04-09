@@ -1,5 +1,6 @@
 package com.hkb.hdms.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.hkb.hdms.base.Constants;
@@ -12,6 +13,7 @@ import com.hkb.hdms.utils.UUIDUtil;
 import com.mysql.cj.util.StringUtils;
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.bpmn.model.FlowElement;
+import org.activiti.bpmn.model.SequenceFlow;
 import org.activiti.bpmn.model.UserTask;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.repository.Deployment;
@@ -22,6 +24,8 @@ import org.activiti.image.impl.DefaultProcessDiagramGenerator;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.expression.spel.standard.SpelExpression;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -288,4 +292,37 @@ public class ProcessServiceImpl implements ProcessService {
             return ReturnConstants.FAILURE;
         }
     }
+
+    @Override
+    public void test() {
+        String id = "6b3ae979-9923-11eb-8e64-9822ef207876";
+
+        List<ProcessDefinition> definitions = repositoryService.createProcessDefinitionQuery().deploymentId(id).list();
+
+        for (ProcessDefinition definition : definitions) {
+            BpmnModel bpmnModel = repositoryService.getBpmnModel(definition.getId());
+            if(bpmnModel != null) {
+                Collection<FlowElement> flowElements = bpmnModel.getMainProcess().getFlowElements();
+                for (FlowElement flowElement : flowElements) {
+                    if(flowElement instanceof SequenceFlow){
+                        SequenceFlow flowElement1 = (SequenceFlow) flowElement;
+                        SpelExpressionParser parser = new SpelExpressionParser();
+
+                        SpelExpression expression = parser.parseRaw(flowElement1.getConditionExpression());
+
+                        System.out.println(flowElement1.getConditionExpression());
+                    }
+                    System.out.println(flowElement.getId());
+                    System.out.println(flowElement.getName());
+                    System.out.println(flowElement.getClass());
+                    System.out.println(JSON.toJSONString(flowElement.getExtensionElements()));
+                }
+            }
+        }
+
+
+
+    }
+
+
 }

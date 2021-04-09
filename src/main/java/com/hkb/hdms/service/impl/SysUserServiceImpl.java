@@ -115,8 +115,13 @@ public class SysUserServiceImpl extends ServiceImpl<UserMapper, User> implements
         String password = UUIDUtil.getUUID();
         user.setPassword(new BCryptPasswordEncoder().encode(password));
 
-        if (this.save(user)) {
+        try {
             mailSender.sendMail(MailConstants.REGISTER, new String[]{password}, user.getEmail());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ReturnConstants.EMAIL_ERROR;
+        }
+        if (this.save(user)) {
             return ReturnConstants.SUCCESS;
         } else {
             return ReturnConstants.FAILURE;
