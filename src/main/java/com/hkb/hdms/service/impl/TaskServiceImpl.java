@@ -6,7 +6,9 @@ import com.hkb.hdms.base.Constants;
 import com.hkb.hdms.base.R;
 import com.hkb.hdms.base.ReturnConstants;
 import com.hkb.hdms.mapper.ProblemMapper;
+import com.hkb.hdms.mapper.ProcessVariableMapper;
 import com.hkb.hdms.model.pojo.Problem;
+import com.hkb.hdms.model.pojo.ProcessVariable;
 import com.hkb.hdms.model.pojo.Type;
 import com.hkb.hdms.model.pojo.User;
 import com.hkb.hdms.service.TaskService;
@@ -23,6 +25,7 @@ import org.activiti.engine.task.TaskInfo;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpSession;
 import java.util.*;
@@ -45,6 +48,8 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
 
     private final TaskHandlerUtil taskHandlerUtil;
 
+    private final ProcessVariableMapper processVariableMapper;
+
     private final HttpSession session;
 
     @Autowired
@@ -53,23 +58,35 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
                            TaskHandlerUtil taskHandlerUtil,
                            org.activiti.engine.TaskService taskService,
                            HttpSession session,
-                           HistoryService historyService) {
+                           HistoryService historyService,
+                           ProcessVariableMapper processVariableMapper) {
         this.typeService = typeService;
         this.runtimeService = runtimeService;
         this.taskHandlerUtil = taskHandlerUtil;
         this.taskService = taskService;
         this.session = session;
         this.historyService = historyService;
+        this.processVariableMapper = processVariableMapper;
     }
 
     @Override
-    public R createTask(Problem problem) {
+    public R createTask(Problem problem, Map<String, Object> processVariables) {
         Type taskType = typeService.getById(problem.getTypeId());
+
+        List<ProcessVariable> variables = processVariableMapper.selectList(new QueryWrapper<ProcessVariable>()
+                .eq("begin_variable", 1)
+                .eq("process_id", problem.getTypeId()));
+
+        //给定流程变量
+        Map<String, Object> variablesMap = new HashMap<>();
+        for (ProcessVariable variable : variables) {
+            variablesMap.put(variable.getName(), processVariables.get(variable.getName()));
+        }
 
         ProcessInstance instance;
         try {
             //根据流程定义id发起流程实例
-            instance = runtimeService.startProcessInstanceById(taskType.getProcessId());
+            instance = runtimeService.startProcessInstanceById(taskType.getProcessId(), variablesMap);
             //绑定每个任务的操作人
             taskHandlerUtil.setTaskHandler(instance, problem.getTypeId());
             problem.setInstanceId(instance.getId());
@@ -123,6 +140,10 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
             Map<String, Object> map = new HashMap<>();
             map.put("taskId", task.getId());
             map.put("taskName", task.getName());
+            List<ProcessVariable> variables = processVariableMapper.selectList(new QueryWrapper<ProcessVariable>()
+                    .eq("process_id", task.getProcessInstanceId())
+                    .eq("node_id", task.getTaskDefinitionKey()));
+            map.put("variables",variables);
             list.add(map);
         }
 
@@ -131,11 +152,22 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
     }
 
     @Override
-    public R completeTask(String taskId) {
+    public R completeTask(String taskId, Map<String,Object> processVariables) {
         //根据taskId查询出task
         Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
+
+        List<ProcessVariable> variables = processVariableMapper.selectList(new QueryWrapper<ProcessVariable>()
+                .eq("node_id", task.getTaskDefinitionKey())
+                .eq("process_id", task.getProcessInstanceId()));
+
+        //给定流程变量
+        Map<String, Object> variablesMap = new HashMap<>();
+        for (ProcessVariable variable : variables) {
+            variablesMap.put(variable.getName(), processVariables.get(variable.getName()));
+        }
+
         //完成task
-        taskService.complete(taskId);
+        taskService.complete(taskId, variablesMap);
         //尝试去设置后续出现的任务节点的处理人
         ProcessInstance instance = runtimeService.createProcessInstanceQuery().processInstanceId(task.getProcessInstanceId()).singleResult();
         //处理的是最后一个节点，complete之后instance会为null
@@ -144,6 +176,15 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
             taskHandlerUtil.setTaskHandler(instance,problem.getTypeId());
         }
         return ReturnConstants.SUCCESS;
+    }
+
+    @Override
+    public List<ProcessVariable> getBeginVariable(Long typeId) {
+        Type taskType = typeService.getById(typeId);
+
+        return processVariableMapper.selectList(new QueryWrapper<ProcessVariable>()
+                .eq("process_id", taskType.getProcessId())
+                .eq("begin_variable", 1));
     }
 
     @Override

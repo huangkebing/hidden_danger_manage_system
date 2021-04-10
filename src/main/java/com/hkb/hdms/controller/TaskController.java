@@ -7,6 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.Map;
+
 /**
  * 流程实例相关接口
  *
@@ -39,8 +41,8 @@ public class TaskController {
 
     @PostMapping("/createTask")
     @ResponseBody
-    public Object createTask(Problem problem){
-        return taskService.createTask(problem);
+    public Object createTask(Problem problem, @RequestParam Map<String, Object> processVariables){
+        return taskService.createTask(problem, processVariables);
     }
 
     @GetMapping("/getMyTask")
@@ -57,13 +59,19 @@ public class TaskController {
 
     @PostMapping("/completeTask")
     @ResponseBody
-    public Object completeTask(String taskId){
-        return taskService.completeTask(taskId);
+    public Object completeTask(String taskId, @RequestParam Map<String, Object> processVariables){
+        return taskService.completeTask(taskId,processVariables);
     }
 
     @GetMapping("/historyTask")
     @ResponseBody
     public Object historyTask(int page, int limit){
         return null;
+    }
+
+    @GetMapping
+    @ResponseBody
+    public Object getBeginVariable(Long typeId){
+        return taskService.getBeginVariable(typeId);
     }
 }
