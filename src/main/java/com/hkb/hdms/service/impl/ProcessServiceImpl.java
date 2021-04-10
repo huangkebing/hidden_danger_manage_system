@@ -297,12 +297,28 @@ public class ProcessServiceImpl implements ProcessService {
 
     @Override
     public R addVariable(ProcessVariable variable) {
+        String nodeId = variable.getNodeId();
+        if(nodeId.charAt(nodeId.length() - 1) == '1'){
+            variable.setBeginVariable(1);
+        } else {
+            variable.setBeginVariable(0);
+        }
+        variable.setNodeId(nodeId.substring(0, nodeId.length() - 1));
+
         processVariableMapper.insert(variable);
         return ReturnConstants.SUCCESS;
     }
 
     @Override
     public R updateVariable(ProcessVariable variable) {
+        String nodeId = variable.getNodeId();
+        if(nodeId.charAt(nodeId.length() - 1) == '1'){
+            variable.setBeginVariable(1);
+        } else {
+            variable.setBeginVariable(0);
+        }
+        variable.setNodeId(nodeId.substring(0, nodeId.length() - 1));
+
         processVariableMapper.update(variable, new UpdateWrapper<ProcessVariable>().eq("id",variable.getId()));
         return ReturnConstants.SUCCESS;
     }
@@ -327,6 +343,7 @@ public class ProcessServiceImpl implements ProcessService {
                 else{
                     map.put("name",task.getName());
                 }
+                map.put("id",task.getId() + "1");
             }
             else{
                 if(StringUtils.isNullOrEmpty(task.getName())){
@@ -335,8 +352,8 @@ public class ProcessServiceImpl implements ProcessService {
                 else{
                     map.put("name",task.getName());
                 }
+                map.put("id",task.getId() + "0");
             }
-            map.put("id",task.getId());
             res.add(map);
         }
         return res;

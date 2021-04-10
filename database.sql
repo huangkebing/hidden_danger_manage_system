@@ -98,9 +98,14 @@ create table `hdms_problem` (
 create table `hdms_process_variable` (
      `id` int unsigned not null auto_increment comment 'id',
      `node_id` varchar(128) not null comment '流程节点id',
+     `node_name` varchar(100) not null comment '流程节点名',
      `process_id` varchar(64) not null comment '流程定义id',
      `name` varchar(64) default '' not null comment '变量名',
      `type` int unsigned not null default 0 comment '变量类型，1=二元型，2=数值',
+     `title` varchar(200) not null comment '流程变量提示文字',
+     `tip0` varchar(200) null comment '二元型 value=0提示文字',
+     `tip1` varchar(200) null comment '二元型value=1提示文字',
+     `begin_variable` int default 0 not null comment '是否开始事件需要的变量，0=不是 1=是',
      `create` timestamp not null comment '创建时间',
      `modify` timestamp not null comment '修改时间',
      primary key (`id`)

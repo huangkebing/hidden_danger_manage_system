@@ -36,6 +36,9 @@ public class ProcessVariable {
 
     private String tip1;
 
+    @TableField("begin_variable")
+    private Integer beginVariable;
+
     @TableField(value = "`create`", fill = FieldFill.INSERT)
     private Date create;
 

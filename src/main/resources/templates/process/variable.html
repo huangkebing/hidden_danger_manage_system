@@ -265,7 +265,7 @@
             if (obj.event === 'edit') {
                 flag = 1;
                 if(data.type == 1){
-                    $("#taskTwo").val(data.nodeId);
+                    $("#taskTwo").val(data.nodeId + data.beginVariable);
                     $("#name").val(data.name);
                     $("#title").val(data.title);
                     $("#tip0").val(data.tip0);
@@ -282,7 +282,7 @@
                     });
                 }
                 else if(data.type == 2){
-                    $("#taskNormal").val(data.nodeId);
+                    $("#taskNormal").val(data.nodeId + data.beginVariable);
                     $("#nameNormal").val(data.name);
                     $("#titleNormal").val(data.title);
                     form.render();
