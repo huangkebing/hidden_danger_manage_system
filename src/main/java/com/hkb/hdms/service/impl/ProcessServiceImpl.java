@@ -1,20 +1,22 @@
 package com.hkb.hdms.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hkb.hdms.base.Constants;
 import com.hkb.hdms.base.R;
 import com.hkb.hdms.base.ReturnConstants;
 import com.hkb.hdms.mapper.ProcessNodeRoleMapper;
+import com.hkb.hdms.mapper.ProcessVariableMapper;
 import com.hkb.hdms.model.pojo.ProcessNodeRole;
+import com.hkb.hdms.model.pojo.ProcessVariable;
 import com.hkb.hdms.service.ProcessService;
 import com.hkb.hdms.utils.ProcessUtil;
 import com.hkb.hdms.utils.UUIDUtil;
 import com.mysql.cj.util.StringUtils;
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.bpmn.model.FlowElement;
-import org.activiti.bpmn.model.SequenceFlow;
+import org.activiti.bpmn.model.StartEvent;
 import org.activiti.bpmn.model.UserTask;
 import org.activiti.engine.RepositoryService;
 import org.activiti.engine.repository.Deployment;
@@ -25,8 +27,6 @@ import org.activiti.image.impl.DefaultProcessDiagramGenerator;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.expression.spel.standard.SpelExpression;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -49,13 +49,16 @@ public class ProcessServiceImpl implements ProcessService {
 
     private final ProcessNodeRoleMapper processNodeRoleMapper;
 
+    private final ProcessVariableMapper processVariableMapper;
+
     private final ProcessUtil processUtil;
 
     @Autowired
-    public ProcessServiceImpl(RepositoryService repositoryService, ProcessNodeRoleMapper processNodeRoleMapper, ProcessUtil processUtil) {
+    public ProcessServiceImpl(RepositoryService repositoryService, ProcessNodeRoleMapper processNodeRoleMapper, ProcessUtil processUtil, ProcessVariableMapper processVariableMapper) {
         this.repositoryService = repositoryService;
         this.processNodeRoleMapper = processNodeRoleMapper;
         this.processUtil = processUtil;
+        this.processVariableMapper = processVariableMapper;
     }
 
     @Override
@@ -95,7 +98,7 @@ public class ProcessServiceImpl implements ProcessService {
                 .deploy();
 
         //流程解析
-        processNodeWithRole(deployment);
+        processUtil.processNodeWithRole(deployment);
         return ReturnConstants.SUCCESS;
     }
 
@@ -126,7 +129,7 @@ public class ProcessServiceImpl implements ProcessService {
             return ReturnConstants.FAILURE;
         }
         //流程解析
-        processNodeWithRole(deployment);
+        processUtil.processNodeWithRole(deployment);
         return ReturnConstants.SUCCESS;
     }
 
@@ -220,15 +223,9 @@ public class ProcessServiceImpl implements ProcessService {
         List<ProcessDefinition> definitions = repositoryService.createProcessDefinitionQuery().deploymentId(deploymentId).list();
 
         for (ProcessDefinition definition : definitions) {
-            BpmnModel bpmnModel = repositoryService.getBpmnModel(definition.getId());
-            if(bpmnModel != null) {
-                Collection<FlowElement> flowElements = bpmnModel.getMainProcess().getFlowElements();
-                List<String> userTasks = flowElements.stream()
-                        .filter(flowElement -> flowElement.getClass().equals(UserTask.class))
-                        .map(FlowElement::getId)
-                        .collect(Collectors.toList());
-                processNodeRoleMapper.delete(new QueryWrapper<ProcessNodeRole>().in("node_id",userTasks));
-            }
+            //同时删除流程角色和流程变量信息
+            processNodeRoleMapper.delete(new QueryWrapper<ProcessNodeRole>().eq("process_id",definition.getId()));
+            processVariableMapper.delete(new QueryWrapper<ProcessVariable>().eq("process_id",definition.getId()));
         }
         repositoryService.deleteDeployment(deploymentId, true);
         return ReturnConstants.SUCCESS;
@@ -254,28 +251,6 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
-    public void processNodeWithRole(Deployment deployment) {
-        List<ProcessDefinition> definitions = repositoryService.createProcessDefinitionQuery().deploymentId(deployment.getId()).list();
-
-        for (ProcessDefinition definition : definitions) {
-
-            BpmnModel bpmnModel = repositoryService.getBpmnModel(definition.getId());
-            if(bpmnModel != null) {
-                Collection<FlowElement> flowElements = bpmnModel.getMainProcess().getFlowElements();
-                List<FlowElement> userTasks = flowElements.stream().filter(flowElement -> flowElement.getClass().equals(UserTask.class)).collect(Collectors.toList());
-                for (FlowElement userTask : userTasks) {
-                    ProcessNodeRole processNodeRole = new ProcessNodeRole();
-                    processNodeRole.setRoleId(0L);
-                    processNodeRole.setNodeId(userTask.getId());
-                    processNodeRole.setName(userTask.getName());
-                    processNodeRole.setProcessId(definition.getId());
-                    processNodeRoleMapper.insert(processNodeRole);
-                }
-            }
-        }
-    }
-
-    @Override
     public Map<String, Object> queryProcessNode(String processId) {
         Map<String, Object> map = new HashMap<>();
         map.put("code", 0);
@@ -298,35 +273,73 @@ public class ProcessServiceImpl implements ProcessService {
     }
 
     @Override
-    public void test() {
-        String id = "6b3ae979-9923-11eb-8e64-9822ef207876";
+    public Map<String, Object> getVariable(String nodeId, String processId, int page, int limit) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("code", 0);
+        map.put("msg", "");
 
-        List<ProcessDefinition> definitions = repositoryService.createProcessDefinitionQuery().deploymentId(id).list();
-
-        for (ProcessDefinition definition : definitions) {
-            BpmnModel bpmnModel = repositoryService.getBpmnModel(definition.getId());
-            if(bpmnModel != null) {
-                Collection<FlowElement> flowElements = bpmnModel.getMainProcess().getFlowElements();
-                for (FlowElement flowElement : flowElements) {
-                    if(flowElement instanceof SequenceFlow){
-                        SequenceFlow flowElement1 = (SequenceFlow) flowElement;
-                        SpelExpressionParser parser = new SpelExpressionParser();
-
-                        SpelExpression expression = parser.parseRaw(flowElement1.getConditionExpression());
-
-                        System.out.println(flowElement1.getConditionExpression());
-                    }
-                    System.out.println(flowElement.getId());
-                    System.out.println(flowElement.getName());
-                    System.out.println(flowElement.getClass());
-                    System.out.println(JSON.toJSONString(flowElement.getExtensionElements()));
-                }
-            }
+        if (page < 1) {
+            page = 1;
         }
 
+        Page<ProcessVariable> pageParam = new Page<>(page, limit);
 
+        if(StringUtils.isNullOrEmpty(nodeId)){
+            processVariableMapper.selectPage(pageParam, new QueryWrapper<ProcessVariable>().eq("process_id",processId));
+        } else{
+            processVariableMapper.selectPage(pageParam, new QueryWrapper<ProcessVariable>().eq("process_id",processId).eq("node_id",nodeId));
+        }
 
+        map.put("data",pageParam.getRecords());
+        map.put("count", pageParam.getTotal());
+        return map;
     }
 
+    @Override
+    public R addVariable(ProcessVariable variable) {
+        processVariableMapper.insert(variable);
+        return ReturnConstants.SUCCESS;
+    }
+
+    @Override
+    public R updateVariable(ProcessVariable variable) {
+        processVariableMapper.update(variable, new UpdateWrapper<ProcessVariable>().eq("id",variable.getId()));
+        return ReturnConstants.SUCCESS;
+    }
+
+    @Override
+    public R deleteVariable(Long variableId) {
+        processVariableMapper.deleteById(variableId);
+        return ReturnConstants.SUCCESS;
+    }
+
+    @Override
+    public List<Map<String, Object>> getTaskOption(String processId) {
+        List<Map<String, Object>> res = new ArrayList<>();
+        Collection<FlowElement> elements = processUtil.getAllFlowElements(processId);
+        List<FlowElement> tasks = elements.stream().filter(flowElement -> flowElement.getClass().equals(UserTask.class) || flowElement.getClass().equals(StartEvent.class)).collect(Collectors.toList());
+        for (FlowElement task : tasks) {
+            Map<String, Object> map = new HashMap<>();
+            if(task instanceof StartEvent){
+                if(StringUtils.isNullOrEmpty(task.getName())){
+                    map.put("name","未命名开始事件");
+                }
+                else{
+                    map.put("name",task.getName());
+                }
+            }
+            else{
+                if(StringUtils.isNullOrEmpty(task.getName())){
+                    map.put("name","未命名用户任务");
+                }
+                else{
+                    map.put("name",task.getName());
+                }
+            }
+            map.put("id",task.getId());
+            res.add(map);
+        }
+        return res;
+    }
 
 }

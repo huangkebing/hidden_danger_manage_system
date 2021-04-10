@@ -1,6 +1,7 @@
 package com.hkb.hdms.controller;
 
 import com.hkb.hdms.model.pojo.ProcessNodeRole;
+import com.hkb.hdms.model.pojo.ProcessVariable;
 import com.hkb.hdms.service.ProcessService;
 import com.mysql.cj.util.StringUtils;
 import org.apache.commons.io.IOUtils;
@@ -45,6 +46,19 @@ public class ProcessController {
         processName += " 流程用户任务节点表";
         model.addObject("processName", processName);
         model.setViewName("process/node");
+        return model;
+    }
+
+    @RequestMapping("/variable.html/{processId}/{processName}")
+    public Object variablePage(@PathVariable String processId, @PathVariable String processName){
+        ModelAndView model = new ModelAndView();
+        model.addObject("processId",processId);
+        if(StringUtils.isNullOrEmpty(processName) || "undefined".equals(processName)){
+            processName = "未命名";
+        }
+        processName += " 流程变量表";
+        model.addObject("processName", processName);
+        model.setViewName("process/variable");
         return model;
     }
 
@@ -170,5 +184,36 @@ public class ProcessController {
     @ResponseBody
     public Object updateNodeRole(ProcessNodeRole processNodeRole){
         return processService.updateNodeRole(processNodeRole);
+    }
+
+    @GetMapping("/getVariable")
+    @ResponseBody
+    public Object getVariable(@RequestParam(required = false) String nodeId,
+                              String processId, int page, int limit){
+        return processService.getVariable(nodeId, processId, page, limit);
+    }
+
+    @PostMapping("/addVariable")
+    @ResponseBody
+    public Object addVariable(ProcessVariable variable){
+        return processService.addVariable(variable);
+    }
+
+    @PostMapping("/updateVariable")
+    @ResponseBody
+    public Object updateVariable(ProcessVariable variable){
+        return processService.updateVariable(variable);
+    }
+
+    @PostMapping("/deleteVariable")
+    @ResponseBody
+    public Object deleteVariable(Long variableId){
+        return processService.deleteVariable(variableId);
+    }
+
+    @GetMapping("/getTaskOption/{processId}")
+    @ResponseBody
+    public Object getTaskOption(@PathVariable String processId){
+        return processService.getTaskOption(processId);
     }
 }

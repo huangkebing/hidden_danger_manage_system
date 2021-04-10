@@ -2,6 +2,7 @@ package com.hkb.hdms.service;
 
 import com.hkb.hdms.base.R;
 import com.hkb.hdms.model.pojo.ProcessNodeRole;
+import com.hkb.hdms.model.pojo.ProcessVariable;
 import org.activiti.engine.repository.Deployment;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -37,11 +38,17 @@ public interface ProcessService {
 
     R suspendProcess(String processId);
 
-    void processNodeWithRole(Deployment deployment);
-
     Map<String, Object> queryProcessNode(String processId);
 
     R updateNodeRole(ProcessNodeRole processNodeRole);
 
-    void test();
+    Map<String, Object> getVariable(String nodeId, String processId, int page, int limit);
+
+    R addVariable(ProcessVariable variable);
+
+    R updateVariable(ProcessVariable variable);
+
+    R deleteVariable(Long variableId);
+
+    List<Map<String, Object>> getTaskOption(String processId);
 }

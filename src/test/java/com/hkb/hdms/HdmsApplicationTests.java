@@ -23,7 +23,7 @@ class HdmsApplicationTests {
 
     @Test
     void contextLoads() {
-        processService.test();
+
     }
 
     @Test

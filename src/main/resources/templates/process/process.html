@@ -65,6 +65,7 @@
         </script>
 
         <script type="text/html" id="processTableBar">
+            <a class="layui-btn layui-btn-xs data-count-edit" lay-event="variable">变量管理</a>
             <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="node">节点管理</a>
             {{#  if(d.suspended === true){ }}
             <a class="layui-btn layui-btn-xs" style="background-color:#19CAAD;" lay-event="active">激活</a>
@@ -131,7 +132,7 @@
                 {field: 'version', title: '流程版本', width: 100 ,align: 'center'},
                 {field: 'deploymentID', title: '部署id', width: 300},
                 {title: '模型查看', minWidth: 150, toolbar: '#fileBar', align: "center"},
-                {title: '操作', width: 240, toolbar: '#processTableBar', align: "center", fixed: 'right'}
+                {title: '操作', width: 320, toolbar: '#processTableBar', align: "center", fixed: 'right'}
             ]],
             limits: [10, 15, 20, 25, 50, 100],
             limit: 15,
@@ -341,6 +342,11 @@
                 miniTab.openNewTabByIframe({
                     href: basePath + "/process/node.html/" + data.processDefinitionID + "/" + data.name,
                     title: "节点管理",
+                });
+            }  else if (obj.event === 'variable'){
+                miniTab.openNewTabByIframe({
+                    href: basePath + "/process/variable.html/" + data.processDefinitionID + "/" + data.name,
+                    title: "变量管理",
                 });
             }
             return false;

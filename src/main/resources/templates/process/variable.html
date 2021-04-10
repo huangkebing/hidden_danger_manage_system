@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<!--suppress ALL-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" th:href="@{/layuimini/lib/layui-v2.5.5/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <fieldset class="table-search-fieldset">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" action="">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">任务节点</label>
+                            <div class="layui-input-inline">
+                                <select class="layui-form-select" name="task" id="taskSearch" lay-verify="" lay-search>
+                                    <option value="" selected>请选择(可搜索)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+
+        <script type="text/html" id="toolbar">
+            <div class="layui-btn-container">
+                <div class="layui-btn-container">
+                    <span class="layui-card-header" style="font-size: 16px;font-weight: bold;"><i class="layui-icon layui-icon-form"></i><span th:text='${processName}'></span></span>
+                </div>
+                <br>
+                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add1"> 添加二元变量 </button>
+                <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="add2"> 添加连续变量 </button>
+            </div>
+        </script>
+
+        <table class="layui-hide" id="variableTable" lay-filter="currentTableFilter"></table>
+
+        <script type="text/html" id="variableTableBar">
+            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">修改</a>
+            <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
+        </script>
+
+        <form id="twoForm" class="layui-form" style="display: none">
+            <div class="layui-form-item" style="margin-top: 20px">
+                <label class="layui-form-label">任务节点<span style="color: red"> *</span></label>
+                <div class="layui-input-block" style="width: 300px;">
+                    <select class="layui-form-select" name="taskTwo" id="taskTwo" lay-verify="required" lay-reqtext="请选择任务节点" lay-search>
+                        <option value="" selected>请选择(可搜索)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">变量名称<span style="color: red"> *</span></label>
+                <div class="layui-input-block" style="width: 300px;">
+                    <input type="text" name="name" lay-verify="required" lay-reqtext="请输入变量名称" id="name" placeholder="变量名称" autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">提示文字<span style="color: red"> *</span></label>
+                <div class="layui-input-block" style="width: 300px;">
+                    <input type="text" name="title" lay-verify="required" lay-reqtext="请输入提示文字" id="title" placeholder="提示文字" autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">true提示<span style="color: red"> *</span></label>
+                <div class="layui-input-block" style="width: 300px;">
+                    <input type="text" name="tip1" lay-verify="required" lay-reqtext="请输入true提示" id="tip1" placeholder="true值的提示文字" autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">false提示<span style="color: red"> *</span></label>
+                <div class="layui-input-block" style="width: 300px;">
+                    <input type="text" name="tip0" lay-verify="required" lay-reqtext="请输入false提示" id="tip0" placeholder="false值的提示文字" autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item" style="margin-left: 70px">
+                <div class="layui-input-block">
+                    <button class="layui-btn" id="submit" style="padding: 0 20px" lay-submit="" lay-filter="two">提交
+                    </button>
+                    <button type="reset" id="reset" style="visibility: hidden" class="layui-btn">重置</button>
+                </div>
+            </div>
+        </form>
+
+        <form id="normalForm" class="layui-form" style="display: none">
+            <div class="layui-form-item" style="margin-top: 20px">
+                <label class="layui-form-label">任务节点<span style="color: red"> *</span></label>
+                <div class="layui-input-block" style="width: 300px;">
+                    <select class="layui-form-select" name="taskNormal" lay-verify="required" lay-reqtext="请选择任务节点" id="taskNormal" lay-search>
+                        <option value="" selected>请选择(可搜索)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">变量名称<span style="color: red"> *</span></label>
+                <div class="layui-input-block" style="width: 300px;">
+                    <input type="text" name="name" lay-verify="required" lay-reqtext="请输入变量名称" id="nameNormal" placeholder="变量名称" autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">提示文字<span style="color: red"> *</span></label>
+                <div class="layui-input-block" style="width: 300px;">
+                    <input type="text" name="title" lay-verify="required" lay-reqtext="请输入提示文字" id="titleNormal" placeholder="提示文字" autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item" style="margin-left: 70px">
+                <div class="layui-input-block">
+                    <button class="layui-btn" id="submit" style="padding: 0 20px" lay-submit="" lay-filter="normal">提交
+                    </button>
+                    <button type="reset" id="resetNormal" style="visibility: hidden" class="layui-btn">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script th:src="@{/layuimini/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
+<script th:src="@{/layuimini/js/lay-config.js}" charset="utf-8"></script>
+<script th:src="@{/js/url.js}"></script>
+<script th:inline="javascript">
+    var processId = [[${processId}]]
+</script>
+<script th:inline="none">
+    layui.use(['form', 'table'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table;
+
+        var flag = 0;
+
+        var currObj;
+
+        $.ajax({
+            url: basePath + "/process/getTaskOption/" + processId,
+            type: "GET",
+            success: function(result){
+                for (var index = 0;index < result.length;index++){
+                    var dataTmp = result[index];
+                    $('#taskSearch').append(new Option(dataTmp.name,dataTmp.id));//往下拉菜单里添加元素
+                    $('#taskTwo').append(new Option(dataTmp.name,dataTmp.id));//往下拉菜单里添加元素
+                    $('#taskNormal').append(new Option(dataTmp.name,dataTmp.id));//往下拉菜单里添加元素
+                }
+                form.render();
+            }
+        });
+
+        var variableTable = table.render({
+            elem: '#variableTable',
+            url: basePath + '/process/getVariable?processId=' + processId,
+            toolbar: '#toolbar',
+            defaultToolbar: ['filter', 'exports'],
+            cols: [[
+                {type: "numbers", width: 50, fixed: 'left'},
+                {field: 'nodeName', width: 200, title: '节点名称'},
+                {field: 'name', width: 120, title: '流程变量'},
+                {field: 'type', width: 120, title: '变量类型', templet: function (d) {
+                        if (d.type == 1) {
+                            return '<span class="layui-badge" style="background-color:#19CAAD;">二元型变量</span>';
+                        } else if(d.type == 2) {
+                            return '<span class="layui-badge" style="background-color: #ECAD9E">连续型变量</span>';
+                        }
+                    }
+                },
+                {field: 'title', width: 240, title: '提示文字'},
+                {field: 'tip1', width: 160, title: '二元型true提示'},
+                {field: 'tip0', width: 160, title: '二元型false提示'},
+                {field: 'create', title: '创建时间', width: 160,sort: true, templet:
+                        "<div>{{layui.util.toDateString(d.create, 'yyyy-MM-dd HH:mm:ss')}}</div>"
+                },
+                {field: 'modify', title: '修改时间',width: 160,sort: true, templet:
+                        "<div>{{layui.util.toDateString(d.modify, 'yyyy-MM-dd HH:mm:ss')}}</div>"
+                },
+                {title: '操作', minWidth: 150, toolbar: '#variableTableBar', align: "center", fixed : 'right'}
+            ]],
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 15,
+            page: true,
+            done: function (rest, curr) {
+                if (curr > 1 && rest.data.length === 0) {
+                    curr = curr - 1;
+                    table.reload('variableTable', {
+                        page: {
+                            curr: curr
+                        }
+                    }, 'data');
+                }
+            }
+        });
+
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            var result = JSON.stringify(data.field);
+
+            //执行搜索重载
+            table.reload('variableTable', {
+                page: {
+                    curr: 1
+                },
+                where: {
+                    nodeId : data.field.task
+                }
+            }, 'data');
+
+            return false;
+        });
+
+        /**
+         * toolbar监听事件
+         */
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            if (obj.event === 'add1') {  // 监听添加操作
+                flag = 0;
+                var index = layer.open({
+                    title: '添加二元型变量',
+                    type: 1,
+                    area: ['450px', '400px'],
+                    content: $("#twoForm"),
+                    cancel: function(layero,index){
+                        $("#reset").click();
+                    }
+                });
+            } else if (obj.event === 'add2') {
+                flag = 0;
+                var index = layer.open({
+                    title: '添加连续型变量',
+                    type: 1,
+                    area: ['450px', '280px'],
+                    content: $("#normalForm"),
+                    cancel: function(layero,index){
+                        $("#resetNormal").click();
+                    }
+                });
+            }
+        });
+
+        table.on('tool(currentTableFilter)', function (obj) {
+            var data = obj.data;
+            currObj = obj;
+            if (obj.event === 'edit') {
+                flag = 1;
+                if(data.type == 1){
+                    $("#taskTwo").val(data.nodeId);
+                    $("#name").val(data.name);
+                    $("#title").val(data.title);
+                    $("#tip0").val(data.tip0);
+                    $("#tip1").val(data.tip1);
+                    form.render();
+                    var index = layer.open({
+                        title: '修改流程变量',
+                        type: 1,
+                        area: ['450px', '400px'],
+                        content: $("#twoForm"),
+                        cancel: function(layero,index){
+                            $("#reset").click();
+                        }
+                    });
+                }
+                else if(data.type == 2){
+                    $("#taskNormal").val(data.nodeId);
+                    $("#nameNormal").val(data.name);
+                    $("#titleNormal").val(data.title);
+                    form.render();
+                    var index = layer.open({
+                        title: '修改流程变量',
+                        type: 1,
+                        area: ['450px', '280px'],
+                        content: $("#normalForm"),
+                        cancel: function(layero,index){
+                            $("#resetNormal").click();
+                        }
+                    });
+                }
+                return false;
+            } else if (obj.event === 'delete') {
+                layer.confirm('你确定要删除该流程变量吗?', {icon: 3, title: '提示'}, function (index) {
+                    $.ajax({
+                        type: "POST",
+                        url: basePath + "/process/deleteVariable",
+                        data: {
+                            variableId : data.id
+                        },
+                        success: function (result) {
+                            if(result.code === 0){
+                                layer.msg("删除流程变量成功！",{icon: 1});
+                                variableTable.reload();
+                            }
+                            else{
+                                layer.msg(result.message,{icon: 2});
+                            }
+                        },
+                        error: function () {
+                            layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                        }
+                    });
+                    layer.close(index);
+                });
+            }
+        });
+
+        //表单提交
+        form.on('submit(two)', function (data) {
+            //新增提交
+            if(flag === 0){
+                $.ajax({
+                    type: "POST",
+                    url: basePath + "/process/addVariable",
+                    data: {
+                        nodeId : data.field.taskTwo,
+                        nodeName : $("#taskTwo").find("option:selected").text(),
+                        processId : processId,
+                        name : data.field.name,
+                        type : 1,
+                        title : data.field.title,
+                        tip1 : data.field.tip1,
+                        tip0 : data.field.tip0
+                    },
+                    success: function (result) {
+                        if(result.code === 0){
+                            layer.closeAll();
+                            $("#reset").click();
+                            layer.msg("新增流程变量成功！",{icon: 1});
+                            variableTable.reload();
+                        }
+                        else{
+                            layer.msg(result.message,{icon: 2});
+                        }
+                    },
+                    error: function () {
+                        layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                    }
+                });
+            }
+            //修改提交
+            else if(flag === 1){
+                $.ajax({
+                    type: "POST",
+                    url: basePath + "/process/updateVariable",
+                    data: {
+                        id : currObj.data.id,
+                        nodeId : data.field.taskTwo,
+                        nodeName : $("#taskTwo").find("option:selected").text(),
+                        processId : processId,
+                        name : data.field.name,
+                        type : 1,
+                        title : data.field.title,
+                        tip1 : data.field.tip1,
+                        tip0 : data.field.tip0
+                    },
+                    success: function (result) {
+                        if(result.code === 0){
+                            layer.closeAll();
+                            $("#reset").click();
+                            layer.msg("修改流程变量成功！",{icon: 1});
+                            variableTable.reload();
+                        }
+                        else{
+                            layer.msg(result.message,{icon: 2});
+                        }
+                    },
+                    error: function () {
+                        layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                    }
+                });
+            }
+            return false;
+        });
+
+        //表单提交
+        form.on('submit(normal)', function (data) {
+            //新增提交
+            if(flag === 0){
+                $.ajax({
+                    type: "POST",
+                    url: basePath + "/process/addVariable",
+                    data: {
+                        nodeId : data.field.taskNormal,
+                        nodeName : $("#taskNormal").find("option:selected").text(),
+                        processId : processId,
+                        name : data.field.name,
+                        type : 2,
+                        title : data.field.title
+                    },
+                    success: function (result) {
+                        if(result.code === 0){
+                            layer.closeAll();
+                            $("#resetNormal").click();
+                            layer.msg("新增流程变量成功！",{icon: 1});
+                            variableTable.reload();
+                        }
+                        else{
+                            layer.msg(result.message,{icon: 2});
+                        }
+                    },
+                    error: function () {
+                        layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                    }
+                });
+            }
+            //修改提交
+            else if(flag === 1){
+                $.ajax({
+                    type: "POST",
+                    url: basePath + "/process/updateVariable",
+                    data: {
+                        id : currObj.data.id,
+                        nodeId : data.field.taskNormal,
+                        nodeName : $("#taskNormal").find("option:selected").text(),
+                        processId : processId,
+                        name : data.field.name,
+                        type : 2,
+                        title : data.field.title
+                    },
+                    success: function (result) {
+                        if(result.code === 0){
+                            layer.closeAll();
+                            $("#resetNormal").click();
+                            layer.msg("修改流程变量成功！",{icon: 1});
+                            variableTable.reload();
+                        }
+                        else{
+                            layer.msg(result.message,{icon: 2});
+                        }
+                    },
+                    error: function () {
+                        layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                    }
+                });
+            }
+            return false;
+        });
+    });
+</script>
+
+</body>
+</html>
