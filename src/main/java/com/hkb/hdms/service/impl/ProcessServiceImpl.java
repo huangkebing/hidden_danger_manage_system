@@ -95,7 +95,7 @@ public class ProcessServiceImpl implements ProcessService {
                 .deploy();
 
         //流程解析
-        processUtil.processAnalysis(deployment);
+        processNodeWithRole(deployment);
         return ReturnConstants.SUCCESS;
     }
 
@@ -126,7 +126,7 @@ public class ProcessServiceImpl implements ProcessService {
             return ReturnConstants.FAILURE;
         }
         //流程解析
-        processUtil.processAnalysis(deployment);
+        processNodeWithRole(deployment);
         return ReturnConstants.SUCCESS;
     }
 
