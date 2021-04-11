@@ -5,16 +5,21 @@ import com.hkb.hdms.base.Constants;
 import com.hkb.hdms.mapper.ProcessNodeRoleMapper;
 import com.hkb.hdms.mapper.RoleMapper;
 import com.hkb.hdms.mapper.UserMapper;
+import com.hkb.hdms.model.dto.InstanceDto;
+import com.hkb.hdms.model.pojo.Problem;
 import com.hkb.hdms.model.pojo.ProcessNodeRole;
 import com.hkb.hdms.model.pojo.User;
 import com.hkb.hdms.model.pojo.UserRole;
 import org.activiti.engine.TaskService;
+import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -75,5 +80,38 @@ public class TaskHandlerUtil {
                 }
             }
         }
+    }
+
+    public List<Problem> todoTaskSort(List<Problem> resources, List<String> resourceIds) {
+        List<Problem> result = new ArrayList<>();
+        if(!CollectionUtils.isEmpty(resources)){
+            //初始化result,为了排序
+            for(int i= 0; i < resources.size() ;i++){
+                result.add(new Problem());
+            }
+            for(Problem resource:resources){
+                String id = resource.getInstanceId();
+                result.set(resourceIds.indexOf(id), resource);
+            }
+        }
+        return result;
+    }
+
+    public List<Problem> historyTaskSort(List<Problem> resources, List<String> resourceIds, List<InstanceDto> instances) {
+        List<Problem> result = new ArrayList<>();
+        if(!CollectionUtils.isEmpty(resources)){
+            //初始化result,为了排序
+            for(int i= 0; i < resources.size() ;i++){
+                result.add(new Problem());
+            }
+            for(Problem resource:resources){
+                String id = resource.getInstanceId();
+                int index = resourceIds.indexOf(id);
+                InstanceDto processInstance = instances.get(index);
+                resource.setCreate(processInstance.getSolveTime());
+                result.set(index, resource);
+            }
+        }
+        return result;
     }
 }

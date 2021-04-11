@@ -39,6 +39,11 @@ public class TaskController {
         return model;
     }
 
+    @RequestMapping("/historyTask.html")
+    public Object historyTask(){
+        return "task/historyTask";
+    }
+
     @PostMapping("/createTask")
     @ResponseBody
     public Object createTask(Problem problem, @RequestParam Map<String, Object> processVariables){
@@ -66,7 +71,7 @@ public class TaskController {
     @GetMapping("/historyTask")
     @ResponseBody
     public Object historyTask(int page, int limit){
-        return null;
+        return taskService.getHistoryTask(page, limit);
     }
 
     @GetMapping("/getBeginVariable/{typeId}")

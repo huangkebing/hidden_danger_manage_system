@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hkb.hdms.mapper.TaskMapper">
+    <select id="getTodoInstances" resultType="String">
+        select distinct RES.PROC_INST_ID_
+        from ACT_RU_TASK RES inner join ACT_RU_IDENTITYLINK I on I.TASK_ID_ = RES.ID_
+        WHERE RES.ASSIGNEE_ is null and I.TYPE_ = 'candidate' and ( I.USER_ID_ = #{email} or I.GROUP_ID_ IN
+        <foreach collection="groups" item="group" open="(" close=")" separator=",">
+            #{group}
+        </foreach>
+        ) GROUP BY RES.PROC_INST_ID_ ORDER BY MAX(RES.CREATE_TIME_) DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <select id="getTodoCount" resultType="Long">
+        select COUNT(distinct RES.PROC_INST_ID_)
+        from ACT_RU_TASK RES inner join ACT_RU_IDENTITYLINK I on I.TASK_ID_ = RES.ID_
+        WHERE RES.ASSIGNEE_ is null and I.TYPE_ = 'candidate' and ( I.USER_ID_ = #{email} or I.GROUP_ID_ IN
+        <foreach collection="groups" item="group" open="(" close=")" separator=",">
+            #{group}
+        </foreach>
+        )
+    </select>
+
+    <resultMap id="selectMap" type="com.hkb.hdms.model.dto.InstanceDto">
+        <result column="PROC_INST_ID_" property="instanceId"/>
+        <result column="END_TIME_" property="solveTime"/>
+    </resultMap>
+
+    <select id="getHistoryInstances" resultMap="selectMap">
+        select distinct RES.PROC_INST_ID_, HPI.END_TIME_
+        from ACT_HI_TASKINST RES inner join ACT_HI_IDENTITYLINK HI on HI.TASK_ID_ = RES.ID_ inner join ACT_HI_PROCINST HPI ON RES.PROC_INST_ID_ = HPI.ID_
+        WHERE HPI.END_TIME_ is not null and RES.ASSIGNEE_ is null and HI.TYPE_ = 'candidate' and ( HI.USER_ID_ = #{email} or HI.GROUP_ID_ IN
+        <foreach collection="groups" item="group" open="(" close=")" separator=",">
+            #{group}
+        </foreach>
+        ) ORDER BY HPI.END_TIME_ DESC
+    </select>
+
+    <select id="getHistoryCount" resultType="Long">
+        select COUNT(distinct RES.PROC_INST_ID_)
+        from ACT_HI_TASKINST RES inner join ACT_HI_IDENTITYLINK HI on HI.TASK_ID_ = RES.ID_ inner join ACT_HI_PROCINST HPI ON RES.PROC_INST_ID_ = HPI.ID_
+        WHERE HPI.END_TIME_ is not null and RES.ASSIGNEE_ is null and HI.TYPE_ = 'candidate' and ( HI.USER_ID_ = #{email} or HI.GROUP_ID_ IN
+        <foreach collection="groups" item="group" open="(" close=")" separator=",">
+            #{group}
+        </foreach>
+        )
+    </select>
+</mapper>

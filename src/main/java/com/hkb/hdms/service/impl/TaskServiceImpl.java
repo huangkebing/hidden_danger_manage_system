@@ -7,6 +7,8 @@ import com.hkb.hdms.base.R;
 import com.hkb.hdms.base.ReturnConstants;
 import com.hkb.hdms.mapper.ProblemMapper;
 import com.hkb.hdms.mapper.ProcessVariableMapper;
+import com.hkb.hdms.mapper.TaskMapper;
+import com.hkb.hdms.model.dto.InstanceDto;
 import com.hkb.hdms.model.pojo.Problem;
 import com.hkb.hdms.model.pojo.ProcessVariable;
 import com.hkb.hdms.model.pojo.Type;
@@ -14,21 +16,22 @@ import com.hkb.hdms.model.pojo.User;
 import com.hkb.hdms.service.TaskService;
 import com.hkb.hdms.service.TypeService;
 import com.hkb.hdms.utils.TaskHandlerUtil;
+import org.activiti.api.runtime.shared.identity.UserGroupManager;
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.runtime.ProcessInstance;
-import org.activiti.engine.runtime.ProcessInstanceQuery;
 import org.activiti.engine.task.Task;
-import org.activiti.engine.task.TaskInfo;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpSession;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -50,6 +53,10 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
 
     private final ProcessVariableMapper processVariableMapper;
 
+    private final UserGroupManager userGroupManager;
+
+    private final TaskMapper taskMapper;
+
     private final HttpSession session;
 
     @Autowired
@@ -59,7 +66,9 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
                            org.activiti.engine.TaskService taskService,
                            HttpSession session,
                            HistoryService historyService,
-                           ProcessVariableMapper processVariableMapper) {
+                           ProcessVariableMapper processVariableMapper,
+                           UserGroupManager userGroupManager,
+                           TaskMapper taskMapper) {
         this.typeService = typeService;
         this.runtimeService = runtimeService;
         this.taskHandlerUtil = taskHandlerUtil;
@@ -67,6 +76,8 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         this.session = session;
         this.historyService = historyService;
         this.processVariableMapper = processVariableMapper;
+        this.userGroupManager = userGroupManager;
+        this.taskMapper = taskMapper;
     }
 
     @Override
@@ -110,19 +121,16 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
             page = 1;
         }
 
-        page = (page - 1) * limit;
+        int offset = (page - 1) * limit;
 
         User loginUser = (User) session.getAttribute(Constants.LOGIN_USER_KEY);
-        List<Task> tasks = taskService.createTaskQuery().taskCandidateUser(loginUser.getEmail()).listPage(page, limit);
+        List<String> groups = userGroupManager.getUserGroups(loginUser.getEmail());
 
-        List<Problem> problems = new ArrayList<>();
-        for (Task task : tasks) {
-            Problem problem = this.getOne(new QueryWrapper<Problem>().eq("instance_id", task.getProcessInstanceId()));
-            problems.add(problem);
-        }
-
+        List<String> instances = taskMapper.getTodoInstances(loginUser.getEmail(), groups, limit, offset);
+        List<Problem> problems = this.list(new QueryWrapper<Problem>().in("instance_id", instances));
+        problems = taskHandlerUtil.todoTaskSort(problems, instances);
         map.put("data", problems);
-        map.put("count", problems.size());
+        map.put("count", taskMapper.getTodoCount(loginUser.getEmail(), groups));
 
         return map;
     }
@@ -188,33 +196,29 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
     }
 
     @Override
-    public void test(){
-        List<HistoricTaskInstance> list = historyService.createHistoricTaskInstanceQuery()
-                .processFinished().taskCandidateUser("yuanchengwei3@163.com").list();
+    public Map<String, Object> getHistoryTask(int page, int limit) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("code", 0);
+        map.put("msg", "");
 
+        if (page < 1) {
+            page = 1;
+        }
 
-        List<HistoricProcessInstance> list2 = historyService.createNativeHistoricProcessInstanceQuery()
-                .sql("select distinct RES.PROC_INST_ID_, HPI.END_TIME_\n" +
-                        "from ACT_HI_TASKINST RES inner join ACT_HI_IDENTITYLINK HI\n" +
-                        "    on HI.TASK_ID_ = RES.ID_ inner join ACT_HI_PROCINST HPI\n" +
-                        "        ON RES.PROC_INST_ID_ = HPI.ID_\n" +
-                        "WHERE HPI.END_TIME_ is not null\n" +
-                        "  and RES.ASSIGNEE_ is null\n" +
-                        "  and HI.TYPE_ = 'candidate'\n" +
-                        "  and ( HI.USER_ID_ = 'yuanchengwei3@163.com' or HI.GROUP_ID_ IN ( '交通隐患' , '火灾隐患' ) )")
-                .list();
+        int offset = (page - 1) * limit;
 
-        List<HistoricTaskInstance> list1 = historyService.createNativeHistoricTaskInstanceQuery()
-                .sql("select distinct RES.PROC_INST_ID_\n" +
-                        "from ACT_HI_TASKINST RES inner join ACT_HI_IDENTITYLINK HI\n" +
-                        "    on HI.TASK_ID_ = RES.ID_ inner join ACT_HI_PROCINST HPI\n" +
-                        "        ON RES.PROC_INST_ID_ = HPI.ID_\n" +
-                        "WHERE HPI.END_TIME_ is not null\n" +
-                        "  and RES.ASSIGNEE_ is null\n" +
-                        "  and HI.TYPE_ = 'candidate'\n" +
-                        "  and ( HI.USER_ID_ = 'yuanchengwei3@163.com' or HI.GROUP_ID_ IN ( '交通隐患' , '火灾隐患' ) )").list();
+        User loginUser = (User) session.getAttribute(Constants.LOGIN_USER_KEY);
+        List<String> groups = userGroupManager.getUserGroups(loginUser.getEmail());
 
+        List<InstanceDto> historyInstances = taskMapper.getHistoryInstances(loginUser.getEmail(), groups, limit, offset);
 
-        System.out.println(list2.size());
+        List<String> instances = historyInstances.stream().map(InstanceDto::getInstanceId).collect(Collectors.toList());
+        List<Problem> problems = this.list(new QueryWrapper<Problem>().in("instance_id", instances));
+
+        problems = taskHandlerUtil.historyTaskSort(problems, instances, historyInstances);
+
+        map.put("data", problems);
+        map.put("count", taskMapper.getHistoryCount(loginUser.getEmail(), groups));
+        return map;
     }
 }
