@@ -80,14 +80,14 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         //给定流程变量
         Map<String, Object> variablesMap = new HashMap<>();
         for (ProcessVariable variable : variables) {
-            variablesMap.put(variable.getName(), processVariables.get(variable.getName()));
+            variablesMap.put(variable.getName(), processVariables.get("variables[" + variable.getName() + "]"));
         }
 
         ProcessInstance instance;
         try {
             //根据流程定义id发起流程实例
             instance = runtimeService.startProcessInstanceById(taskType.getProcessId(), variablesMap);
-            //绑定每个任务的操作人
+            //绑定任务的操作人
             taskHandlerUtil.setTaskHandler(instance, problem.getTypeId());
             problem.setInstanceId(instance.getId());
         } catch (Exception e) {
@@ -141,7 +141,7 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
             map.put("taskId", task.getId());
             map.put("taskName", task.getName());
             List<ProcessVariable> variables = processVariableMapper.selectList(new QueryWrapper<ProcessVariable>()
-                    .eq("process_id", task.getProcessInstanceId())
+                    .eq("process_id", task.getProcessDefinitionId())
                     .eq("node_id", task.getTaskDefinitionKey()));
             map.put("variables",variables);
             list.add(map);
@@ -158,12 +158,12 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
 
         List<ProcessVariable> variables = processVariableMapper.selectList(new QueryWrapper<ProcessVariable>()
                 .eq("node_id", task.getTaskDefinitionKey())
-                .eq("process_id", task.getProcessInstanceId()));
+                .eq("process_id", task.getProcessDefinitionId()));
 
         //给定流程变量
         Map<String, Object> variablesMap = new HashMap<>();
         for (ProcessVariable variable : variables) {
-            variablesMap.put(variable.getName(), processVariables.get(variable.getName()));
+            variablesMap.put(variable.getName(), processVariables.get("variables[" + variable.getName() + "]"));
         }
 
         //完成task

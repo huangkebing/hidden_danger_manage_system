@@ -64,7 +64,7 @@ public class TaskHandlerUtil {
                 //该角色是否参与问题分配，不参与直接全部查出来
                 if(userRole.getQuestion() == 0){
                     users = userMapper.selectList(new QueryWrapper<User>()
-                            .eq("role_id", roleId)
+                            .eq("role", roleId)
                             .eq("live",1));
                 }
                 else{

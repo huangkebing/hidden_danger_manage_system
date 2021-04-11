@@ -1,60 +1,126 @@
 <!DOCTYPE html>
 <!--suppress ALL-->
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+<link rel="stylesheet" th:href="@{/layuimini/lib/layui-v2.5.5/css/layui.css}" media="all">
+<link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
 <body>
     <div id="btnBar"></div>
+    <form id="operateTask" class="layui-form" style="display: none">
+        <div class="layui-form-item" id="variables"></div>
 
+        <div class="layui-form-item" style="margin-left: 70px">
+            <div class="layui-input-block">
+                <button class="layui-btn" id="submit" style="padding: 0 20px" lay-submit="" lay-filter="operate">提交
+                </button>
+                <button type="reset" id="reset" style="visibility: hidden" class="layui-btn">重置</button>
+            </div>
+        </div>
+    </form>
 
 <script th:src="@{/layuimini/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
 <script th:src="@{/layuimini/lib/jquery-3.4.1/jquery-3.4.1.min.js}" charset="utf-8"></script>
 <script th:src="@{/layuimini/js/lay-config.js}" charset="utf-8"></script>
 <script th:src="@{/js/url.js}"></script>
 <script th:inline="javascript">
-    function task() {
-        var target = $(event.target);
-        $.ajax({
-            type: "POST",
-            url: basePath + "/task/completeTask",
-            data: {
-                taskId : target.val()
-            },
-            success: function (result) {
-                if(result.code === 0){
-                    layer.msg("处理隐患成功！",{icon: 1});
-                    parent.layui.table.reload('currentTableId');
-                }
-                else{
-                    layer.msg(result.message,{icon: 2});
-                }
-            },
-            error: function () {
-                layer.msg('系统错误，请联系系统管理员',{icon: 2});
-            }
-        });
-    }
+    var initData;
+    var currTaskId;
+    var form;
+    var layerIndex;
 
     layui.use(['form', 'table', 'miniTab'], function () {
+        form = layui.form;
+
         $.ajax({
             url: basePath + "/task/getDetailTask/" + [[${problemId}]],
             type: "GET",
             success: function(result){
                 var data = result.data;
-                for (var index = 0;index < data.task.length;index++){
-                    var dataTmp = data.task[index];
-                    $("#btnBar").append('<button type="button" onclick="task()" value="' + dataTmp.taskId + '">'+ dataTmp.taskName+'</button>');
+                //保存任务相关的数据
+                initData = data.task;
+                for (var index = 0;index < initData.length;index++){
+                    var dataTmp = initData[index];
+                    $("#btnBar").append('<button type="button" onclick="task()" value="' + index + '">'+ dataTmp.taskName+'</button>');
                 }
             }
         });
 
-
-
-
+        //表单提交
+        form.on('submit(operate)', function (data) {
+            $.ajax({
+                type: "POST",
+                url: basePath + "/task/completeTask",
+                data: {
+                    taskId : currTaskId,
+                    variables : data.field
+                },
+                success: function (result) {
+                    if(result.code === 0){
+                        layer.msg("处理隐患成功！",{icon: 1});
+                        layer.close(layerIndex);
+                        parent.layui.table.reload('currentTableId');
+                    }
+                    else{
+                        layer.msg(result.message,{icon: 2});
+                    }
+                },
+                error: function () {
+                    layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                }
+            });
+            return false;
+        });
 
     });
+
+    function task() {
+        var target = $(event.target);
+        var data = initData[target.val()];
+        //保存当前点击的任务id
+        currTaskId = data.taskId;
+
+        $("#variables").empty();
+        for (var index = 0;index < data.variables.length;index++){
+            var dataTmp = data.variables[index];
+            //二元型流程变量
+            if(dataTmp.type === 1){
+                var input_html =
+                    '<div class="layui-form-item">\n' +
+                    '    <label class="layui-form-label">' + dataTmp.title + '</label>\n' +
+                    '    <div class="layui-input-block">\n' +
+                    '        <input type="radio" name="'+ dataTmp.name +'" value="1" title="'+ dataTmp.tip1 +'" checked="">\n' +
+                    '        <input type="radio" name="'+ dataTmp.name +'" value="0" title="'+ dataTmp.tip0 +'">\n' +
+                    '    </div>\n' +
+                    '</div>';
+                $("#variables").append(input_html);
+                form.render();
+            }
+            //连续型流程变量
+            else if(dataTmp.type === 2){
+                var input_html =
+                    '<div class="layui-form-item">\n' +
+                    '   <label class="layui-form-label">'+ dataTmp.title + ':</label>\n' +
+                    '   <div class="layui-input-block">\n' +
+                    '       <input type="text" name="' + dataTmp.name + '" placeholder="' + dataTmp.title
+                    + '" class="layui-input" lay-verify="required" lay-reqtext="请输入'+ dataTmp.title +'" />\n' +
+                    '   </div>\n' +
+                    '</div>';
+                $("#variables").append(input_html);
+            }
+        }
+        layerIndex = layer.open({
+            title: target.text(),
+            type: 1,
+            area: ['450px', '240px'],
+            content: $("#operateTask"),
+            cancel: function(layero,index){
+                $("#reset").click();
+            }
+        });
+    }
 </script>
 </body>
 </html>

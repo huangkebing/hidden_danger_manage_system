@@ -69,9 +69,9 @@ public class TaskController {
         return null;
     }
 
-    @GetMapping
+    @GetMapping("/getBeginVariable/{typeId}")
     @ResponseBody
-    public Object getBeginVariable(Long typeId){
+    public Object getBeginVariable(@PathVariable Long typeId){
         return taskService.getBeginVariable(typeId);
     }
 }
