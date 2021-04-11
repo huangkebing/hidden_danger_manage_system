@@ -30,7 +30,14 @@
     <select id="getHistoryInstances" resultMap="selectMap">
         select distinct RES.PROC_INST_ID_, HPI.END_TIME_
         from ACT_HI_TASKINST RES inner join ACT_HI_IDENTITYLINK HI on HI.TASK_ID_ = RES.ID_ inner join ACT_HI_PROCINST HPI ON RES.PROC_INST_ID_ = HPI.ID_
-        WHERE HPI.END_TIME_ is not null and RES.ASSIGNEE_ is null and HI.TYPE_ = 'candidate' and ( HI.USER_ID_ = #{email} or HI.GROUP_ID_ IN
+        WHERE HPI.END_TIME_ is not null and RES.ASSIGNEE_ is null
+        <if test="begin != null and begin != ''">
+            and HPI.END_TIME_ &gt;= #{begin}
+        </if>
+        <if test="end != null and end != ''">
+            and HPI.END_TIME_ &lt;= #{end}
+        </if>
+        and HI.TYPE_ = 'candidate' and ( HI.USER_ID_ = #{email} or HI.GROUP_ID_ IN
         <foreach collection="groups" item="group" open="(" close=")" separator=",">
             #{group}
         </foreach>
@@ -40,7 +47,14 @@
     <select id="getHistoryCount" resultType="Long">
         select COUNT(distinct RES.PROC_INST_ID_)
         from ACT_HI_TASKINST RES inner join ACT_HI_IDENTITYLINK HI on HI.TASK_ID_ = RES.ID_ inner join ACT_HI_PROCINST HPI ON RES.PROC_INST_ID_ = HPI.ID_
-        WHERE HPI.END_TIME_ is not null and RES.ASSIGNEE_ is null and HI.TYPE_ = 'candidate' and ( HI.USER_ID_ = #{email} or HI.GROUP_ID_ IN
+        WHERE HPI.END_TIME_ is not null and RES.ASSIGNEE_ is null
+        <if test="begin != null and begin != ''">
+            and HPI.END_TIME_ &gt;= #{begin}
+        </if>
+        <if test="end != null and end != ''">
+            and HPI.END_TIME_ &lt;= #{end}
+        </if>
+        and HI.TYPE_ = 'candidate' and ( HI.USER_ID_ = #{email} or HI.GROUP_ID_ IN
         <foreach collection="groups" item="group" open="(" close=")" separator=",">
             #{group}
         </foreach>

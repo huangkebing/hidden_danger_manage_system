@@ -196,7 +196,7 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
     }
 
     @Override
-    public Map<String, Object> getHistoryTask(int page, int limit) {
+    public Map<String, Object> getHistoryTask(String begin, String end, int page, int limit) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("code", 0);
         map.put("msg", "");
@@ -210,7 +210,7 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         User loginUser = (User) session.getAttribute(Constants.LOGIN_USER_KEY);
         List<String> groups = userGroupManager.getUserGroups(loginUser.getEmail());
 
-        List<InstanceDto> historyInstances = taskMapper.getHistoryInstances(loginUser.getEmail(), groups, limit, offset);
+        List<InstanceDto> historyInstances = taskMapper.getHistoryInstances(loginUser.getEmail(), groups, limit, offset, begin, end);
 
         List<String> instances = historyInstances.stream().map(InstanceDto::getInstanceId).collect(Collectors.toList());
         List<Problem> problems = this.list(new QueryWrapper<Problem>().in("instance_id", instances));
@@ -218,7 +218,7 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         problems = taskHandlerUtil.historyTaskSort(problems, instances, historyInstances);
 
         map.put("data", problems);
-        map.put("count", taskMapper.getHistoryCount(loginUser.getEmail(), groups));
+        map.put("count", taskMapper.getHistoryCount(loginUser.getEmail(), groups, begin, end));
         return map;
     }
 }

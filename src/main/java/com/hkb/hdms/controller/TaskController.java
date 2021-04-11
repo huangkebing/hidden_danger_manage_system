@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -70,8 +71,10 @@ public class TaskController {
 
     @GetMapping("/historyTask")
     @ResponseBody
-    public Object historyTask(int page, int limit){
-        return taskService.getHistoryTask(page, limit);
+    public Object historyTask(@RequestParam(required = false) String begin,
+                              @RequestParam(required = false) String end,
+                              int page, int limit){
+        return taskService.getHistoryTask(begin, end, page, limit);
     }
 
     @GetMapping("/getBeginVariable/{typeId}")
