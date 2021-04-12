@@ -15,6 +15,10 @@ public class ProblemInfo {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
+    @TableField("problem_id")
+    private Long problemId;
+
+    @TableField("`context`")
     private String context;
 
     private Integer type;

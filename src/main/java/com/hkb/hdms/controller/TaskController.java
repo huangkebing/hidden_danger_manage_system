@@ -1,6 +1,7 @@
 package com.hkb.hdms.controller;
 
 import com.hkb.hdms.model.pojo.Problem;
+import com.hkb.hdms.model.pojo.ProblemInfo;
 import com.hkb.hdms.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -92,5 +93,28 @@ public class TaskController {
     @ResponseBody
     public Object getBeginVariable(@PathVariable Long typeId){
         return taskService.getBeginVariable(typeId);
+    }
+
+    @PostMapping("/updateProblem")
+    @ResponseBody
+    public Object updateProblem(Problem problem){
+        return taskService.updateProblem(problem);
+    }
+
+    @PostMapping("/addRemarks")
+    @ResponseBody
+    public Object addRemarks(Long problemId, String remark){
+        return taskService.addRemarks(problemId, remark);
+    }
+
+    @PostMapping("/updateRemarks")
+    @ResponseBody
+    public Object updateRemarks(ProblemInfo info){
+        return taskService.updateRemarks(info);
+    }
+
+    @PostMapping("/deleteRemarks")
+    public Object deleteRemarks(Long infoId){
+        return taskService.deleteRemarks(infoId);
     }
 }

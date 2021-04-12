@@ -1,19 +1,18 @@
 package com.hkb.hdms.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hkb.hdms.base.Constants;
 import com.hkb.hdms.base.R;
 import com.hkb.hdms.base.ReturnConstants;
+import com.hkb.hdms.mapper.ProblemInfoMapper;
 import com.hkb.hdms.mapper.ProblemMapper;
 import com.hkb.hdms.mapper.ProcessVariableMapper;
 import com.hkb.hdms.mapper.TaskMapper;
 import com.hkb.hdms.model.dto.InstanceDto;
 import com.hkb.hdms.model.dto.ProblemDto;
-import com.hkb.hdms.model.pojo.Problem;
-import com.hkb.hdms.model.pojo.ProcessVariable;
-import com.hkb.hdms.model.pojo.Type;
-import com.hkb.hdms.model.pojo.User;
+import com.hkb.hdms.model.pojo.*;
 import com.hkb.hdms.service.TaskService;
 import com.hkb.hdms.service.TypeService;
 import com.hkb.hdms.utils.TaskHandlerUtil;
@@ -53,6 +52,8 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
 
     private final ProblemMapper problemMapper;
 
+    private final ProblemInfoMapper problemInfoMapper;
+
     private final TaskMapper taskMapper;
 
     private final HttpSession session;
@@ -65,7 +66,9 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
                            HttpSession session,
                            ProcessVariableMapper processVariableMapper,
                            UserGroupManager userGroupManager,
-                           TaskMapper taskMapper, ProblemMapper problemMapper) {
+                           TaskMapper taskMapper,
+                           ProblemMapper problemMapper,
+                           ProblemInfoMapper problemInfoMapper) {
         this.typeService = typeService;
         this.runtimeService = runtimeService;
         this.taskHandlerUtil = taskHandlerUtil;
@@ -75,6 +78,7 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         this.userGroupManager = userGroupManager;
         this.taskMapper = taskMapper;
         this.problemMapper = problemMapper;
+        this.problemInfoMapper = problemInfoMapper;
     }
 
     @Override
@@ -102,7 +106,6 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
             e.printStackTrace();
             return ReturnConstants.PROCESS_ERROR;
         }
-
         this.save(problem);
 
         return ReturnConstants.SUCCESS;
@@ -245,5 +248,47 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         map.put("data", problems);
         map.put("count", taskMapper.getSolveingCount(loginUser.getEmail(), groups));
         return map;
+    }
+
+    @Override
+    public R updateProblem(Problem problem) {
+        if (this.update(problem, new UpdateWrapper<Problem>().eq("id",problem.getId()))) {
+            return ReturnConstants.SUCCESS;
+        }
+        else {
+            return ReturnConstants.FAILURE;
+        }
+    }
+
+    @Override
+    public R addRemarks(Long problemId, String remark) {
+        User user = (User) session.getAttribute(Constants.LOGIN_USER_KEY);
+        ProblemInfo problemInfo = new ProblemInfo();
+        problemInfo.setProblemId(problemId);
+        problemInfo.setContext(remark);
+        problemInfo.setType(1);
+        problemInfo.setEmail(user.getEmail());
+        problemInfo.setUserId(user.getId());
+        problemInfo.setUsername(user.getName());
+        problemInfoMapper.insert(problemInfo);
+
+        return ReturnConstants.SUCCESS;
+    }
+
+    @Override
+    public R updateRemarks(ProblemInfo info) {
+        User user = (User) session.getAttribute(Constants.LOGIN_USER_KEY);
+        info.setEmail(user.getEmail());
+        info.setUserId(user.getId());
+        info.setUsername(user.getName());
+
+        problemInfoMapper.update(info, new UpdateWrapper<ProblemInfo>().eq("id",info.getId()));
+        return ReturnConstants.SUCCESS;
+    }
+
+    @Override
+    public R deleteRemarks(Long infoId) {
+        problemInfoMapper.deleteById(infoId);
+        return ReturnConstants.SUCCESS;
     }
 }

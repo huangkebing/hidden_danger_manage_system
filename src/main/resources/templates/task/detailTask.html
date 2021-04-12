@@ -8,6 +8,9 @@
     <title>Title</title>
 </head>
 <body>
+    <div id="createUser"></div>
+    <div id="title"></div>
+    <div id="description"></div>
     <div id="btnBar"></div>
     <form id="operateTask" class="layui-form" style="display: none">
         <div class="layui-form-item" id="variables"></div>
@@ -45,6 +48,9 @@
                     var dataTmp = initData[index];
                     $("#btnBar").append('<button type="button" onclick="task()" value="' + index + '">'+ dataTmp.taskName+'</button>');
                 }
+                $("#createUser").html(data.problem.username);
+                $("#title").html(data.problem.name);
+                $("#description").html(data.problem.description);
             }
         });
 

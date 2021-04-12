@@ -3,6 +3,7 @@ package com.hkb.hdms.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.hkb.hdms.base.R;
 import com.hkb.hdms.model.pojo.Problem;
+import com.hkb.hdms.model.pojo.ProblemInfo;
 import com.hkb.hdms.model.pojo.ProcessVariable;
 
 import java.util.List;
@@ -26,4 +27,12 @@ public interface TaskService extends IService<Problem> {
     Map<String,Object> getHistoryTask(String begin, String end, int page, int limit);
 
     Map<String,Object> getSolveingTask(int page, int limit);
+
+    R updateProblem(Problem problem);
+
+    R addRemarks(Long problemId, String remark);
+
+    R updateRemarks(ProblemInfo info);
+
+    R deleteRemarks(Long infoId);
 }

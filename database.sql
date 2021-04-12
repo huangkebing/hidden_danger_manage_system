@@ -116,6 +116,7 @@ create table `hdms_process_variable` (
 #问题信息表
 create table `hdms_problem_info` (
     `id` int unsigned not null auto_increment comment 'id',
+    `problem_id` int not null comment '问题id',
     `context` longtext not null comment '内容',
     `type` int unsigned not null default 0 comment '变量类型，1=文字，2=图片路径，3=文件路径',
     `user_id` int not null comment '添加者id',
