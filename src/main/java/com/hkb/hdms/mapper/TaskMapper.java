@@ -24,4 +24,8 @@ public interface TaskMapper {
     List<InstanceDto> getSolveingInstances(@Param("email") String email, @Param("groups") List<String> groups, int limit , int offset);
 
     Long getSolveingCount(@Param("email") String email, @Param("groups") List<String> groups);
+
+    int deleteHiUsers(String taskId, String instanceId);
+
+    int deleteRuUsers(String taskId, String instanceId);
 }

@@ -80,4 +80,12 @@
         </foreach>
         )
     </select>
+
+    <delete id="deleteHiUsers">
+        delete from ACT_HI_IDENTITYLINK where ( TASK_ID_ = #{taskId} or PROC_INST_ID_ = #{instanceId} )
+    </delete>
+
+    <delete id="deleteRuUsers">
+        delete from ACT_RU_IDENTITYLINK where ( TASK_ID_ = #{taskId} or PROC_INST_ID_ = #{instanceId} )
+    </delete>
 </mapper>

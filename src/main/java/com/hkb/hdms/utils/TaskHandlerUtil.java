@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.hkb.hdms.base.Constants;
 import com.hkb.hdms.mapper.ProcessNodeRoleMapper;
 import com.hkb.hdms.mapper.RoleMapper;
+import com.hkb.hdms.mapper.TaskMapper;
 import com.hkb.hdms.mapper.UserMapper;
 import com.hkb.hdms.model.dto.InstanceDto;
 import com.hkb.hdms.model.pojo.Problem;
@@ -11,7 +12,6 @@ import com.hkb.hdms.model.pojo.ProcessNodeRole;
 import com.hkb.hdms.model.pojo.User;
 import com.hkb.hdms.model.pojo.UserRole;
 import org.activiti.engine.TaskService;
-import org.activiti.engine.history.HistoricProcessInstance;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,13 +39,16 @@ public class TaskHandlerUtil {
 
     private final UserMapper userMapper;
 
+    private final TaskMapper taskMapper;
+
     @Autowired
-    public TaskHandlerUtil(TaskService taskService, ProcessNodeRoleMapper processNodeRoleMapper, HttpSession session, RoleMapper roleMapper, UserMapper userMapper) {
+    public TaskHandlerUtil(TaskService taskService, ProcessNodeRoleMapper processNodeRoleMapper, HttpSession session, RoleMapper roleMapper, UserMapper userMapper, TaskMapper taskMapper) {
         this.taskService = taskService;
         this.processNodeRoleMapper = processNodeRoleMapper;
         this.session = session;
         this.roleMapper = roleMapper;
         this.userMapper = userMapper;
+        this.taskMapper = taskMapper;
     }
 
     public void setTaskHandler(ProcessInstance instance, Long typeId){
@@ -82,7 +85,18 @@ public class TaskHandlerUtil {
         }
     }
 
+    public void deleteCandidateUser(String taskId, String instanceId){
+        User user = (User) session.getAttribute(Constants.LOGIN_USER_KEY);
+        taskMapper.deleteRuUsers(taskId, instanceId);
+        taskMapper.deleteHiUsers(taskId, instanceId);
+
+        taskService.addCandidateUser(taskId, user.getEmail());
+    }
+
     public List<Problem> todoTaskSort(List<Problem> resources, List<String> resourceIds) {
+        if(resources.size() == 0 || resourceIds.size() == 0){
+            return resources;
+        }
         List<Problem> result = new ArrayList<>();
         if(!CollectionUtils.isEmpty(resources)){
             //初始化result,为了排序
@@ -98,6 +112,9 @@ public class TaskHandlerUtil {
     }
 
     public List<Problem> historyTaskSort(List<Problem> resources, List<String> resourceIds, List<InstanceDto> instances) {
+        if(resources.size() == 0 || resourceIds.size() == 0 || instances.size() == 0){
+            return resources;
+        }
         List<Problem> result = new ArrayList<>();
         if(!CollectionUtils.isEmpty(resources)){
             //初始化result,为了排序

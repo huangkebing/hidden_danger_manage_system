@@ -23,6 +23,7 @@ import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
@@ -82,9 +83,10 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
     }
 
     @Override
+    @Transactional
     public R createTask(Problem problem, Map<String, Object> processVariables) {
         Type taskType = typeService.getById(problem.getTypeId());
-
+        User user = (User) session.getAttribute(Constants.LOGIN_USER_KEY);
         List<ProcessVariable> variables = processVariableMapper.selectList(new QueryWrapper<ProcessVariable>()
                 .eq("begin_variable", 1)
                 .eq("process_id", problem.getTypeId()));
@@ -106,6 +108,7 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
             e.printStackTrace();
             return ReturnConstants.PROCESS_ERROR;
         }
+        problem.setUserId(user.getId());
         this.save(problem);
 
         return ReturnConstants.SUCCESS;
@@ -127,8 +130,12 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         List<String> groups = userGroupManager.getUserGroups(loginUser.getEmail());
 
         List<String> instances = taskMapper.getTodoInstances(loginUser.getEmail(), groups, limit, offset);
-        List<Problem> problems = this.list(new QueryWrapper<Problem>().in("instance_id", instances));
-        problems = taskHandlerUtil.todoTaskSort(problems, instances);
+        List<Problem> problems = new ArrayList<>();
+        if(instances.size() != 0){
+            problems = this.list(new QueryWrapper<Problem>().in("instance_id", instances));
+            problems = taskHandlerUtil.todoTaskSort(problems, instances);
+        }
+
         map.put("data", problems);
         map.put("count", taskMapper.getTodoCount(loginUser.getEmail(), groups));
 
@@ -174,7 +181,7 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         for (ProcessVariable variable : variables) {
             variablesMap.put(variable.getName(), processVariables.get("variables[" + variable.getName() + "]"));
         }
-
+        taskHandlerUtil.deleteCandidateUser(taskId, task.getProcessInstanceId());
         //完成task
         taskService.complete(taskId, variablesMap);
         //尝试去设置后续出现的任务节点的处理人
@@ -214,9 +221,11 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         List<InstanceDto> historyInstances = taskMapper.getHistoryInstances(loginUser.getEmail(), groups, limit, offset, begin, end);
 
         List<String> instances = historyInstances.stream().map(InstanceDto::getInstanceId).collect(Collectors.toList());
-        List<Problem> problems = this.list(new QueryWrapper<Problem>().in("instance_id", instances));
-
-        problems = taskHandlerUtil.historyTaskSort(problems, instances, historyInstances);
+        List<Problem> problems = new ArrayList<>();
+        if(instances.size() != 0){
+            problems = this.list(new QueryWrapper<Problem>().in("instance_id", instances));
+            problems = taskHandlerUtil.historyTaskSort(problems, instances, historyInstances);
+        }
 
         map.put("data", problems);
         map.put("count", taskMapper.getHistoryCount(loginUser.getEmail(), groups, begin, end));
@@ -241,10 +250,11 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         List<InstanceDto> historyInstances = taskMapper.getSolveingInstances(loginUser.getEmail(), groups, limit, offset);
 
         List<String> instances = historyInstances.stream().map(InstanceDto::getInstanceId).collect(Collectors.toList());
-        List<Problem> problems = this.list(new QueryWrapper<Problem>().in("instance_id", instances));
-
-        problems = taskHandlerUtil.todoTaskSort(problems, instances);
-
+        List<Problem> problems = new ArrayList<>();
+        if(instances.size() != 0){
+            problems = this.list(new QueryWrapper<Problem>().in("instance_id", instances));
+            problems = taskHandlerUtil.todoTaskSort(problems, instances);
+        }
         map.put("data", problems);
         map.put("count", taskMapper.getSolveingCount(loginUser.getEmail(), groups));
         return map;
