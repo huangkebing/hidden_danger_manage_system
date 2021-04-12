@@ -20,4 +20,8 @@ public interface TaskMapper {
     List<InstanceDto> getHistoryInstances(@Param("email") String email, @Param("groups") List<String> groups, int limit , int offset, String begin, String end);
 
     Long getHistoryCount(@Param("email") String email, @Param("groups") List<String> groups, String begin, String end);
+
+    List<InstanceDto> getSolveingInstances(@Param("email") String email, @Param("groups") List<String> groups, int limit , int offset);
+
+    Long getSolveingCount(@Param("email") String email, @Param("groups") List<String> groups);
 }

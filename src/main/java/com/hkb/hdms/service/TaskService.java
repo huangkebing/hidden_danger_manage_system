@@ -24,4 +24,6 @@ public interface TaskService extends IService<Problem> {
     List<ProcessVariable> getBeginVariable(Long typeId);
 
     Map<String,Object> getHistoryTask(String begin, String end, int page, int limit);
+
+    Map<String,Object> getSolveingTask(int page, int limit);
 }

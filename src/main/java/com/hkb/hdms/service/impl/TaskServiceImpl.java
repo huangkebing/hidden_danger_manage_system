@@ -17,10 +17,7 @@ import com.hkb.hdms.service.TaskService;
 import com.hkb.hdms.service.TypeService;
 import com.hkb.hdms.utils.TaskHandlerUtil;
 import org.activiti.api.runtime.shared.identity.UserGroupManager;
-import org.activiti.engine.HistoryService;
 import org.activiti.engine.RuntimeService;
-import org.activiti.engine.history.HistoricProcessInstance;
-import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.apache.commons.lang3.ObjectUtils;
@@ -47,8 +44,6 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
 
     private final org.activiti.engine.TaskService taskService;
 
-    private final HistoryService historyService;
-
     private final TaskHandlerUtil taskHandlerUtil;
 
     private final ProcessVariableMapper processVariableMapper;
@@ -65,7 +60,6 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
                            TaskHandlerUtil taskHandlerUtil,
                            org.activiti.engine.TaskService taskService,
                            HttpSession session,
-                           HistoryService historyService,
                            ProcessVariableMapper processVariableMapper,
                            UserGroupManager userGroupManager,
                            TaskMapper taskMapper) {
@@ -74,7 +68,6 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         this.taskHandlerUtil = taskHandlerUtil;
         this.taskService = taskService;
         this.session = session;
-        this.historyService = historyService;
         this.processVariableMapper = processVariableMapper;
         this.userGroupManager = userGroupManager;
         this.taskMapper = taskMapper;
@@ -219,6 +212,33 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
 
         map.put("data", problems);
         map.put("count", taskMapper.getHistoryCount(loginUser.getEmail(), groups, begin, end));
+        return map;
+    }
+
+    @Override
+    public Map<String, Object> getSolveingTask(int page, int limit) {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("code", 0);
+        map.put("msg", "");
+
+        if (page < 1) {
+            page = 1;
+        }
+
+        int offset = (page - 1) * limit;
+
+        User loginUser = (User) session.getAttribute(Constants.LOGIN_USER_KEY);
+        List<String> groups = userGroupManager.getUserGroups(loginUser.getEmail());
+
+        List<InstanceDto> historyInstances = taskMapper.getSolveingInstances(loginUser.getEmail(), groups, limit, offset);
+
+        List<String> instances = historyInstances.stream().map(InstanceDto::getInstanceId).collect(Collectors.toList());
+        List<Problem> problems = this.list(new QueryWrapper<Problem>().in("instance_id", instances));
+
+        problems = taskHandlerUtil.todoTaskSort(problems, instances);
+
+        map.put("data", problems);
+        map.put("count", taskMapper.getSolveingCount(loginUser.getEmail(), groups));
         return map;
     }
 }

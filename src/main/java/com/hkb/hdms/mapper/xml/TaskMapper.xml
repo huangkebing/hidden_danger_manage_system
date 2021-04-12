@@ -60,4 +60,24 @@
         </foreach>
         )
     </select>
+
+    <select id="getSolveingInstances" resultMap="selectMap">
+        select distinct RES.PROC_INST_ID_, HPI.START_TIME_
+        from ACT_HI_TASKINST RES inner join ACT_HI_IDENTITYLINK HI on HI.TASK_ID_ = RES.ID_ inner join ACT_HI_PROCINST HPI ON RES.PROC_INST_ID_ = HPI.ID_
+        WHERE HPI.END_TIME_ is null and RES.ASSIGNEE_ is null and HI.TYPE_ = 'candidate' and ( HI.USER_ID_ = #{email} or HI.GROUP_ID_ IN
+        <foreach collection="groups" item="group" open="(" close=")" separator=",">
+            #{group}
+        </foreach>
+        ) ORDER BY HPI.START_TIME_ DESC
+    </select>
+
+    <select id="getSolveingCount" resultType="Long">
+        select COUNT(distinct RES.PROC_INST_ID_)
+        from ACT_HI_TASKINST RES inner join ACT_HI_IDENTITYLINK HI on HI.TASK_ID_ = RES.ID_ inner join ACT_HI_PROCINST HPI ON RES.PROC_INST_ID_ = HPI.ID_
+        WHERE HPI.END_TIME_ is null and RES.ASSIGNEE_ is null and HI.TYPE_ = 'candidate' and ( HI.USER_ID_ = #{email} or HI.GROUP_ID_ IN
+        <foreach collection="groups" item="group" open="(" close=")" separator=",">
+            #{group}
+        </foreach>
+        )
+    </select>
 </mapper>

@@ -41,8 +41,13 @@ public class TaskController {
     }
 
     @RequestMapping("/historyTask.html")
-    public Object historyTask(){
+    public Object historyTaskPage(){
         return "task/historyTask";
+    }
+
+    @RequestMapping("/solveingTask.html")
+    public Object solveingTaskPage(){
+        return "task/solveingTask";
     }
 
     @PostMapping("/createTask")
@@ -71,10 +76,16 @@ public class TaskController {
 
     @GetMapping("/historyTask")
     @ResponseBody
-    public Object historyTask(@RequestParam(required = false) String begin,
+    public Object getHistoryTask(@RequestParam(required = false) String begin,
                               @RequestParam(required = false) String end,
                               int page, int limit){
         return taskService.getHistoryTask(begin, end, page, limit);
+    }
+
+    @GetMapping("/SolveingTask")
+    @ResponseBody
+    public Object getSolveingTask(int page, int limit){
+        return taskService.getSolveingTask(page, limit);
     }
 
     @GetMapping("/getBeginVariable/{typeId}")
