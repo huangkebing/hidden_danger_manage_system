@@ -9,6 +9,7 @@ import com.hkb.hdms.mapper.ProblemMapper;
 import com.hkb.hdms.mapper.ProcessVariableMapper;
 import com.hkb.hdms.mapper.TaskMapper;
 import com.hkb.hdms.model.dto.InstanceDto;
+import com.hkb.hdms.model.dto.ProblemDto;
 import com.hkb.hdms.model.pojo.Problem;
 import com.hkb.hdms.model.pojo.ProcessVariable;
 import com.hkb.hdms.model.pojo.Type;
@@ -50,6 +51,8 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
 
     private final UserGroupManager userGroupManager;
 
+    private final ProblemMapper problemMapper;
+
     private final TaskMapper taskMapper;
 
     private final HttpSession session;
@@ -62,7 +65,7 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
                            HttpSession session,
                            ProcessVariableMapper processVariableMapper,
                            UserGroupManager userGroupManager,
-                           TaskMapper taskMapper) {
+                           TaskMapper taskMapper, ProblemMapper problemMapper) {
         this.typeService = typeService;
         this.runtimeService = runtimeService;
         this.taskHandlerUtil = taskHandlerUtil;
@@ -71,6 +74,7 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         this.processVariableMapper = processVariableMapper;
         this.userGroupManager = userGroupManager;
         this.taskMapper = taskMapper;
+        this.problemMapper = problemMapper;
     }
 
     @Override
@@ -131,7 +135,7 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
     @Override
     public R getDetailTask(Long problemId) {
         Map<String, Object> data = new HashMap<>();
-        Problem problem = this.getById(problemId);
+        ProblemDto problem = problemMapper.selectDetailById(problemId);
         User loginUser = (User) session.getAttribute(Constants.LOGIN_USER_KEY);
 
         List<Task> tasks = taskService.createTaskQuery().processInstanceId(problem.getInstanceId()).taskCandidateUser(loginUser.getEmail()).list();
@@ -149,6 +153,7 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         }
 
         data.put("task", list);
+        data.put("problem", problem);
         return new R(0, "SUCCESS", data);
     }
 

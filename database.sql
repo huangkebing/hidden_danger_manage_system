@@ -88,7 +88,9 @@ create table `hdms_problem` (
     `name` varchar(128) not null comment '问题名称',
     `description` varchar(1024) not null comment '问题描述',
     `priority` int not null default 2 comment '优先级',
+    `type_id` int not null comment '问题类型',
     `instance_id` varchar(64) not null comment '流程实例id',
+    `user_id` int not null comment '创建人id',
     `create` timestamp not null comment '创建时间',
     `modify` timestamp not null comment '修改时间',
     primary key (`id`)
@@ -109,4 +111,17 @@ create table `hdms_process_variable` (
      `create` timestamp not null comment '创建时间',
      `modify` timestamp not null comment '修改时间',
      primary key (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+#问题信息表
+create table `hdms_problem_info` (
+    `id` int unsigned not null auto_increment comment 'id',
+    `context` longtext not null comment '内容',
+    `type` int unsigned not null default 0 comment '变量类型，1=文字，2=图片路径，3=文件路径',
+    `user_id` int not null comment '添加者id',
+    `username` varchar(100) null comment '用户名称',
+    `email` varchar(25) null comment '用户邮箱',
+    `create` timestamp not null comment '创建时间',
+    `modify` timestamp not null comment '修改时间',
+    primary key (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -60,6 +60,7 @@
                 </div>
             </div>
         </form>
+        <span style="color: grey">节点处理人指定为默认，如果为开始节点则为任务的创建人，否则为上一个任务节点的处理者</span>
     </div>
 </div>
 <script th:src="@{/layuimini/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
@@ -80,7 +81,7 @@
             url: basePath + "/role/getAllRole",    //后台数据请求地址
             type: "GET",
             success: function(result){
-                $("#role").append(new Option("发起人", 0));
+                $("#role").append(new Option("默认", 0));
                 for (var index = 0;index < result.length;index++){
                     var dataTmp = result[index];
                     $('#role').append(new Option(dataTmp.name,dataTmp.id));//往下拉菜单里添加元素

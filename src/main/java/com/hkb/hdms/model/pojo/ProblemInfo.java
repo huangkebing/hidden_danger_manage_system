@@ -6,31 +6,25 @@ import lombok.Data;
 import java.util.Date;
 
 /**
- * hdms_problem 表pojo
- *
  * @author huangkebing
- * 2021/04/03
+ * 2021/04/12
  */
-@TableName("hdms_problem")
+@TableName("hdms_problem_info")
 @Data
-public class Problem {
+public class ProblemInfo {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    private String name;
+    private String context;
 
-    private String description;
-
-    private Integer priority;
-
-    @TableField("type_id")
-    private Long typeId;
-
-    @TableField("instance_id")
-    private String instanceId;
+    private Integer type;
 
     @TableField("user_id")
     private Long userId;
+
+    private String username;
+
+    private String email;
 
     @TableField(value = "`create`", fill = FieldFill.INSERT)
     private Date create;
