@@ -9,105 +9,74 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" th:href="@{/layuimini/lib/layui-v2.5.5/css/layui.css}" media="all">
     <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
-    <link rel="stylesheet" th:href="@{/layuimini/js/lay-module/step-lay/step.css}" media="all">
+    <style>
+        .w-e-text-container{
+            margin-left: 110px!important;
+            height: 180px!important;
+            z-index: 0!important;
+        }
+        .w-e-menu{
+            z-index: 1!important;
+        }
+    </style>
 </head>
 <body>
 <div class="layuimini-container">
     <div class="layuimini-main">
-        <div class="layui-fluid">
-            <div class="layui-card">
-                <div style="color: #666;margin-top: 30px;margin-bottom: 40px;padding-left: 30px;">
-                    <h3>说明</h3><br>
-                    <p>1.如果没有您想要创建的类型，请联系系统管理员授权</p><br>
-                </div>
-                <hr>
-                <div class="layui-card-body" style="padding-top: 20px;">
-                    <div class="layui-carousel" id="stepForm" lay-filter="stepForm" style="margin: 0 auto;">
-                        <div carousel-item>
-                            <div>
-                                <form class="layui-form" style="margin: 0 auto;max-width: 460px;padding-top: 40px;">
-                                    <div class="layui-form-item">
-                                        <label class="layui-form-label">隐患名称:</label>
-                                        <div class="layui-input-block">
-                                            <input type="text" name="name" placeholder="隐患名称" class="layui-input" lay-verify="required" lay-reqtext="请输入隐患名称" />
-                                        </div>
-                                    </div>
-                                    <div class="layui-form-item">
-                                        <label class="layui-form-label">隐患类型:</label>
-                                        <div class="layui-input-block">
-                                            <select id="questionType" name="typeId" lay-verify="required" lay-reqtext="请选择隐患类型">
-                                                <option value="" selected>请选择(可搜索)</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="layui-form-item">
-                                        <label class="layui-form-label">优先级:</label>
-                                        <div class="layui-input-block">
-                                            <select lay-verify="required" name="priority" lay-reqtext="请选择优先级">
-                                                <option value="1">低</option>
-                                                <option value="2" selected>中</option>
-                                                <option value="3">高</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="layui-form-item">
-                                        <div class="layui-input-block">
-                                            <button class="layui-btn" lay-submit lay-filter="formStep">
-                                                &emsp;下一步&emsp;
-                                            </button>
-                                            <button type="reset" id="reset1" style="visibility: hidden" class="layui-btn">重置</button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                            <div>
-                                <form class="layui-form" style="margin: 0 auto;max-width: 460px;padding-top: 40px;">
-                                    <div class="layui-form-item" id="variables"></div>
-                                    <div class="layui-form-item">
-                                        <label class="layui-form-label">隐患描述:</label>
-                                        <div class="layui-input-block">
-                                            <textarea name="description" placeholder="隐患描述" value="" class="layui-textarea"></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="layui-form-item">
-                                        <div class="layui-input-block">
-                                            <button type="button" class="layui-btn layui-btn-primary pre">上一步</button>
-                                            <button class="layui-btn" lay-submit lay-filter="formStep2">
-                                                &emsp;确认创建&emsp;
-                                            </button>
-                                            <button type="reset" id="reset2" style="visibility: hidden" class="layui-btn">重置</button>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                            <div>
-                                <div style="text-align: center;margin-top: 90px;">
-                                    <i class="layui-icon layui-circle"
-                                       style="color: white;font-size:30px;font-weight:bold;background: #52C41A;padding: 20px;line-height: 80px;">&#xe605;</i>
-                                    <div style="font-size: 24px;color: #333;font-weight: 500;margin-top: 30px;">
-                                        创建成功
-                                    </div>
-                                </div>
-                                <div style="text-align: center;margin-top: 50px;">
-                                    <button class="layui-btn next">再建一个</button>
-                                    <button class="layui-btn layui-btn-primary">查看问题</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        <blockquote class="layui-elem-quote layui-text">
+            注意：如果没有您想要创建的类型，请联系系统管理员授权
+        </blockquote>
+
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+            <legend>创建隐患</legend>
+        </fieldset>
+
+        <form class="layui-form">
+            <div class="layui-form-item">
+                <label class="layui-form-label">隐患名称:</label>
+                <div class="layui-input-block">
+                    <input type="text" name="name" placeholder="隐患名称" class="layui-input" lay-verify="required" lay-reqtext="请输入隐患名称" />
                 </div>
             </div>
-        </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">隐患类型:</label>
+                <div class="layui-input-block">
+                    <select id="questionType" name="typeId" lay-verify="required" lay-reqtext="请选择隐患类型" lay-filter="problemType">
+                        <option value="" selected>请选择(可搜索)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">优先级:</label>
+                <div class="layui-input-block">
+                    <select lay-verify="required" name="priority" lay-reqtext="请选择优先级">
+                        <option value="1">低</option>
+                        <option value="2" selected>中</option>
+                        <option value="3">高</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item" id="variables"></div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">隐患描述:</label>
+                <div id="editor">
+                    <p>隐患描述</p>
+                </div>
+            </div>
+            <button class="layui-btn" style="margin-left: 110px" lay-submit lay-filter="commit">
+                确认创建
+            </button>
+        </form>
     </div>
 </div>
 <script th:src="@{/layuimini/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
 <script th:src="@{/layuimini/js/lay-config.js}" charset="utf-8"></script>
 <script th:src="@{/js/url.js}"></script>
 <script th:inline="javaScript">
-    layui.use([ 'form', 'step'], function () {
+    layui.use([ 'form', 'wangEditor'], function () {
         var $ = layui.$,
             form = layui.form,
-            step = layui.step;
+            wangEditor = layui.wangEditor;
 
         var baseData;
 
@@ -123,27 +92,43 @@
             }
         });
 
-        step.render({
-            elem: '#stepForm',
-            filter: 'stepForm',
-            width: '100%', //设置容器宽度
-            stepWidth: '750px',
-            height: '470px',
-            stepItems: [{
-                title: '隐患信息'
-            }, {
-                title: '隐患描述'
-            }, {
-                title: '创建完成'
-            }]
-        });
+        var editor = new wangEditor('#editor');
+        editor.customConfig.uploadImgServer = basePath + "/file/uploadFile";
+        editor.customConfig.uploadFileName = 'file';
+        editor.customConfig.pasteFilterStyle = false;
+        editor.customConfig.uploadImgMaxLength = 5;
+        editor.customConfig.uploadImgHooks = {
+            // 上传超时
+            timeout: function (xhr, editor) {
+                layer.msg('上传超时！')
+            },
+            // 如果服务器端返回的不是 {errno:0, data: [...]} 这种格式，可使用该配置
+            customInsert: function (insertImg, result, editor) {
+                console.log(result);
+                if (result.code == 1) {
+                    var url = result.data.url;
+                    url.forEach(function (e) {
+                        insertImg(e);
+                    })
+                } else {
+                    layer.msg(result.msg);
+                }
+            }
+        };
+        editor.customConfig.customAlert = function (info) {
+            layer.msg(info);
+        };
+        editor.create();
 
-
-        form.on('submit(formStep)', function (data) {
+        form.on('select(problemType)', function(data){
+            if(data.value === "") {
+                $("#variables").empty();
+                return false;
+            }
             baseData = data;
             $.ajax({
                 type: "GET",
-                url: basePath + "/task/getBeginVariable/" + data.field.typeId,
+                url: basePath + "/task/getBeginVariable/" + data.value,
                 success: function (result) {
                     $("#variables").empty();
                     for (var index = 0;index < result.length;index++){
@@ -174,17 +159,17 @@
                             $("#variables").append(input_html);
                         }
                     }
-                    step.next('#stepForm');
                 },
                 error: function () {
                     layer.msg('系统错误，请联系系统管理员',{icon: 2});
                 }
             });
-            return false;
         });
 
-        form.on('submit(formStep2)', function (data) {
-            $.ajax({
+        form.on('submit(commit)', function (data) {
+            console.log(editor.txt.html())
+
+            /*$.ajax({
                 type: "POST",
                 url: basePath + "/task/createTask",
                 data: {
@@ -206,17 +191,7 @@
                     layer.msg('系统错误，请联系系统管理员',{icon: 2});
                 }
             });
-            return false;
-        });
-
-        $('.pre').click(function () {
-            step.pre('#stepForm');
-        });
-
-        $('.next').click(function () {
-            step.next('#stepForm');
-            $("#reset1").click();
-            $("#reset2").click();
+            return false;*/
         });
     })
 </script>
