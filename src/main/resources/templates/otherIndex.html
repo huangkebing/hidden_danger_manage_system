@@ -87,17 +87,18 @@
             page: true,
         });
 
+        window.addEventListener("storage", function (e) {
+            if(e.key == 'taskTable'){
+                taskTable.reload();
+            }
+        });
+
         table.on('tool(todoTable)', function (obj) {
             var data = obj.data;
             if (obj.event === 'edit') {
-                var index = layer.open({
-                    title: '处理问题',
-                    type: 2,
-                    shade: 0.2,
-                    maxmin:true,
-                    shadeClose: true,
-                    area: ['100%', '100%'],
-                    content: basePath + "/task/detailTask.html/" + data.id,
+                miniTab.openNewTabByIframe({
+                    href: basePath + "/task/detailTask.html/" + data.id,
+                    title: "处理问题",
                 });
                 return false;
             }

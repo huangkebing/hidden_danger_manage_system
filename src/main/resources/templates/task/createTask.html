@@ -198,6 +198,7 @@
                 },
                 success: function (result) {
                     if(result.code === 0){
+                        localStorage.setItem('taskTable',generateUUID());
                         layer.open({
                             type: 1,
                             title:'创建成功',
