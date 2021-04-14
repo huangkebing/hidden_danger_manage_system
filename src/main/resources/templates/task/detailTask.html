@@ -15,6 +15,15 @@
     .layui-elem-quote{
         padding: 10px 15px 10px 15px;
     }
+    .w-e-text-container{
+        margin-left: 110px!important;
+        height: 210px!important;
+        z-index: 0!important;
+    }
+    .w-e-menu{
+        z-index: 1!important;
+    }
+    body .btnStyle .layui-layer-btn a{background:#019688;border: #019688;padding: 4px 20px}
 </style>
 <body>
 <div class="layui-col-md8">
@@ -23,8 +32,11 @@
             <div id="createUser"></div>
             <div id="title"></div>
             <div id="description"></div>
+            <div id="typeName"></div>
+            <div id="priorityDiv"></div>
             <div>
                 <button type="button" class="layui-btn layui-btn-normal">添加备注</button>
+                <button type="button" id="editTaskBtn" class="layui-btn layui-btn-normal">修改隐患</button>
             </div>
             <div id="btnBar"></div>
             <blockquote class="layui-elem-quote" style="margin-top: 10px">备注信息</blockquote>
@@ -50,6 +62,44 @@
         </div>
     </div>
 </form>
+<from id="editTask" class="layui-form" style="display: none">
+    <div class="layuimini-container">
+        <div class="layuimini-main">
+            <div class="layui-form-item" style="margin-top: 20px">
+                <label class="layui-form-label">隐患名称<span style="color: red"> *</span></label>
+                <div class="layui-input-block">
+                    <input type="text" name="name" id="name" lay-verify="required" lay-reqtext="请输入隐患名称" placeholder="隐患名称"
+                           autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">隐患类型<span> &nbsp;</span></label>
+                <div class="layui-input-block">
+                    <input type="text" name="type" id="type" autocomplete="off" disabled class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">优先级:</label>
+                <div class="layui-input-block">
+                    <select lay-verify="required" name="priority" id="priority" lay-reqtext="请选择优先级">
+                        <option value="1">低</option>
+                        <option value="2">中</option>
+                        <option value="3">高</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">隐患描述<span> &nbsp;</span></label>
+                <div id="editorTask">
+                    <p>隐患描述</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</from>
 <script th:src="@{/layuimini/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
 <script th:src="@{/layuimini/lib/jquery-3.4.1/jquery-3.4.1.min.js}" charset="utf-8"></script>
 <script th:src="@{/layuimini/js/lay-config.js}" charset="utf-8"></script>
@@ -60,9 +110,11 @@
     var form;
     var layerIndex;
 
-    layui.use(['form', 'table', 'flow'], function () {
+    layui.use(['form', 'table', 'flow', 'wangEditor'], function () {
         form = layui.form;
-        var flow = layui.flow;
+        var flow = layui.flow,
+            wangEditor = layui.wangEditor;
+        var taskEditer;
 
         $.ajax({
             url: basePath + "/task/getDetailTask/" + [[${problemId}]],
@@ -78,6 +130,8 @@
                 $("#createUser").html(data.problem.username);
                 $("#title").html(data.problem.name);
                 $("#description").html(data.problem.description);
+                $("#typeName").html(data.problem.typeName);
+                $("#priorityDiv").html(data.problem.priority);
             }
         });
 
@@ -121,6 +175,8 @@
             skin: 'btnStyle'
         });
 
+        taskEditer = editer('#editorTask');
+
         //表单提交
         form.on('submit(operate)', function (data) {
             $.ajax({
@@ -147,6 +203,46 @@
             return false;
         });
 
+        $("#editTaskBtn").click(function (){
+            $("#name").val($("#title").text());
+            $("#type").val($("#typeName").text());
+            $("#priority").val($("#priorityDiv").text())
+            taskEditer.txt.html($("#description").html());
+            form.render();
+            var index = layer.open({
+                title: '修改隐患',
+                type: 1,
+                area: ['800px', '500px'],
+                content: $("#editTask"),
+                btn: ['提交'],
+                btnAlign: 'c',
+                skin: 'btnStyle',
+                yes: function(data){
+                    $.ajax({
+                        type: "POST",
+                        url: basePath + "/task/updateProblem",
+                        data: {
+                            id : [[${problemId}]],
+                            name : $("#name").val(),
+                            priority : $("#priority").val(),
+                            description : taskEditer.txt.html()
+                        },
+                        success: function (result) {
+                            if(result.code === 0){
+                                localStorage.setItem('taskTable',generateUUID());
+                                location.reload();
+                            }
+                            else{
+                                layer.msg(result.message,{icon: 2});
+                            }
+                        },
+                        error: function () {
+                            layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                        }
+                    });
+                }
+            });
+        });
     });
 
     function task() {
@@ -193,6 +289,46 @@
                 $("#reset").click();
             }
         });
+    }
+
+    function editer(id){
+        var editor = new wangEditor(id);
+        editor.customConfig.showMenuTooltips = true;
+        editor.customConfig.uploadImgServer = basePath + "/file/uploadFile";
+        editor.customConfig.uploadFileName = 'files';
+        editor.customConfig.pasteFilterStyle = false;
+        editor.customConfig.uploadImgMaxLength = 5;
+        editor.customConfig.uploadImgMaxSize = 10 * 1024 * 1024 // 10M
+        editor.customConfig.uploadImgParams = {
+            flag : 'remarks'
+        };
+        editor.customConfig.menus = [
+            'head', 'bold', 'fontSize', 'italic', 'underline', 'strikeThrough', 'indent',
+            'lineHeight', 'foreColor', 'backColor', 'link', 'list', 'todo', 'justify', 'quote', 'image',
+            'table', 'code', 'splitLine', 'undo', 'redo'
+        ];
+        editor.customConfig.uploadImgHooks = {
+            // 上传超时
+            timeout: function (xhr, editor) {
+                layer.msg('上传超时！')
+            },
+            // 如果服务器端返回的不是 {errno:0, data: [...]} 这种格式，可使用该配置
+            customInsert: function (insertImg, result, editor) {
+                if (result.code == 0) {
+                    var data = result.data;
+                    for (let i = 0; i < data.length; i++) {
+                        insertImg(data[i].url);
+                    }
+                } else {
+                    layer.msg(result.message,{icon : 2});
+                }
+            }
+        };
+        editor.customConfig.customAlert = function (info) {
+            layer.msg(info);
+        };
+        editor.create();
+        return editor;
     }
 </script>
 </body>
