@@ -34,3 +34,6 @@ build/
 
 #上传的bpmn文件
 bpmn
+
+#文件上传保存路径
+upload

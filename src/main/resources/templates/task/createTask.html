@@ -18,6 +18,12 @@
         .w-e-menu{
             z-index: 1!important;
         }
+        img{
+            width: 250px;
+        }
+        .layui-layer-wrap{
+            margin-top: 40px!important;
+        }
     </style>
 </head>
 <body>
@@ -26,11 +32,9 @@
         <blockquote class="layui-elem-quote layui-text">
             注意：如果没有您想要创建的类型，请联系系统管理员授权
         </blockquote>
-
         <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
             <legend>创建隐患</legend>
         </fieldset>
-
         <form class="layui-form">
             <div class="layui-form-item">
                 <label class="layui-form-label">隐患名称:</label>
@@ -69,16 +73,23 @@
         </form>
     </div>
 </div>
+
+<div id="tip" style="text-align: center;margin-top: 90px;display: none">
+    <i class="layui-icon layui-circle"
+       style="color: white;font-size:30px;font-weight:bold;background: #52C41A;padding: 20px;line-height: 80px;">&#xe605;</i>
+    <div style="font-size: 24px;color: #333;font-weight: 500;margin-top: 30px;">
+        创建成功
+    </div>
+</div>
 <script th:src="@{/layuimini/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
 <script th:src="@{/layuimini/js/lay-config.js}" charset="utf-8"></script>
 <script th:src="@{/js/url.js}"></script>
 <script th:inline="javaScript">
-    layui.use([ 'form', 'wangEditor'], function () {
+    layui.use([ 'form', 'wangEditor', 'miniTab'], function () {
         var $ = layui.$,
             form = layui.form,
-            wangEditor = layui.wangEditor;
-
-        var baseData;
+            wangEditor = layui.wangEditor,
+            miniTab = layui.miniTab;
 
         $.ajax({
             url: basePath + "/question/getQuestionFilterByUser",    //后台数据请求地址
@@ -93,10 +104,20 @@
         });
 
         var editor = new wangEditor('#editor');
+        editor.customConfig.showMenuTooltips = true;
         editor.customConfig.uploadImgServer = basePath + "/file/uploadFile";
-        editor.customConfig.uploadFileName = 'file';
+        editor.customConfig.uploadFileName = 'files';
         editor.customConfig.pasteFilterStyle = false;
         editor.customConfig.uploadImgMaxLength = 5;
+        editor.customConfig.uploadImgMaxSize = 10 * 1024 * 1024 // 10M
+        editor.customConfig.uploadImgParams = {
+            flag : 'remarks'
+        };
+        editor.customConfig.menus = [
+            'head', 'bold', 'fontSize', 'italic', 'underline', 'strikeThrough', 'indent',
+            'lineHeight', 'foreColor', 'backColor', 'link', 'list', 'todo', 'justify', 'quote', 'image',
+            'table', 'code', 'splitLine', 'undo', 'redo'
+        ];
         editor.customConfig.uploadImgHooks = {
             // 上传超时
             timeout: function (xhr, editor) {
@@ -104,14 +125,13 @@
             },
             // 如果服务器端返回的不是 {errno:0, data: [...]} 这种格式，可使用该配置
             customInsert: function (insertImg, result, editor) {
-                console.log(result);
-                if (result.code == 1) {
-                    var url = result.data.url;
-                    url.forEach(function (e) {
-                        insertImg(e);
-                    })
+                if (result.code == 0) {
+                    var data = result.data;
+                    for (let i = 0; i < data.length; i++) {
+                        insertImg(data[i].url);
+                    }
                 } else {
-                    layer.msg(result.msg);
+                    layer.msg(result.message,{icon : 2});
                 }
             }
         };
@@ -125,7 +145,6 @@
                 $("#variables").empty();
                 return false;
             }
-            baseData = data;
             $.ajax({
                 type: "GET",
                 url: basePath + "/task/getBeginVariable/" + data.value,
@@ -167,21 +186,34 @@
         });
 
         form.on('submit(commit)', function (data) {
-            console.log(editor.txt.html())
-
-            /*$.ajax({
+            $.ajax({
                 type: "POST",
                 url: basePath + "/task/createTask",
                 data: {
-                    name : baseData.field.name,
-                    description : data.field.description,
-                    priority : baseData.field.priority,
-                    typeId : baseData.field.typeId,
+                    name : data.field.name,
+                    description : editor.txt.html(),
+                    priority : data.field.priority,
+                    typeId : data.field.typeId,
                     variables : data.field
                 },
                 success: function (result) {
                     if(result.code === 0){
-                        step.next('#stepForm');
+                        layer.open({
+                            type: 1,
+                            title:'创建成功',
+                            area: '300px;',
+                            shade: 0.8,
+                            btn: ['再建一个', '不了谢谢'],
+                            btnAlign: 'c',
+                            moveType: 1, //拖拽模式，0或者1
+                            content: $("#tip"),
+                            yes: function (){
+                                location.reload();
+                            },
+                            btn2: function (){
+                                miniTab.deleteCurrentByIframe();
+                            }
+                        });
                     }
                     else{
                         layer.msg(result.message,{icon: 2});
@@ -191,7 +223,7 @@
                     layer.msg('系统错误，请联系系统管理员',{icon: 2});
                 }
             });
-            return false;*/
+            return false;
         });
     })
 </script>

@@ -26,5 +26,8 @@ public class Constants {
     public static final String LOGO_PATH = "images/logo.png";
 
     //bpmn上传路径
-    public static final String BPMN_PathMapping = "D:\\codewrite\\java\\hidden_danger_manage_system\\bpmn\\";
+    public static final String BPMN_PathMapping = System.getProperty("user.dir") + "/bpmn/";
+
+    public static final String FILE_UPLOADMapping = System.getProperty("user.dir") + "/upload/";
+
 }

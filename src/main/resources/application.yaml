@@ -41,6 +41,10 @@ spring:
   #thymeleaf 缓存
   thymeleaf:
     cache: false
+  #修改最大文件上限
+  servlet:
+    multipart:
+      max-file-size: 10MB
 mybatis-plus:
   mapper-locations: classpath*:com/hkb/hdms/mapper/xml/*.xml
   type-aliases-package: com.hkb.hdms.model.pojo
