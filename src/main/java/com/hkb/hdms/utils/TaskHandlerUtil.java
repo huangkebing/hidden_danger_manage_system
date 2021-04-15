@@ -92,43 +92,4 @@ public class TaskHandlerUtil {
 
         taskService.addCandidateUser(taskId, user.getEmail());
     }
-
-    public List<Problem> todoTaskSort(List<Problem> resources, List<String> resourceIds) {
-        if(resources.size() == 0 || resourceIds.size() == 0){
-            return resources;
-        }
-        List<Problem> result = new ArrayList<>();
-        if(!CollectionUtils.isEmpty(resources)){
-            //初始化result,为了排序
-            for(int i= 0; i < resources.size() ;i++){
-                result.add(new Problem());
-            }
-            for(Problem resource:resources){
-                String id = resource.getInstanceId();
-                result.set(resourceIds.indexOf(id), resource);
-            }
-        }
-        return result;
-    }
-
-    public List<Problem> historyTaskSort(List<Problem> resources, List<String> resourceIds, List<InstanceDto> instances) {
-        if(resources.size() == 0 || resourceIds.size() == 0 || instances.size() == 0){
-            return resources;
-        }
-        List<Problem> result = new ArrayList<>();
-        if(!CollectionUtils.isEmpty(resources)){
-            //初始化result,为了排序
-            for(int i= 0; i < resources.size() ;i++){
-                result.add(new Problem());
-            }
-            for(Problem resource:resources){
-                String id = resource.getInstanceId();
-                int index = resourceIds.indexOf(id);
-                InstanceDto processInstance = instances.get(index);
-                resource.setCreate(processInstance.getSolveTime());
-                result.set(index, resource);
-            }
-        }
-        return result;
-    }
 }

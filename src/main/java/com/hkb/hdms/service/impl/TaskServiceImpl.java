@@ -130,12 +130,7 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         User loginUser = (User) session.getAttribute(Constants.LOGIN_USER_KEY);
         List<String> groups = userGroupManager.getUserGroups(loginUser.getEmail());
 
-        List<String> instances = taskMapper.getTodoInstances(loginUser.getEmail(), groups, limit, offset);
-        List<Problem> problems = new ArrayList<>();
-        if(instances.size() != 0){
-            problems = this.list(new QueryWrapper<Problem>().in("instance_id", instances));
-            problems = taskHandlerUtil.todoTaskSort(problems, instances);
-        }
+        List<Problem> problems = taskMapper.getTodoInstances(loginUser.getEmail(), groups, limit, offset);
 
         map.put("data", problems);
         map.put("count", taskMapper.getTodoCount(loginUser.getEmail(), groups));
@@ -220,14 +215,7 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         User loginUser = (User) session.getAttribute(Constants.LOGIN_USER_KEY);
         List<String> groups = userGroupManager.getUserGroups(loginUser.getEmail());
 
-        List<InstanceDto> historyInstances = taskMapper.getHistoryInstances(loginUser.getEmail(), groups, limit, offset, begin, end);
-
-        List<String> instances = historyInstances.stream().map(InstanceDto::getInstanceId).collect(Collectors.toList());
-        List<Problem> problems = new ArrayList<>();
-        if(instances.size() != 0){
-            problems = this.list(new QueryWrapper<Problem>().in("instance_id", instances));
-            problems = taskHandlerUtil.historyTaskSort(problems, instances, historyInstances);
-        }
+        List<Problem> problems = taskMapper.getHistoryInstances(loginUser.getEmail(), groups, limit, offset, begin, end);
 
         map.put("data", problems);
         map.put("count", taskMapper.getHistoryCount(loginUser.getEmail(), groups, begin, end));
@@ -249,14 +237,8 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         User loginUser = (User) session.getAttribute(Constants.LOGIN_USER_KEY);
         List<String> groups = userGroupManager.getUserGroups(loginUser.getEmail());
 
-        List<InstanceDto> historyInstances = taskMapper.getSolveingInstances(loginUser.getEmail(), groups, limit, offset);
+        List<Problem> problems = taskMapper.getSolveingInstances(loginUser.getEmail(), groups, limit, offset);
 
-        List<String> instances = historyInstances.stream().map(InstanceDto::getInstanceId).collect(Collectors.toList());
-        List<Problem> problems = new ArrayList<>();
-        if(instances.size() != 0){
-            problems = this.list(new QueryWrapper<Problem>().in("instance_id", instances));
-            problems = taskHandlerUtil.todoTaskSort(problems, instances);
-        }
         map.put("data", problems);
         map.put("count", taskMapper.getSolveingCount(loginUser.getEmail(), groups));
         return map;

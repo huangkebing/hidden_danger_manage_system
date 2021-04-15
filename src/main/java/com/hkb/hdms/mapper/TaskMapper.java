@@ -1,7 +1,7 @@
 package com.hkb.hdms.mapper;
 
 import com.hkb.hdms.model.dto.InstanceDto;
-import org.activiti.engine.history.HistoricProcessInstance;
+import com.hkb.hdms.model.pojo.Problem;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -13,19 +13,19 @@ import java.util.List;
  */
 @Repository
 public interface TaskMapper {
-    List<String> getTodoInstances(@Param("email") String email, @Param("groups") List<String> groups, int limit , int offset);
+    List<Problem> getTodoInstances(@Param("email") String email, @Param("groups") List<String> groups, int limit , int offset);
 
     Long getTodoCount(@Param("email") String email, @Param("groups") List<String> groups);
 
-    List<InstanceDto> getHistoryInstances(@Param("email") String email, @Param("groups") List<String> groups, int limit , int offset, String begin, String end);
+    List<Problem> getHistoryInstances(@Param("email") String email, @Param("groups") List<String> groups, int limit , int offset, String begin, String end);
 
     Long getHistoryCount(@Param("email") String email, @Param("groups") List<String> groups, String begin, String end);
 
-    List<InstanceDto> getSolveingInstances(@Param("email") String email, @Param("groups") List<String> groups, int limit , int offset);
+    List<Problem> getSolveingInstances(@Param("email") String email, @Param("groups") List<String> groups, int limit , int offset);
 
     Long getSolveingCount(@Param("email") String email, @Param("groups") List<String> groups);
 
-    int deleteHiUsers(String taskId, String instanceId);
+    void deleteHiUsers(String taskId, String instanceId);
 
-    int deleteRuUsers(String taskId, String instanceId);
+    void deleteRuUsers(String taskId, String instanceId);
 }
