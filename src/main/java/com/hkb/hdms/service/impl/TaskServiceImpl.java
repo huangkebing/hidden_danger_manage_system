@@ -27,10 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -272,7 +269,7 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         Map<String, Object> map = new HashMap<>();
         Page<ProblemInfo> pageParam = new Page<>(page, limit);
         problemInfoMapper.selectPage(pageParam, new QueryWrapper<ProblemInfo>()
-                .eq("type", 2).or().eq("type",3)
+                .in("type", Arrays.asList(1,2))
                 .eq("problem_id",problemId)
                 .orderByDesc("modify"));
         map.put("data",pageParam.getRecords());
