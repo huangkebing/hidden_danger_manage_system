@@ -286,6 +286,19 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
     }
 
     @Override
+    public Map<String, Object> getFiles(Long problemId, int page, int limit) {
+        Map<String, Object> map = new HashMap<>();
+        Page<ProblemInfo> pageParam = new Page<>(page, limit);
+        problemInfoMapper.selectPage(pageParam, new QueryWrapper<ProblemInfo>()
+                .eq("type", 2).or().eq("type",3)
+                .eq("problem_id",problemId)
+                .orderByDesc("modify"));
+        map.put("data",pageParam.getRecords());
+        map.put("count",pageParam.getTotal());
+        return map;
+    }
+
+    @Override
     public R addRemarks(Long problemId, String remark) {
         User user = (User) session.getAttribute(Constants.LOGIN_USER_KEY);
         ProblemInfo problemInfo = new ProblemInfo();

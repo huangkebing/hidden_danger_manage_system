@@ -246,13 +246,20 @@
             ,isLazyimg: true
             ,done: function(page, next){ //加载下一页
                 //模拟插入
-                setTimeout(function(){
-                    var lis = [];
-                    for(var i = 0; i < 4; i++){
-                        lis.push('<li><span>123</span></li>')
+                $.ajax({
+                    url: basePath + "/task/getFiles/" + [[${problemId}]] + "/" + page + "/4",    //后台数据请求地址
+                    type: "GET",
+                    success: function(result){
+                        console.log(result);
+                        var data = result.data;
+                        var pageSize = Math.ceil(result.count / 4);
+                        var lis = [];
+                        for (let i = 0; i < data.length; i++) {
+                            lis.push(createFilesDiv(data[i]));
+                        }
+                        next(lis.join(''), page < pageSize);
                     }
-                    next(lis.join(''), page < 1); //假设总页数为 6
-                }, 500);
+                });
             },
             skin: 'btnStyle'
         });
@@ -282,17 +289,20 @@
 
         upload.render({
             elem: '#editFile',
-            url: 'https://httpbin.org/post',
+            url: basePath + '/file/uploadFile',
             accept: 'file',
+            data: {
+                problemId: [[${problemId}]]
+            },
             done: function(res){
-                layer.msg('上传成功');
+                location.reload();
             }
         });
 
         var taskEditer = new wangEditor('#editorTask');
         taskEditer.customConfig.showMenuTooltips = true;
         taskEditer.customConfig.uploadImgServer = basePath + "/file/uploadFile";
-        taskEditer.customConfig.uploadFileName = 'files';
+        taskEditer.customConfig.uploadFileName = 'file';
         taskEditer.customConfig.pasteFilterStyle = false;
         taskEditer.customConfig.uploadImgMaxLength = 5;
         taskEditer.customConfig.uploadImgMaxSize = 10 * 1024 * 1024 // 10M
@@ -329,7 +339,7 @@
         remarksEditer = new wangEditor('#editorRemarks');
         remarksEditer.customConfig.showMenuTooltips = true;
         remarksEditer.customConfig.uploadImgServer = basePath + "/file/uploadFile";
-        remarksEditer.customConfig.uploadFileName = 'files';
+        remarksEditer.customConfig.uploadFileName = 'file';
         remarksEditer.customConfig.pasteFilterStyle = false;
         remarksEditer.customConfig.uploadImgMaxLength = 5;
         remarksEditer.customConfig.uploadImgMaxSize = 10 * 1024 * 1024 // 10M
@@ -433,15 +443,7 @@
 
         $(".picture").delegate("img","click",function(){
             var target = $(event.target);
-            var index = layer.open({
-                title: '图片查看',
-                type: 1,
-                shade: 0.2,
-                maxmin:true,
-                shadeClose: true,
-                area: ['100%', '100%'],
-                content: '<div style="text-align: center;margin-top: 50px"><img src="'+ target.attr("src") +'" style="width: 60%;"/></div>'
-            });
+            window.open(target.attr("src"));
         });
 
         $("#addRemarks").click(function (){
@@ -491,7 +493,7 @@
             '               <i class="fa fa-edit" remarkid="' + remarksList.length + '"></i>' +
             '           </a>' +
             '           <a class="button2Link" onclick="deleteRemarks()" style="color: #ff3d3d;font-size: 15px;cursor: pointer">' +
-            '               <i class="fa fa-trash-o" remarkid="' + remarksList.length + '"></i>' +
+            '               <i class="fa fa-trash-o" remarkid="' + data.id + '"></i>' +
             '           </a>' +
             '      </div>' +
             '      <div class="layui-col-md12" style="color: grey;margin: 5px 15px 5px 0;padding-right:5px;font-size: 15px;text-align: right">' +
@@ -500,6 +502,21 @@
             '           <a class="nameLink" onclick="userLinkClick()" userid="' + data.userId + '">'+
                             data.username + '(' + data.email + ')  ' +
             '           </a>'+
+            '      </div>' +
+            '    </div>'
+    }
+
+    function createFilesDiv(data){
+        return '<div class="layui-row grid-demo grid-demo-bg1" style="border-radius:10px;border: #F2F2F2 5px solid;margin-bottom: 10px;">' +
+            '      <div class="layui-col-md11" style="margin-top: 4px;padding-left: 8px">' +
+            '           <a href="'+ data.filePath +'" target="_blank">' +
+                            data.context +
+            '           </a>'+
+            '      </div>' +
+            '      <div class="layui-col-md1" style="margin-top: 3px">' +
+            '           <a class="button2Link" onclick="deleteRemarks()" style="color: #ff3d3d;font-size: 15px;cursor: pointer">' +
+            '               <i class="fa fa-trash-o" remarkid="' + data.id + '"></i>' +
+            '           </a>' +
             '      </div>' +
             '    </div>'
     }
@@ -567,12 +584,12 @@
 
     function deleteRemarks() {
         var target = $(event.target);
-        layer.confirm('你确定要删除该备注吗?', {icon: 3, title: '提示'}, function (index) {
+        layer.confirm('你确定要删除该内容吗?', {icon: 3, title: '提示'}, function (index) {
             $.ajax({
                 type: "POST",
                 url: basePath + "/task/deleteRemarks",
                 data: {
-                    infoId: remarksList[target.attr("remarkid") - 1].id
+                    infoId: target.attr("remarkid")
                 },
                 success: function (result) {
                     if (result.code === 0) {

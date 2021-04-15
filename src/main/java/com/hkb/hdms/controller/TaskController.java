@@ -107,6 +107,12 @@ public class TaskController {
         return taskService.getRemarks(problemId, page, limit);
     }
 
+    @GetMapping("/getFiles/{problemId}/{page}/{limit}")
+    @ResponseBody
+    public Object getFiles(@PathVariable int limit, @PathVariable int page, @PathVariable Long problemId){
+        return taskService.getFiles(problemId, page, limit);
+    }
+
     @PostMapping("/addRemarks")
     @ResponseBody
     public Object addRemarks(Long problemId, String remark){

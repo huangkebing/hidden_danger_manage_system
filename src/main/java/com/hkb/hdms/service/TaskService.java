@@ -32,6 +32,8 @@ public interface TaskService extends IService<Problem> {
 
     Map<String, Object> getRemarks(Long problemId, int page, int limit);
 
+    Map<String, Object> getFiles(Long problemId, int page, int limit);
+
     R addRemarks(Long problemId, String remark);
 
     R updateRemarks(ProblemInfo info);

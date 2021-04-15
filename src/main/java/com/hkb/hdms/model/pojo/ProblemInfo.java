@@ -30,6 +30,9 @@ public class ProblemInfo {
 
     private String email;
 
+    @TableField("file_path")
+    private String filePath;
+
     @TableField(value = "`create`", fill = FieldFill.INSERT)
     private Date create;
 
