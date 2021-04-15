@@ -7,14 +7,17 @@
         <result column="live" property="live"/>
         <result column="create" property="create"/>
         <result column="modify" property="modify"/>
+        <result column="name" property="username"/>
+        <result column="mobile" property="phone"/>
+        <result column="remark" property="remark"/>
         <association property="role" javaType="com.hkb.hdms.model.pojo.UserRole">
             <result column="rid" property="id"/>
-            <result column="name" property="name"/>
+            <result column="rname" property="name"/>
             <result column="question" property="question"/>
         </association>
     </resultMap>
     <select id="selectUsers" parameterType="com.hkb.hdms.model.pojo.User" resultMap="selectMap">
-        select u.id, u.email, u.live, u.`create`, u.modify, r.id 'rid', r.name, r.question
+        select u.id, u.email, u.live, u.`create`, u.modify, r.id 'rid', r.name as rname, r.question
         from hdms.hdms_user as u left join
         hdms_role as r
         on u.role = r.id
@@ -29,6 +32,14 @@
                 and u.live = #{user.live}
             </if>
         </where>
+    </select>
+
+    <select id="selectUserById" parameterType="Long" resultMap="selectMap">
+        select u.id, u.name, u.mobile, u.remark, u.email, u.live, u.`create`, u.modify, r.id 'rid', r.name as rname, r.question
+        from hdms.hdms_user as u left join
+        hdms_role as r
+        on u.role = r.id
+        where u.id = #{userId}
     </select>
 
     <select id="selectUsersByTypeAndRole" resultType="com.hkb.hdms.model.pojo.User">

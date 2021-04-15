@@ -204,6 +204,11 @@ public class SysUserServiceImpl extends ServiceImpl<UserMapper, User> implements
         return ReturnConstants.SUCCESS;
     }
 
+    @Override
+    public UserDto getUserDtoById(Long userId) {
+        return userMapper.selectUserById(userId);
+    }
+
     private List<Long> formatQuestionIds(String questionIds) {
         List<Long> res = new ArrayList<>();
         String[] strs = questionIds.split(",");

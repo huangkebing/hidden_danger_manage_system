@@ -4,10 +4,7 @@ import com.hkb.hdms.model.pojo.User;
 import com.hkb.hdms.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 处理用户信息相关接口
@@ -106,5 +103,11 @@ public class UserController {
     @ResponseBody
     public Object userToQuestion(Long userId, String questionIds){
         return sysUserService.userToQuestion(userId, questionIds);
+    }
+
+    @GetMapping("/getUserById/{userId}")
+    @ResponseBody
+    public Object getUserById(@PathVariable Long userId){
+        return sysUserService.getUserDtoById(userId);
     }
 }

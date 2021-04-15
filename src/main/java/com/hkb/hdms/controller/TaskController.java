@@ -101,6 +101,12 @@ public class TaskController {
         return taskService.updateProblem(problem);
     }
 
+    @GetMapping("/getRemarks/{problemId}/{page}/{limit}")
+    @ResponseBody
+    public Object getRemarks(@PathVariable int limit, @PathVariable int page, @PathVariable Long problemId){
+        return taskService.getRemarks(problemId, page, limit);
+    }
+
     @PostMapping("/addRemarks")
     @ResponseBody
     public Object addRemarks(Long problemId, String remark){
@@ -114,6 +120,7 @@ public class TaskController {
     }
 
     @PostMapping("/deleteRemarks")
+    @ResponseBody
     public Object deleteRemarks(Long infoId){
         return taskService.deleteRemarks(infoId);
     }

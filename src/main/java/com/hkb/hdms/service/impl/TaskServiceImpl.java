@@ -2,6 +2,7 @@ package com.hkb.hdms.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hkb.hdms.base.Constants;
 import com.hkb.hdms.base.R;
@@ -269,6 +270,19 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         else {
             return ReturnConstants.FAILURE;
         }
+    }
+
+    @Override
+    public Map<String, Object> getRemarks(Long problemId, int page, int limit) {
+        Map<String, Object> map = new HashMap<>();
+        Page<ProblemInfo> pageParam = new Page<>(page, limit);
+        problemInfoMapper.selectPage(pageParam, new QueryWrapper<ProblemInfo>()
+                .eq("type", 1)
+                .eq("problem_id",problemId)
+                .orderByDesc("modify"));
+        map.put("data",pageParam.getRecords());
+        map.put("count",pageParam.getTotal());
+        return map;
     }
 
     @Override

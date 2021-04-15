@@ -3,6 +3,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <link rel="stylesheet" th:href="@{/layuimini/lib/layui-v2.5.5/css/layui.css}" media="all">
 <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
+<link rel="stylesheet" th:href="@{/layuimini/lib/font-awesome-4.7.0/css/font-awesome.min.css}" media="all">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
@@ -24,6 +25,61 @@
         z-index: 1!important;
     }
     body .btnStyle .layui-layer-btn a{background:#019688;border: #019688;padding: 4px 20px}
+    .nameLink{
+        cursor: pointer;
+        color: #1E9FFF;
+    }
+    .nameLink:hover{
+        color: #1aa094;
+    }
+    img{
+        width: 250px;
+        cursor: pointer;
+    }
+    a {
+        color: #1E9FFF;
+    }
+    table ,table td, table th{
+        border: 1px solid #999;
+        border-spacing: 0;/*去掉单元格间隙*/
+    }
+    pre{
+        background-color: #f1f1f1;
+        border-radius: 3px;
+        padding: 3px 5px;
+        margin: 0 3px;
+    }
+    blockquote{
+        display: block;
+        border-left: 8px solid #d0e5f2;
+        padding: 5px 10px;
+        margin: 10px 0;
+        line-height: 1.4;
+        font-size: 100%;
+        background-color: #f1f1f1;
+    }
+    .picture ol,.picture ul{
+        margin: 10px 0 10px 20px;
+    }
+    .picture ol li,.w-e-text ol li{
+        list-style-type: decimal;
+    }
+    .picture ul li,.w-e-text ul li{
+        list-style-type: disc;
+    }
+    .userTipItem{
+        margin-left: 50px;margin-top: 10px;margin-bottom: 10px;
+        vertical-align: top;
+    }
+    .userTipIcon{
+        color: grey;
+        vertical-align: top;
+        margin-top: 3px;
+    }
+    .userTipHr{
+        margin-left: 50px;
+        margin-right: 50px;
+    }
 </style>
 <body>
 <div class="layui-col-md8">
@@ -31,16 +87,17 @@
         <div class="layuimini-main layui-row">
             <div id="createUser"></div>
             <div id="title"></div>
-            <div id="description"></div>
+            <div id="description" class="picture"></div>
             <div id="typeName"></div>
             <div id="priorityDiv"></div>
             <div>
-                <button type="button" class="layui-btn layui-btn-normal">添加备注</button>
+                <button type="button" id="addRemarks" class="layui-btn layui-btn-normal">添加备注</button>
                 <button type="button" id="editTaskBtn" class="layui-btn layui-btn-normal">修改隐患</button>
+                <button type="button" id="editFile" class="layui-btn layui-btn-normal">上传附件</button>
             </div>
             <div id="btnBar"></div>
             <blockquote class="layui-elem-quote" style="margin-top: 10px">备注信息</blockquote>
-            <ul class="flow-default" id="remarksFlow"></ul>
+            <ul class="flow-default picture" id="remarksFlow"></ul>
         </div>
     </div>
 </div>
@@ -100,6 +157,49 @@
         </div>
     </div>
 </from>
+
+<from id="remarksForm" class="layui-form" style="display: none">
+    <div class="layuimini-container">
+        <div class="layuimini-main">
+            <div class="layui-form-item">
+                <label class="layui-form-label">备注信息<span> &nbsp;</span></label>
+                <div id="editorRemarks">
+                </div>
+            </div>
+        </div>
+    </div>
+</from>
+<div id="userTip" style="display: none">
+    <div class="userTipItem">
+        <i class="fa fa-user-o userTipIcon"></i>
+        <div id="userTipName" style="display: inline-block;margin-left: 10px">
+        </div>
+    </div>
+    <hr class="userTipHr">
+    <div class="userTipItem">
+        <i class="fa fa-address-book-o userTipIcon"></i>
+        <div id="userTipRole" style="display: inline-block;margin-left: 10px">
+        </div>
+    </div>
+    <hr class="userTipHr">
+    <div class="userTipItem">
+        <i class="fa fa-envelope-o userTipIcon"></i>
+        <div id="userTipEmail" style="display: inline-block;margin-left: 10px">
+        </div>
+    </div>
+    <hr class="userTipHr">
+    <div class="userTipItem">
+        <i class="fa fa-phone userTipIcon"></i>
+        <div id="userTipPhone" style="display: inline-block;margin-left: 10px">
+        </div>
+    </div>
+    <hr class="userTipHr">
+    <div class="userTipItem">
+        <i class="fa fa-pencil-square-o userTipIcon"></i>
+        <div id="userTipRemark" style="display: inline-block;margin-left: 10px;margin-right: 10px;width: 200px">
+        </div>
+    </div>
+</div>
 <script th:src="@{/layuimini/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
 <script th:src="@{/layuimini/lib/jquery-3.4.1/jquery-3.4.1.min.js}" charset="utf-8"></script>
 <script th:src="@{/layuimini/js/lay-config.js}" charset="utf-8"></script>
@@ -109,11 +209,15 @@
     var currTaskId;
     var form;
     var layerIndex;
+    var remarksList = new Array();
+    var remarksEditer;
 
-    layui.use(['form', 'table', 'flow', 'wangEditor'], function () {
+    layui.use(['form', 'table', 'flow', 'wangEditor', 'upload'], function () {
         form = layui.form;
+        var $ = layui.$;
         var flow = layui.flow,
-            wangEditor = layui.wangEditor;
+            wangEditor = layui.wangEditor,
+            upload = layui.upload;
         var taskEditer;
 
         $.ajax({
@@ -141,8 +245,6 @@
             ,isAuto: false
             ,isLazyimg: true
             ,done: function(page, next){ //加载下一页
-                console.log(page);
-                console.log(next);
                 //模拟插入
                 setTimeout(function(){
                     var lis = [];
@@ -161,21 +263,105 @@
             ,isAuto: false
             ,isLazyimg: true
             ,done: function(page, next){ //加载下一页
-                console.log(page);
-                console.log(next);
-                //模拟插入
-                setTimeout(function(){
-                    var lis = [];
-                    for(var i = 0; i < 4; i++){
-                        lis.push('<li><span>456</span></li>')
+                $.ajax({
+                    url: basePath + "/task/getRemarks/" + [[${problemId}]] + "/" + page + "/4",    //后台数据请求地址
+                    type: "GET",
+                    success: function(result){
+                        var data = result.data;
+                        var pageSize = Math.ceil(result.count / 4);
+                        var lis = [];
+                        for (let i = 0; i < data.length; i++) {
+                            lis.push(createRemarksDiv(data[i]));
+                        }
+                        next(lis.join(''), page < pageSize);
                     }
-                    next(lis.join(''), page < 6); //假设总页数为 6
-                }, 500);
+                });
             },
             skin: 'btnStyle'
         });
 
-        taskEditer = editer('#editorTask');
+        upload.render({
+            elem: '#editFile',
+            url: 'https://httpbin.org/post',
+            accept: 'file',
+            done: function(res){
+                layer.msg('上传成功');
+            }
+        });
+
+        var taskEditer = new wangEditor('#editorTask');
+        taskEditer.customConfig.showMenuTooltips = true;
+        taskEditer.customConfig.uploadImgServer = basePath + "/file/uploadFile";
+        taskEditer.customConfig.uploadFileName = 'files';
+        taskEditer.customConfig.pasteFilterStyle = false;
+        taskEditer.customConfig.uploadImgMaxLength = 5;
+        taskEditer.customConfig.uploadImgMaxSize = 10 * 1024 * 1024 // 10M
+        taskEditer.customConfig.uploadImgParams = {
+            flag : 'remarks'
+        };
+        taskEditer.customConfig.menus = [
+            'head', 'bold', 'fontSize', 'italic', 'underline', 'strikeThrough', 'indent',
+            'lineHeight', 'foreColor', 'backColor', 'link', 'list', 'todo', 'justify', 'quote', 'image',
+            'table', 'code', 'splitLine', 'undo', 'redo'
+        ];
+        taskEditer.customConfig.uploadImgHooks = {
+            // 上传超时
+            timeout: function (xhr, editor) {
+                layer.msg('上传超时！')
+            },
+            // 如果服务器端返回的不是 {errno:0, data: [...]} 这种格式，可使用该配置
+            customInsert: function (insertImg, result, editor) {
+                if (result.code == 0) {
+                    var data = result.data;
+                    for (let i = 0; i < data.length; i++) {
+                        insertImg(data[i].url);
+                    }
+                } else {
+                    layer.msg(result.message,{icon : 2});
+                }
+            }
+        };
+        taskEditer.customConfig.customAlert = function (info) {
+            layer.msg(info);
+        };
+        taskEditer.create();
+
+        remarksEditer = new wangEditor('#editorRemarks');
+        remarksEditer.customConfig.showMenuTooltips = true;
+        remarksEditer.customConfig.uploadImgServer = basePath + "/file/uploadFile";
+        remarksEditer.customConfig.uploadFileName = 'files';
+        remarksEditer.customConfig.pasteFilterStyle = false;
+        remarksEditer.customConfig.uploadImgMaxLength = 5;
+        remarksEditer.customConfig.uploadImgMaxSize = 10 * 1024 * 1024 // 10M
+        remarksEditer.customConfig.uploadImgParams = {
+            flag : 'remarks'
+        };
+        remarksEditer.customConfig.menus = [
+            'head', 'bold', 'fontSize', 'italic', 'underline', 'strikeThrough', 'indent',
+            'lineHeight', 'foreColor', 'backColor', 'link', 'list', 'todo', 'justify', 'quote', 'image',
+            'table', 'code', 'splitLine', 'undo', 'redo'
+        ];
+        remarksEditer.customConfig.uploadImgHooks = {
+            // 上传超时
+            timeout: function (xhr, editor) {
+                layer.msg('上传超时！')
+            },
+            // 如果服务器端返回的不是 {errno:0, data: [...]} 这种格式，可使用该配置
+            customInsert: function (insertImg, result, editor) {
+                if (result.code == 0) {
+                    var data = result.data;
+                    for (let i = 0; i < data.length; i++) {
+                        insertImg(data[i].url);
+                    }
+                } else {
+                    layer.msg(result.message,{icon : 2});
+                }
+            }
+        };
+        remarksEditer.customConfig.customAlert = function (info) {
+            layer.msg(info);
+        };
+        remarksEditer.create();
 
         //表单提交
         form.on('submit(operate)', function (data) {
@@ -240,10 +426,168 @@
                             layer.msg('系统错误，请联系系统管理员',{icon: 2});
                         }
                     });
+                    return false;
                 }
             });
         });
+
+        $(".picture").delegate("img","click",function(){
+            var target = $(event.target);
+            var index = layer.open({
+                title: '图片查看',
+                type: 1,
+                shade: 0.2,
+                maxmin:true,
+                shadeClose: true,
+                area: ['100%', '100%'],
+                content: '<div style="text-align: center;margin-top: 50px"><img src="'+ target.attr("src") +'" style="width: 60%;"/></div>'
+            });
+        });
+
+        $("#addRemarks").click(function (){
+            remarksEditer.txt.html("");
+            var index = layer.open({
+                title: '添加备注',
+                type: 1,
+                area: ['850px', '350px'],
+                content: $("#remarksForm"),
+                btn: ['提交'],
+                btnAlign: 'c',
+                skin: 'btnStyle',
+                yes: function(data){
+                    $.ajax({
+                        type: "POST",
+                        url: basePath + "/task/addRemarks",
+                        data: {
+                            problemId : [[${problemId}]],
+                            remark : remarksEditer.txt.html()
+                        },
+                        success: function (result) {
+                            if(result.code === 0){
+                                location.reload();
+                            }
+                            else{
+                                layer.msg(result.message,{icon: 2});
+                            }
+                        },
+                        error: function () {
+                            layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                        }
+                    });
+                    return false;
+                }
+            })
+        });
     });
+
+    function createRemarksDiv(data){
+        remarksList.push(data);
+        return '<div class="layui-row grid-demo grid-demo-bg1" style="border-radius:16px;border: #F2F2F2 8px solid;margin-bottom: 10px;">' +
+            '      <div class="layui-col-md11" style="margin-top: 8px;padding-left: 8px">\n' +
+                        data.context +
+            '      </div>' +
+            '      <div class="layui-col-md1" style="margin-top: 10px">' +
+            '           <a class="button1Link" onclick="editRemarks()" style="margin-left:10px;margin-right: 10px;color: #1e88e5;font-size: 15px;cursor: pointer">' +
+            '               <i class="fa fa-edit" remarkid="' + remarksList.length + '"></i>' +
+            '           </a>' +
+            '           <a class="button2Link" onclick="deleteRemarks()" style="color: #ff3d3d;font-size: 15px;cursor: pointer">' +
+            '               <i class="fa fa-trash-o" remarkid="' + remarksList.length + '"></i>' +
+            '           </a>' +
+            '      </div>' +
+            '      <div class="layui-col-md12" style="color: grey;margin: 5px 15px 5px 0;padding-right:5px;font-size: 15px;text-align: right">' +
+            '           <i class="fa fa-clock-o"></i>&nbsp;' +
+                            layui.util.toDateString(data.modify, 'yyyy-MM-dd HH:mm:ss') + '&nbsp;By&nbsp;' +
+            '           <a class="nameLink" onclick="userLinkClick()" userid="' + data.userId + '">'+
+                            data.username + '(' + data.email + ')  ' +
+            '           </a>'+
+            '      </div>' +
+            '    </div>'
+    }
+
+    function userLinkClick() {
+        var target = $(event.target);
+        $.ajax({
+            type: "GET",
+            url: basePath + "/user/getUserById/" + target.attr("userid"),
+            success: function (result) {
+                console.log(result);
+                $("#userTipName").html(result.username);
+                $("#userTipRole").html(result.role.name);
+                $("#userTipEmail").html(result.email);
+                $("#userTipPhone").html(result.phone);
+                $("#userTipRemark").html(result.remark);
+                var index = layer.open({
+                    title: '用户信息',
+                    type: 1,
+                    area: ['300px', '300px'],
+                    content: $("#userTip"),
+                })
+            },
+            error: function () {
+                layer.msg('系统错误，请联系系统管理员',{icon: 2});
+            }
+        });
+    }
+
+    function editRemarks() {
+        var target = $(event.target);
+        remarksEditer.txt.html(remarksList[target.attr("remarkid") - 1].context);
+        var index = layer.open({
+            title: '修改备注',
+            type: 1,
+            area: ['850px', '350px'],
+            content: $("#remarksForm"),
+            btn: ['提交'],
+            btnAlign: 'c',
+            skin: 'btnStyle',
+            yes: function(data){
+                $.ajax({
+                    type: "POST",
+                    url: basePath + "/task/updateRemarks",
+                    data: {
+                        id : remarksList[target.attr("remarkid") - 1].id,
+                        context : remarksEditer.txt.html()
+                    },
+                    success: function (result) {
+                        if(result.code === 0){
+                            location.reload();
+                        }
+                        else{
+                            layer.msg(result.message,{icon: 2});
+                        }
+                    },
+                    error: function () {
+                        layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                    }
+                });
+                return false;
+            }
+        })
+    }
+
+    function deleteRemarks() {
+        var target = $(event.target);
+        layer.confirm('你确定要删除该备注吗?', {icon: 3, title: '提示'}, function (index) {
+            $.ajax({
+                type: "POST",
+                url: basePath + "/task/deleteRemarks",
+                data: {
+                    infoId: remarksList[target.attr("remarkid") - 1].id
+                },
+                success: function (result) {
+                    if (result.code === 0) {
+                        location.reload();
+                    } else {
+                        layer.msg(result.message, {icon: 2});
+                    }
+                },
+                error: function () {
+                    layer.msg('系统错误，请联系系统管理员', {icon: 2});
+                }
+            });
+            layer.close(index);
+        })
+    }
 
     function task() {
         var target = $(event.target);
@@ -289,46 +633,6 @@
                 $("#reset").click();
             }
         });
-    }
-
-    function editer(id){
-        var editor = new wangEditor(id);
-        editor.customConfig.showMenuTooltips = true;
-        editor.customConfig.uploadImgServer = basePath + "/file/uploadFile";
-        editor.customConfig.uploadFileName = 'files';
-        editor.customConfig.pasteFilterStyle = false;
-        editor.customConfig.uploadImgMaxLength = 5;
-        editor.customConfig.uploadImgMaxSize = 10 * 1024 * 1024 // 10M
-        editor.customConfig.uploadImgParams = {
-            flag : 'remarks'
-        };
-        editor.customConfig.menus = [
-            'head', 'bold', 'fontSize', 'italic', 'underline', 'strikeThrough', 'indent',
-            'lineHeight', 'foreColor', 'backColor', 'link', 'list', 'todo', 'justify', 'quote', 'image',
-            'table', 'code', 'splitLine', 'undo', 'redo'
-        ];
-        editor.customConfig.uploadImgHooks = {
-            // 上传超时
-            timeout: function (xhr, editor) {
-                layer.msg('上传超时！')
-            },
-            // 如果服务器端返回的不是 {errno:0, data: [...]} 这种格式，可使用该配置
-            customInsert: function (insertImg, result, editor) {
-                if (result.code == 0) {
-                    var data = result.data;
-                    for (let i = 0; i < data.length; i++) {
-                        insertImg(data[i].url);
-                    }
-                } else {
-                    layer.msg(result.message,{icon : 2});
-                }
-            }
-        };
-        editor.customConfig.customAlert = function (info) {
-            layer.msg(info);
-        };
-        editor.create();
-        return editor;
     }
 </script>
 </body>

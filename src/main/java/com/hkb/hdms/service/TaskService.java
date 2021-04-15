@@ -30,6 +30,8 @@ public interface TaskService extends IService<Problem> {
 
     R updateProblem(Problem problem);
 
+    Map<String, Object> getRemarks(Long problemId, int page, int limit);
+
     R addRemarks(Long problemId, String remark);
 
     R updateRemarks(ProblemInfo info);
