@@ -6,6 +6,7 @@ import com.hkb.hdms.model.pojo.Problem;
 import com.hkb.hdms.model.pojo.ProblemInfo;
 import com.hkb.hdms.model.pojo.ProcessVariable;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -39,4 +40,8 @@ public interface TaskService extends IService<Problem> {
     R updateRemarks(ProblemInfo info);
 
     R deleteRemarks(Long infoId);
+
+    R transferTask(Long problemId, String email);
+
+    InputStream speedOfProgress(Long problemId);
 }

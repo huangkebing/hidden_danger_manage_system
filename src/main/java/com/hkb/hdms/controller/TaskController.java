@@ -3,11 +3,16 @@ package com.hkb.hdms.controller;
 import com.hkb.hdms.model.pojo.Problem;
 import com.hkb.hdms.model.pojo.ProblemInfo;
 import com.hkb.hdms.service.TaskService;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Date;
 import java.util.Map;
 
@@ -129,5 +134,27 @@ public class TaskController {
     @ResponseBody
     public Object deleteRemarks(Long infoId){
         return taskService.deleteRemarks(infoId);
+    }
+
+    @PostMapping("/transferTask")
+    @ResponseBody
+    public Object transferTask(Long problemId, String email){
+        return taskService.transferTask(problemId, email);
+    }
+
+    @GetMapping("speedOfProgress/{problemId}")
+    public void speedOfProgress(HttpServletResponse response, @PathVariable Long problemId) {
+        InputStream image = taskService.speedOfProgress(problemId);
+        try {
+            byte[] imageBytes = IOUtils.toByteArray(image);
+            image.close();
+            response.setContentType("text/xml"); // 设置返回的文件类型
+            OutputStream os = response.getOutputStream();
+            os.write(imageBytes);
+            os.flush();
+            os.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

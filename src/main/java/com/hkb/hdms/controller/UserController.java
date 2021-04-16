@@ -110,4 +110,10 @@ public class UserController {
     public Object getUserById(@PathVariable Long userId){
         return sysUserService.getUserDtoById(userId);
     }
+
+    @GetMapping("/getTransferTaskUser/{problemId}")
+    @ResponseBody
+    public Object getTransferTaskUser(@PathVariable Long problemId){
+        return sysUserService.getTransferTaskUser(problemId);
+    }
 }

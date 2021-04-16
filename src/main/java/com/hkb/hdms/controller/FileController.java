@@ -73,13 +73,7 @@ public class FileController {
                 info.setUserId(user.getId());
                 info.setUsername(user.getName());
                 info.setProblemId(problemId);
-                if(suffixName.equals(".jpg") || suffixName.equals(".png")
-                        || suffixName.equals(".jpeg") || suffixName.equals("gif") || suffixName.equals("bmp")){
-                    info.setType(2);
-                }
-                else {
-                    info.setType(3);
-                }
+                info.setType(2);
                 problemInfoMapper.insert(info);
             }
             res.add(dataMap);

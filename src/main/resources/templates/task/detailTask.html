@@ -94,6 +94,8 @@
                 <button type="button" id="addRemarks" class="layui-btn layui-btn-normal">添加备注</button>
                 <button type="button" id="editTaskBtn" class="layui-btn layui-btn-normal">修改隐患</button>
                 <button type="button" id="editFile" class="layui-btn layui-btn-normal">上传附件</button>
+                <button type="button" id="taskToOther" class="layui-btn layui-btn-normal">任务转交</button>
+                <button type="button" id="process" class="layui-btn layui-btn-normal">处理进度</button>
             </div>
             <div id="btnBar"></div>
             <blockquote class="layui-elem-quote" style="margin-top: 10px">备注信息</blockquote>
@@ -200,6 +202,25 @@
         </div>
     </div>
 </div>
+
+<form id="tranferForm" class="layui-form" style="display: none">
+    <div class="layui-form-item" style="margin-top: 20px">
+        <label class="layui-form-label">移交用户<span style="color: red"> *</span></label>
+        <div class="layui-input-block" style="width: 300px;">
+            <select class="layui-form-select" name="email" id="email" lay-verify="" lay-search>
+                <option value="" selected>请选择(可搜索)</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item" style="margin-left: 70px">
+        <div class="layui-input-block">
+            <button class="layui-btn" id="submit" style="padding: 0 20px" lay-submit="" lay-filter="tranfer">提交
+            </button>
+            <button type="reset" id="reset" style="visibility: hidden" class="layui-btn">重置</button>
+        </div>
+    </div>
+</form>
 <script th:src="@{/layuimini/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
 <script th:src="@{/layuimini/lib/jquery-3.4.1/jquery-3.4.1.min.js}" charset="utf-8"></script>
 <script th:src="@{/layuimini/js/lay-config.js}" charset="utf-8"></script>
@@ -236,6 +257,18 @@
                 $("#description").html(data.problem.description);
                 $("#typeName").html(data.problem.typeName);
                 $("#priorityDiv").html(data.problem.priority);
+            }
+        });
+
+        $.ajax({
+            url: basePath + "/user/getTransferTaskUser/" + [[${problemId}]],    //后台数据请求地址
+            type: "GET",
+            success: function(result){
+                for (var index = 0;index < result.length;index++){
+                    var dataTmp = result[index];
+                    $('#email').append(new Option(dataTmp.name + "(" + dataTmp.email + ")",dataTmp.email));//往下拉菜单里添加元素
+                }
+                form.render();
             }
         });
 
@@ -480,6 +513,55 @@
                 }
             })
         });
+
+        $("#taskToOther").click(function (){
+            var index = layer.open({
+                title: '移交任务',
+                type: 1,
+                area: ['450px', '240px'],
+                content: $("#tranferForm"),
+                cancel: function(layero,index){
+                    $("#reset").click();
+                }
+            });
+        })
+
+        //表单提交
+        form.on('submit(tranfer)', function (data) {
+            $.ajax({
+                type: "POST",
+                url: basePath + "/task/transferTask",
+                data: {
+                    email : data.field.email,
+                    problemId : [[${problemId}]]
+                },
+                success: function (result) {
+                    if(result.code === 0){
+                        layer.msg("移交任务成功！",{icon: 1});
+                    }
+                    else{
+                        layer.msg(result.message,{icon: 2});
+                    }
+                },
+                error: function () {
+                    layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                }
+            });
+        });
+
+        $("#process").click(function (){
+            var src = basePath + "/task/speedOfProgress/" + [[${problemId}]];
+            layer.open({
+                title: '处理进度',
+                type: 1,
+                shade: 0.2,
+                maxmin:true,
+                shadeClose: true,
+                area: ['100%', '100%'],
+                shadeClose: true,
+                content: '<iframe src="'+ src+'" width="100%" height="100%"></iframe>'
+            });
+        })
     });
 
     function createRemarksDiv(data){

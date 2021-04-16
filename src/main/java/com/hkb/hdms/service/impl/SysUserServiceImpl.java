@@ -8,10 +8,14 @@ import com.hkb.hdms.base.MailConstants;
 import com.hkb.hdms.base.R;
 import com.hkb.hdms.base.Constants;
 import com.hkb.hdms.base.ReturnConstants;
+import com.hkb.hdms.mapper.ProblemMapper;
+import com.hkb.hdms.mapper.RoleMapper;
 import com.hkb.hdms.mapper.UserMapper;
 import com.hkb.hdms.mapper.UserTypeMapper;
 import com.hkb.hdms.model.dto.UserDto;
+import com.hkb.hdms.model.pojo.Problem;
 import com.hkb.hdms.model.pojo.User;
+import com.hkb.hdms.model.pojo.UserRole;
 import com.hkb.hdms.model.pojo.UserType;
 import com.hkb.hdms.service.SysUserService;
 import com.hkb.hdms.utils.UUIDUtil;
@@ -45,12 +49,18 @@ public class SysUserServiceImpl extends ServiceImpl<UserMapper, User> implements
 
     private final UserTypeMapper userTypeMapper;
 
+    private final ProblemMapper problemMapper;
+
+    private final RoleMapper roleMapper;
+
     @Autowired
-    public SysUserServiceImpl(HttpSession session, UserMapper userMapper, RegisterMailSender mailSender, UserTypeMapper userTypeMapper) {
+    public SysUserServiceImpl(HttpSession session, UserMapper userMapper, RegisterMailSender mailSender, UserTypeMapper userTypeMapper, ProblemMapper problemMapper, RoleMapper roleMapper) {
         this.session = session;
         this.userMapper = userMapper;
         this.mailSender = mailSender;
         this.userTypeMapper = userTypeMapper;
+        this.problemMapper = problemMapper;
+        this.roleMapper = roleMapper;
     }
 
     @Override
@@ -207,6 +217,24 @@ public class SysUserServiceImpl extends ServiceImpl<UserMapper, User> implements
     @Override
     public UserDto getUserDtoById(Long userId) {
         return userMapper.selectUserById(userId);
+    }
+
+    @Override
+    public List<User> getTransferTaskUser(Long problemId) {
+        Problem problem = problemMapper.selectById(problemId);
+        User user = (User) session.getAttribute(Constants.LOGIN_USER_KEY);
+        UserRole userRole = roleMapper.selectById(user.getRole());
+        List<User> users;
+        //该角色是否参与问题分配，不参与直接全部查出来
+        if(userRole.getQuestion() == 0){
+            users = userMapper.selectList(new QueryWrapper<User>()
+                    .eq("role", user.getRole())
+                    .eq("live",1));
+        }
+        else{
+            users = userMapper.selectUsersByTypeAndRole((long) user.getRole(), problem.getTypeId());
+        }
+        return users.stream().filter(fUser -> !fUser.getId().equals(user.getId())).collect(Collectors.toList());
     }
 
     private List<Long> formatQuestionIds(String questionIds) {

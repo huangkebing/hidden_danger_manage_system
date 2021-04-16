@@ -5,6 +5,7 @@ import com.hkb.hdms.base.R;
 import com.hkb.hdms.model.dto.UserDto;
 import com.hkb.hdms.model.pojo.User;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,4 +28,6 @@ public interface SysUserService extends IService<User> {
     R userToQuestion(Long userId, String questionIds);
 
     UserDto getUserDtoById(Long userId);
+
+    List<User> getTransferTaskUser(Long problemId);
 }
