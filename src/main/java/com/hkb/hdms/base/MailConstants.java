@@ -10,4 +10,6 @@ public class MailConstants {
     public static final String VALIDATE_CODE = "hdms系统登录验证码";
 
     public static final String REGISTER = "hdms系统注册成功通知";
+
+    public static final String CRON = "hdms每日待处理隐患提醒";
 }

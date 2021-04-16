@@ -15,7 +15,7 @@ import com.hkb.hdms.model.pojo.User;
 import com.hkb.hdms.model.pojo.UserType;
 import com.hkb.hdms.service.SysUserService;
 import com.hkb.hdms.utils.UUIDUtil;
-import com.hkb.hdms.utils.impl.RegisterMailSender;
+import com.hkb.hdms.utils.RegisterMailSender;
 import com.mysql.cj.util.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -116,7 +116,7 @@ public class SysUserServiceImpl extends ServiceImpl<UserMapper, User> implements
         user.setPassword(new BCryptPasswordEncoder().encode(password));
 
         try {
-            mailSender.sendMail(MailConstants.REGISTER, new String[]{password}, user.getEmail());
+            mailSender.sendMail(MailConstants.REGISTER, password, user.getEmail());
         } catch (Exception e) {
             e.printStackTrace();
             return ReturnConstants.EMAIL_ERROR;

@@ -1,6 +1,6 @@
-package com.hkb.hdms.utils.impl;
+package com.hkb.hdms.utils;
 
-import com.hkb.hdms.utils.MailSender;
+import com.hkb.hdms.base.ValidateCodeConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
@@ -9,10 +9,10 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author huangkebing
- * 2021/03/22
+ * 2021/03/06
  */
 @Component
-public abstract class AbstractMailSender implements MailSender {
+public class ValidateCodeMailSender {
     //发送邮件的邮箱
     @Value("${spring.mail.username}")
     private String from;
@@ -20,12 +20,11 @@ public abstract class AbstractMailSender implements MailSender {
     private final JavaMailSender sender;
 
     @Autowired
-    public AbstractMailSender(JavaMailSender sender) {
+    public ValidateCodeMailSender(JavaMailSender sender) {
         this.sender = sender;
     }
 
-    @Override
-    public void sendMail(String subject, String[] message, String... to) {
+    public void sendMail(String subject, String message, String... to) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         //设置邮件主题
         mailMessage.setSubject(subject);
@@ -38,5 +37,16 @@ public abstract class AbstractMailSender implements MailSender {
         sender.send(mailMessage);
     }
 
-    public abstract String contextBuild(String[] message);
+    /**
+     * 根据message生成邮件正文
+     *
+     * @param message 邮件动态的信息，本类中为登录的验证码
+     */
+    public String contextBuild(String message) {
+        return "【hdms系统】登录验证码：" + message + "，" +
+                ValidateCodeConstants.EXPIRE_IN +
+                "分钟内有效。" +
+                "\n -------------------- \n" +
+                "来自hdms安全隐患管理系统，请勿泄漏验证码！";
+    }
 }
