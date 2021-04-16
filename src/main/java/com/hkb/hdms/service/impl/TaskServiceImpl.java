@@ -8,10 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hkb.hdms.base.Constants;
 import com.hkb.hdms.base.R;
 import com.hkb.hdms.base.ReturnConstants;
-import com.hkb.hdms.mapper.ProblemInfoMapper;
-import com.hkb.hdms.mapper.ProblemMapper;
-import com.hkb.hdms.mapper.ProcessVariableMapper;
-import com.hkb.hdms.mapper.TaskMapper;
+import com.hkb.hdms.mapper.*;
 import com.hkb.hdms.model.dto.InstanceDto;
 import com.hkb.hdms.model.dto.ProblemDto;
 import com.hkb.hdms.model.pojo.*;
@@ -65,6 +62,8 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
 
     private final UserGroupManager userGroupManager;
 
+    private final ProblemObserverMapper problemObserverMapper;
+
     private final ProblemMapper problemMapper;
 
     private final ProblemInfoMapper problemInfoMapper;
@@ -83,7 +82,7 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
                            UserGroupManager userGroupManager,
                            TaskMapper taskMapper,
                            ProblemMapper problemMapper,
-                           ProblemInfoMapper problemInfoMapper, HistoryService historyService, RepositoryService repositoryService) {
+                           ProblemInfoMapper problemInfoMapper, HistoryService historyService, RepositoryService repositoryService, ProblemObserverMapper problemObserverMapper) {
         this.typeService = typeService;
         this.runtimeService = runtimeService;
         this.taskHandlerUtil = taskHandlerUtil;
@@ -96,6 +95,7 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         this.problemInfoMapper = problemInfoMapper;
         this.historyService = historyService;
         this.repositoryService = repositoryService;
+        this.problemObserverMapper = problemObserverMapper;
     }
 
     @Override
@@ -363,6 +363,25 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
 
         // 使用默认配置获得流程图表生成器，并生成追踪图片字符流
         return ge.generateDiagram(bpmnModel, highLightedActivitiIds, highLightedFlowIds, "宋体", "微软雅黑", "黑体");
+    }
+
+    @Override
+    public R closeTask(Long problemId) {
+        Problem problem = problemMapper.selectById(problemId);
+        runtimeService.deleteProcessInstance(problem.getInstanceId(), "隐患关闭");
+        return ReturnConstants.SUCCESS;
+    }
+
+    @Override
+    @Transactional
+    public R deleteTask(Long problemId) {
+        Problem problem = problemMapper.selectById(problemId);
+        runtimeService.deleteProcessInstance(problem.getInstanceId(), "隐患关闭");
+        historyService.deleteHistoricProcessInstance(problem.getInstanceId());
+        problemObserverMapper.delete(new QueryWrapper<ProblemObserver>().eq("problem_id",problemId));
+        problemInfoMapper.delete(new QueryWrapper<ProblemInfo>().eq("problem_id",problemId));
+        problemMapper.deleteById(problemId);
+        return ReturnConstants.SUCCESS;
     }
 
     private static List<String> getHighLightedFlows(BpmnModel bpmnModel, List<HistoricActivityInstance> historicActivityInstances) {

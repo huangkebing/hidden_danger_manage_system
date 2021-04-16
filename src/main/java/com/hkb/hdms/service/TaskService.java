@@ -44,4 +44,8 @@ public interface TaskService extends IService<Problem> {
     R transferTask(Long problemId, String email);
 
     InputStream speedOfProgress(Long problemId);
+
+    R closeTask(Long problemId);
+
+    R deleteTask(Long problemId);
 }

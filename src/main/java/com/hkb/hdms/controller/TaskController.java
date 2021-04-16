@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Date;
 import java.util.Map;
 
 /**
@@ -156,5 +155,17 @@ public class TaskController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @PostMapping("closeTask")
+    @ResponseBody
+    public Object closeTask(Long problemId){
+        return taskService.closeTask(problemId);
+    }
+
+    @PostMapping("deleteTask")
+    @ResponseBody
+    public Object deleteTask(Long problemId){
+        return taskService.deleteTask(problemId);
     }
 }
