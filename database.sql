@@ -126,3 +126,14 @@ create table `hdms_problem_info` (
     `modify` timestamp not null comment '修改时间',
     primary key (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+#问题关注表
+create table `hdms_problem_observer` (
+    `id` int unsigned not null auto_increment comment 'id',
+    `problem_id` int not null comment '问题id',
+    `user_id` int not null comment '关注者id',
+    `email` varchar(25) null comment '用户邮箱',
+    `create` timestamp not null comment '创建时间',
+    `modify` timestamp not null comment '修改时间',
+    primary key (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
