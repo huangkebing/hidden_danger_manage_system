@@ -14,6 +14,7 @@ import com.hkb.hdms.model.dto.ProblemDto;
 import com.hkb.hdms.model.pojo.*;
 import com.hkb.hdms.service.TaskService;
 import com.hkb.hdms.service.TypeService;
+import com.hkb.hdms.utils.NoticeUtil;
 import com.hkb.hdms.utils.TaskHandlerUtil;
 import org.activiti.api.runtime.shared.identity.UserGroupManager;
 import org.activiti.bpmn.model.BpmnModel;
@@ -72,6 +73,8 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
 
     private final HttpSession session;
 
+    private final NoticeUtil noticeUtil;
+
     @Autowired
     public TaskServiceImpl(TypeService typeService,
                            RuntimeService runtimeService,
@@ -82,7 +85,7 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
                            UserGroupManager userGroupManager,
                            TaskMapper taskMapper,
                            ProblemMapper problemMapper,
-                           ProblemInfoMapper problemInfoMapper, HistoryService historyService, RepositoryService repositoryService, ProblemObserverMapper problemObserverMapper) {
+                           ProblemInfoMapper problemInfoMapper, HistoryService historyService, RepositoryService repositoryService, ProblemObserverMapper problemObserverMapper, NoticeUtil noticeUtil) {
         this.typeService = typeService;
         this.runtimeService = runtimeService;
         this.taskHandlerUtil = taskHandlerUtil;
@@ -96,6 +99,7 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         this.historyService = historyService;
         this.repositoryService = repositoryService;
         this.problemObserverMapper = problemObserverMapper;
+        this.noticeUtil = noticeUtil;
     }
 
     @Override
@@ -126,6 +130,36 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         }
         problem.setUserId(user.getId());
         this.save(problem);
+
+        Problem nowProblem = problemMapper.selectOne(new QueryWrapper<Problem>().eq("instance_id", problem.getInstanceId()));
+
+        //添加备注
+        ProblemInfo problemInfo = new ProblemInfo();
+        problemInfo.setType(1);
+        problemInfo.setProblemId(nowProblem.getId());
+        problemInfo.setEmail(user.getEmail());
+        problemInfo.setUsername(user.getName());
+        problemInfo.setUserId(user.getId());
+        problemInfo.setContext(user.getName() + " 创建了问题：" + nowProblem.getName());
+        noticeUtil.insertRemark(problemInfo);
+
+        //设置关注
+        ProblemObserver problemObserver = new ProblemObserver();
+        problemObserver.setProblemId(nowProblem.getId());
+        problemObserver.setEmail(user.getEmail());
+        problemObserver.setUserId(user.getId());
+        noticeUtil.insertObserve(problemObserver);
+
+        //保存到redis中
+        Map<String, Object> map = new HashMap<>();
+        map.put("type", 1);
+        map.put("userId", user.getId());
+        map.put("username", user.getName());
+        map.put("email", user.getEmail());
+        map.put("problemId",nowProblem.getId());
+        map.put("problemName",nowProblem.getName());
+        map.put("priority",nowProblem.getPriority());
+        noticeUtil.insertRedis(map);
 
         return ReturnConstants.SUCCESS;
     }

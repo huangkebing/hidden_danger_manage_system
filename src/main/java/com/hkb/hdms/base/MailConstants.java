@@ -12,4 +12,6 @@ public class MailConstants {
     public static final String REGISTER = "hdms系统注册成功通知";
 
     public static final String CRON = "hdms每日待处理隐患提醒";
+
+    public static final String NOTICE = "hdms隐患变动提醒";
 }

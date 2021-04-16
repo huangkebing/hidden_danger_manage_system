@@ -30,4 +30,6 @@ public class Constants {
 
     public static final String FILE_UPLOADMapping = System.getProperty("user.dir") + "/upload/";
 
+    public static final String REDIS_KEY = "hdmsResent";
+
 }
