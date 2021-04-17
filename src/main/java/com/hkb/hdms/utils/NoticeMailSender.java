@@ -37,7 +37,7 @@ public class NoticeMailSender {
     }
 
     public String contextBuild(String message) {
-        return "【hdms系统】您处理过的安全隐患有如下变动：\n" +
+        return "【hdms系统】您相关的安全隐患有如下变动：\n" +
                 "    " + message +
                 "\n -------------------- \n来自hdms安全隐患管理系统";
     }

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 通知模块相关的实现
@@ -73,8 +74,15 @@ public class NoticeUtil {
     }
 
     public void noticeMail(Long problemId, String message){
-        List<ProblemObserver> observers = problemObserverMapper.selectList(new QueryWrapper<ProblemObserver>().eq("problem_id", problemId));
-        String[] emailArray = (String[]) observers.stream().map(ProblemObserver::getEmail).toArray();
-        mailSender.sendMail(MailConstants.NOTICE, message, emailArray);
+        new Thread(()->{
+            List<ProblemObserver> observers = problemObserverMapper.selectList(new QueryWrapper<ProblemObserver>().eq("problem_id", problemId));
+            List<String> emails = observers.stream().map(ProblemObserver::getEmail).collect(Collectors.toList());
+            if(emails.size() == 0){
+                return;
+            }
+            String[] emailArray = new String[0];
+            emailArray = emails.toArray(emailArray);
+            mailSender.sendMail(MailConstants.NOTICE, message, emailArray);
+        }).start();
     }
 }

@@ -69,6 +69,8 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
 
     private final ProblemInfoMapper problemInfoMapper;
 
+    private final UserMapper userMapper;
+
     private final TaskMapper taskMapper;
 
     private final HttpSession session;
@@ -85,7 +87,7 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
                            UserGroupManager userGroupManager,
                            TaskMapper taskMapper,
                            ProblemMapper problemMapper,
-                           ProblemInfoMapper problemInfoMapper, HistoryService historyService, RepositoryService repositoryService, ProblemObserverMapper problemObserverMapper, NoticeUtil noticeUtil) {
+                           ProblemInfoMapper problemInfoMapper, HistoryService historyService, RepositoryService repositoryService, ProblemObserverMapper problemObserverMapper, NoticeUtil noticeUtil, UserMapper userMapper) {
         this.typeService = typeService;
         this.runtimeService = runtimeService;
         this.taskHandlerUtil = taskHandlerUtil;
@@ -100,6 +102,7 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         this.repositoryService = repositoryService;
         this.problemObserverMapper = problemObserverMapper;
         this.noticeUtil = noticeUtil;
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -161,6 +164,8 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         map.put("priority",nowProblem.getPriority());
         noticeUtil.insertRedis(map);
 
+        String message = user.getName() + "(" + user.getEmail() + ") 创建了隐患：" + nowProblem.getName();
+        noticeUtil.noticeMail(nowProblem.getId(), message);
         return ReturnConstants.SUCCESS;
     }
 
@@ -218,6 +223,10 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         //根据taskId查询出task
         Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
 
+        Problem problem = this.getOne(new QueryWrapper<Problem>().eq("instance_id", task.getProcessInstanceId()));
+        User user = (User) session.getAttribute(Constants.LOGIN_USER_KEY);
+        String taskName = task.getName();
+
         List<ProcessVariable> variables = processVariableMapper.selectList(new QueryWrapper<ProcessVariable>()
                 .eq("node_id", task.getTaskDefinitionKey())
                 .eq("process_id", task.getProcessDefinitionId()));
@@ -234,9 +243,42 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         ProcessInstance instance = runtimeService.createProcessInstanceQuery().processInstanceId(task.getProcessInstanceId()).singleResult();
         //处理的是最后一个节点，complete之后instance会为null
         if(ObjectUtils.isNotEmpty(instance)){
-            Problem problem = this.getOne(new QueryWrapper<Problem>().eq("instance_id", task.getProcessInstanceId()));
             taskHandlerUtil.setTaskHandler(instance,problem.getTypeId());
         }
+
+        //添加备注
+        ProblemInfo problemInfo = new ProblemInfo();
+        problemInfo.setType(1);
+        problemInfo.setProblemId(problem.getId());
+        problemInfo.setEmail(user.getEmail());
+        problemInfo.setUsername(user.getName());
+        problemInfo.setUserId(user.getId());
+        problemInfo.setContext(user.getName() + "(" + user.getEmail()  + ") 处理了隐患：" + problem.getName() + " 中的" + taskName + " 节点");
+        noticeUtil.insertRemark(problemInfo);
+
+        //设置关注
+        ProblemObserver problemObserver = new ProblemObserver();
+        problemObserver.setProblemId(problem.getId());
+        problemObserver.setEmail(user.getEmail());
+        problemObserver.setUserId(user.getId());
+        noticeUtil.insertObserve(problemObserver);
+
+        //保存到redis中
+        Map<String, Object> map = new HashMap<>();
+        map.put("type", 5);
+        map.put("userId", user.getId());
+        map.put("username", user.getName());
+        map.put("email", user.getEmail());
+        map.put("problemId",problem.getId());
+        map.put("problemName",problem.getName());
+        map.put("priority",problem.getPriority());
+        map.put("taskName",taskName);
+        noticeUtil.insertRedis(map);
+
+        String message = user.getName() + "(" + user.getEmail()  + ") 处理了隐患：" + problem.getName() + " 中的" + taskName + " 节点";
+        noticeUtil.noticeMail(problem.getId(), message);
+
+        noticeUtil.updateProblemModify(problem.getId());
         return ReturnConstants.SUCCESS;
     }
 
@@ -296,6 +338,19 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
     @Override
     public R updateProblem(Problem problem) {
         if (this.update(problem, new UpdateWrapper<Problem>().eq("id",problem.getId()))) {
+            Problem nowProblem = problemMapper.selectById(problem.getId());
+            User user = (User) session.getAttribute(Constants.LOGIN_USER_KEY);
+            //添加备注
+            ProblemInfo problemInfo = new ProblemInfo();
+            problemInfo.setType(1);
+            problemInfo.setProblemId(nowProblem.getId());
+            problemInfo.setEmail(user.getEmail());
+            problemInfo.setUsername(user.getName());
+            problemInfo.setUserId(user.getId());
+            problemInfo.setContext(user.getName() + " 编辑了隐患：" + nowProblem.getName());
+            noticeUtil.insertRemark(problemInfo);
+
+            noticeUtil.updateProblemModify(nowProblem.getId());
             return ReturnConstants.SUCCESS;
         }
         else {
@@ -340,7 +395,8 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         problemInfo.setUserId(user.getId());
         problemInfo.setUsername(user.getName());
         problemInfoMapper.insert(problemInfo);
-
+        //更新修改时间
+        noticeUtil.updateProblemModify(problemId);
         return ReturnConstants.SUCCESS;
     }
 
@@ -352,12 +408,21 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         info.setUsername(user.getName());
 
         problemInfoMapper.update(info, new UpdateWrapper<ProblemInfo>().eq("id",info.getId()));
+
+        //更新修改时间
+        ProblemInfo problemInfo = problemInfoMapper.selectById(info.getId());
+        noticeUtil.updateProblemModify(problemInfo.getProblemId());
         return ReturnConstants.SUCCESS;
     }
 
     @Override
     public R deleteRemarks(Long infoId) {
+        //先获取
+        ProblemInfo problemInfo = problemInfoMapper.selectById(infoId);
         problemInfoMapper.deleteById(infoId);
+
+        //更新修改时间
+        noticeUtil.updateProblemModify(problemInfo.getProblemId());
         return ReturnConstants.SUCCESS;
     }
 
@@ -365,12 +430,33 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
     public R transferTask(Long problemId, String email) {
         ProblemDto problem = problemMapper.selectDetailById(problemId);
         User loginUser = (User) session.getAttribute(Constants.LOGIN_USER_KEY);
-
+        User toUser = userMapper.selectOne(new QueryWrapper<User>().eq("email", email));
         List<Task> tasks = taskService.createTaskQuery().processInstanceId(problem.getInstanceId()).taskCandidateUser(loginUser.getEmail()).list();
         for (Task task : tasks) {
             taskService.deleteCandidateUser(task.getId(), loginUser.getEmail());
             taskService.addCandidateUser(task.getId(), email);
         }
+        ProblemInfo problemInfo = new ProblemInfo();
+        problemInfo.setProblemId(problemId);
+        problemInfo.setContext(loginUser.getName() + "(" + loginUser.getEmail() + ") 把隐患" + problem.getName() + "移交给" + toUser.getName() + "(" + toUser.getEmail() + ")");
+        problemInfo.setType(1);
+        problemInfo.setEmail(loginUser.getEmail());
+        problemInfo.setUserId(loginUser.getId());
+        problemInfo.setUsername(loginUser.getName());
+        noticeUtil.insertRemark(problemInfo);
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("type", 4);
+        map.put("userId", loginUser.getId());
+        map.put("username", loginUser.getName());
+        map.put("email", loginUser.getEmail());
+        map.put("problemId",problem.getId());
+        map.put("problemName",problem.getName());
+        map.put("priority",problem.getPriority());
+        map.put("toUserId", toUser.getId());
+        map.put("toUsername", toUser.getName());
+        map.put("toEmail", toUser.getEmail());
+        noticeUtil.insertRedis(map);
         return ReturnConstants.SUCCESS;
     }
 
@@ -402,7 +488,41 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
     @Override
     public R closeTask(Long problemId) {
         Problem problem = problemMapper.selectById(problemId);
+        User user = (User) session.getAttribute(Constants.LOGIN_USER_KEY);
         runtimeService.deleteProcessInstance(problem.getInstanceId(), "隐患关闭");
+
+        //添加备注
+        ProblemInfo problemInfo = new ProblemInfo();
+        problemInfo.setType(1);
+        problemInfo.setProblemId(problem.getId());
+        problemInfo.setEmail(user.getEmail());
+        problemInfo.setUsername(user.getName());
+        problemInfo.setUserId(user.getId());
+        problemInfo.setContext(user.getName() + "(" + user.getEmail()  + ") 关闭了问题：" + problem.getName());
+        noticeUtil.insertRemark(problemInfo);
+
+        //设置关注
+        ProblemObserver problemObserver = new ProblemObserver();
+        problemObserver.setProblemId(problem.getId());
+        problemObserver.setEmail(user.getEmail());
+        problemObserver.setUserId(user.getId());
+        noticeUtil.insertObserve(problemObserver);
+
+        //保存到redis中
+        Map<String, Object> map = new HashMap<>();
+        map.put("type", 3);
+        map.put("userId", user.getId());
+        map.put("username", user.getName());
+        map.put("email", user.getEmail());
+        map.put("problemId",problem.getId());
+        map.put("problemName",problem.getName());
+        map.put("priority",problem.getPriority());
+        noticeUtil.insertRedis(map);
+
+        String message = user.getName() + "(" + user.getEmail() + ") 关闭了隐患：" + problem.getName();
+        noticeUtil.noticeMail(problem.getId(), message);
+
+        noticeUtil.updateProblemModify(problemId);
         return ReturnConstants.SUCCESS;
     }
 
@@ -410,7 +530,21 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
     @Transactional
     public R deleteTask(Long problemId) {
         Problem problem = problemMapper.selectById(problemId);
-        runtimeService.deleteProcessInstance(problem.getInstanceId(), "隐患关闭");
+        User user = (User) session.getAttribute(Constants.LOGIN_USER_KEY);
+        String message = user.getName() + "(" + user.getEmail() + ") 删除了隐患：" + problem.getName();
+        noticeUtil.noticeMail(problem.getId(), message);
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("type", 2);
+        map.put("userId", user.getId());
+        map.put("username", user.getName());
+        map.put("email", user.getEmail());
+        map.put("problemId",problem.getId());
+        map.put("problemName",problem.getName());
+        map.put("priority",problem.getPriority());
+        noticeUtil.insertRedis(map);
+
+        runtimeService.deleteProcessInstance(problem.getInstanceId(), "隐患删除");
         historyService.deleteHistoricProcessInstance(problem.getInstanceId());
         problemObserverMapper.delete(new QueryWrapper<ProblemObserver>().eq("problem_id",problemId));
         problemInfoMapper.delete(new QueryWrapper<ProblemInfo>().eq("problem_id",problemId));
