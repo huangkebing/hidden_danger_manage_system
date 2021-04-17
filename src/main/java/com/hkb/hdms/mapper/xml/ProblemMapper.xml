@@ -13,10 +13,23 @@
         <result column="email" property="email"/>
         <result column="tname" property="typeName"/>
     </resultMap>
+
     <select id="selectDetailById" parameterType="Long" resultMap="selectMap">
         select p.*, u.name as uname, u.email, t.name as tname
         from hdms_problem p inner join hdms_user u on p.user_id = u.id
                             inner join hdms_type t on p.type_id = t.id
         where p.id = #{problemId}
+    </select>
+
+    <select id="countByType" resultType="com.hkb.hdms.model.dto.IndexDto">
+        select t.name, count(p.id) as value
+        from hdms_problem p inner join hdms_type t on p.type_id = t.id
+        group by type_id;
+    </select>
+
+    <select id="countByTypeAndWeekDay" resultType="com.hkb.hdms.model.dto.IndexDto">
+        select weekday(p.`create`) as weekday,count(p.id) as value,t.name
+        from hdms_problem p inner join hdms_type t on p.type_id = t.id
+        group by weekday(p.`create`),t.name
     </select>
 </mapper>
