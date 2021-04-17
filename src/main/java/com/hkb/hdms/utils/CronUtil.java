@@ -1,5 +1,6 @@
 package com.hkb.hdms.utils;
 
+import com.hkb.hdms.base.Constants;
 import com.hkb.hdms.base.MailConstants;
 import com.hkb.hdms.mapper.TaskMapper;
 import com.hkb.hdms.mapper.UserMapper;
@@ -9,10 +10,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.activiti.api.runtime.shared.identity.UserGroupManager;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 /**
@@ -29,13 +33,15 @@ public class CronUtil {
     private final TaskMapper taskMapper;
     private final CronMailSender mailSender;
     private final UserGroupManager userGroupManager;
+    private final RedisTemplate<String,Object> redisTemplate;
 
     @Autowired
-    public CronUtil(UserMapper userMapper, TaskMapper taskMapper, UserGroupManager userGroupManager, CronMailSender mailSender) {
+    public CronUtil(UserMapper userMapper, TaskMapper taskMapper, UserGroupManager userGroupManager, CronMailSender mailSender, RedisTemplate<String, Object> redisTemplate) {
         this.userMapper = userMapper;
         this.taskMapper = taskMapper;
         this.userGroupManager = userGroupManager;
         this.mailSender = mailSender;
+        this.redisTemplate = redisTemplate;
     }
 
     /**
@@ -52,5 +58,14 @@ public class CronUtil {
             }
         }
         log.info(LocalDate.now() + "每日提醒完成，处理了" + users.size() + "个用户");
+    }
+
+    @Scheduled(cron = "0 0 1 * * ? ")
+    public void delRedis(){
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime delDay = now.plusDays(-3);
+        long beginTime = delDay.withHour(0).withMinute(0).withSecond(0).withNano(0).toInstant(ZoneOffset.ofHours(8)).toEpochMilli();
+        long endTime = delDay.withHour(23).withMinute(59).withSecond(59).withNano(999999999).toInstant(ZoneOffset.ofHours(8)).toEpochMilli();
+        redisTemplate.opsForZSet().removeRangeByScore(Constants.REDIS_KEY, beginTime, endTime);
     }
 }

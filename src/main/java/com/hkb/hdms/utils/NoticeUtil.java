@@ -55,7 +55,7 @@ public class NoticeUtil {
     }
 
     public void insertRedis(Map<String, Object> map){
-        redisTemplate.opsForList().leftPush(Constants.REDIS_KEY, JSON.toJSONString(map));
+        redisTemplate.opsForZSet().add(Constants.REDIS_KEY,JSON.toJSONString(map),System.currentTimeMillis());
     }
 
     public void insertRemark(ProblemInfo problemInfo){
