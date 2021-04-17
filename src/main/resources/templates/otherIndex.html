@@ -32,6 +32,19 @@
         .layui-elem-quote{
             padding: 10px 15px 10px 15px;
         }
+        .userTipItem{
+            margin-left: 50px;margin-top: 10px;margin-bottom: 10px;
+            vertical-align: top;
+        }
+        .userTipIcon{
+            color: grey;
+            vertical-align: top;
+            margin-top: 3px;
+        }
+        .userTipHr{
+            margin-left: 50px;
+            margin-right: 50px;
+        }
     </style>
 </head>
 <body>
@@ -53,20 +66,53 @@
     </div>
 </div>
 
-
-
+<div id="userTip" style="display: none">
+    <div class="userTipItem">
+        <i class="fa fa-user-o userTipIcon"></i>
+        <div id="userTipName" style="display: inline-block;margin-left: 10px">
+        </div>
+    </div>
+    <hr class="userTipHr">
+    <div class="userTipItem">
+        <i class="fa fa-address-book-o userTipIcon"></i>
+        <div id="userTipRole" style="display: inline-block;margin-left: 10px">
+        </div>
+    </div>
+    <hr class="userTipHr">
+    <div class="userTipItem">
+        <i class="fa fa-envelope-o userTipIcon"></i>
+        <div id="userTipEmail" style="display: inline-block;margin-left: 10px">
+        </div>
+    </div>
+    <hr class="userTipHr">
+    <div class="userTipItem">
+        <i class="fa fa-phone userTipIcon"></i>
+        <div id="userTipPhone" style="display: inline-block;margin-left: 10px">
+        </div>
+    </div>
+    <hr class="userTipHr">
+    <div class="userTipItem">
+        <i class="fa fa-pencil-square-o userTipIcon"></i>
+        <div id="userTipRemark" style="display: inline-block;margin-left: 10px;margin-right: 10px;width: 200px">
+        </div>
+    </div>
+</div>
 
 <script th:src="@{/layuimini/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
+<script th:src="@{/layuimini/lib/jquery-3.4.1/jquery-3.4.1.min.js}" charset="utf-8"></script>
 <script th:src="@{/layuimini/js/lay-config.js}" charset="utf-8"></script>
 <script th:src="@{/js/url.js}"></script>
 <script th:inline="none">
+    var miniTab;
+
+
     layui.use(['form', 'table', 'miniTab','flow'], function () {
         var $ = layui.jquery,
             form = layui.form,
             table = layui.table,
-            miniTab = layui.miniTab,
             flow = layui.flow;
-
+        miniTab = layui.miniTab;
+        
         var taskTable = table.render({
             elem: '#currentTableId',
             url: basePath + '/task/getMyTask',
@@ -134,8 +180,8 @@
         });
     });
 
-    function createResentDiv(data){
-        remarksList.push(data);
+    function createResentDiv(beginData){
+        var data = JSON.parse(beginData);
         var context = '<div class="layui-row grid-demo grid-demo-bg1" style="border-radius:16px;border: #F2F2F2 8px solid;margin-bottom: 10px;">' +
             '      <div class="layui-col-md12" style="color: grey;margin: 5px 15px 5px 0;padding-right:5px;font-size: 15px;text-align: right">' +
             '           <i class="fa fa-clock-o"></i>&nbsp;' +
@@ -143,44 +189,84 @@
             '      </div>' +
             '      <div class="layui-col-md12" style="margin-top: 8px;padding-left: 8px">';
 
-        if(data.type == 1){
+        if(data.type === 1){
             context +=  '<a class="nameLink" onclick="userLinkClick()" userid="' + data.userId + '">'+
                 data.username + '(' + data.email + ')  ' +
                 '           </a>'+ '创建了隐患：' +
-                '<a class="nameLink" onclick="userLinkClick()" problemId="' + data.problemId + '">' +
+                '<a class="nameLink" onclick="problemClick()" problemId="' + data.problemId + '">' +
                 data.problemName + '</a>'
-        } else if(data.type == 2){
+        } else if(data.type === 2){
             context +=  '<a class="nameLink" onclick="userLinkClick()" userid="' + data.userId + '">'+
                 data.username + '(' + data.email + ')  ' +
                 '           </a>'+ '删除了隐患：' +
-                '<a class="nameLink" onclick="userLinkClick()" problemId="' + data.problemId + '">' +
+                '<a class="nameLink" onclick="problemClick()" problemId="' + data.problemId + '">' +
                 data.problemName + '</a>'
-        } else if(data.type == 3){
+        } else if(data.type === 3){
             context +=  '<a class="nameLink" onclick="userLinkClick()" userid="' + data.userId + '">'+
                 data.username + '(' + data.email + ')  ' +
                 '           </a>'+ '关闭了隐患：' +
-                '<a class="nameLink" onclick="userLinkClick()" problemId="' + data.problemId + '">' +
+                '<a class="nameLink" onclick="problemClick()" problemId="' + data.problemId + '">' +
                 data.problemName + '</a>'
-        } else if(data.type == 4){
+        } else if(data.type === 4){
             context +=  '<a class="nameLink" onclick="userLinkClick()" userid="' + data.userId + '">'+
                 data.username + '(' + data.email + ')  ' +
                 '           </a>'+ '将隐患：' +
-                '<a class="nameLink" onclick="userLinkClick()" problemId="' + data.problemId + '">' +
+                '<a class="nameLink" onclick="problemClick()" problemId="' + data.problemId + '">' +
                 data.problemName + '</a>' + '转交给' +
                 '<a class="nameLink" onclick="userLinkClick()" userid="' + data.toUserId + '">'+
                 data.toUsername + '(' + data.toEmail + ')  ' +
                 '           </a>'
-        } else if(data.type == 5){
+        } else if(data.type === 5){
             context +=  '<a class="nameLink" onclick="userLinkClick()" userid="' + data.userId + '">'+
                 data.username + '(' + data.email + ')  ' +
                 '           </a>'+ '处理了隐患：' +
-                '<a class="nameLink" onclick="userLinkClick()" problemId="' + data.problemId + '">' +
+                '<a class="nameLink" onclick="problemClick()" problemId="' + data.problemId + '">' +
                 data.problemName + '</a>' + ' 的' + data.taskName + '节点'
         }
 
         context += '      </div>' +
             '    </div>';
         return context;
+    }
+
+    function userLinkClick() {
+        var target = $(event.target);
+        $.ajax({
+            type: "GET",
+            url: basePath + "/user/getUserById/" + target.attr("userid"),
+            success: function (result) {
+                $("#userTipName").html(result.username);
+                $("#userTipRole").html(result.role.name);
+                $("#userTipEmail").html(result.email);
+                if(result.phone == undefined){
+                    $("#userTipPhone").html("未填写");
+                } else{
+                    $("#userTipPhone").html(result.phone);
+                }
+                if(result.remark == undefined){
+                    $("#userTipRemark").html("未填写");
+                } else {
+                    $("#userTipRemark").html(result.remark);
+                }
+                var index = layer.open({
+                    title: '用户信息',
+                    type: 1,
+                    area: ['300px', '300px'],
+                    content: $("#userTip"),
+                })
+            },
+            error: function () {
+                layer.msg('系统错误，请联系系统管理员',{icon: 2});
+            }
+        });
+    }
+
+    function problemClick(){
+        var target = $(event.target);
+        miniTab.openNewTabByIframe({
+            href: basePath + "/task/readTask.html/" + target.attr("problemId"),
+            title: "查看问题",
+        });
     }
 </script>
 
