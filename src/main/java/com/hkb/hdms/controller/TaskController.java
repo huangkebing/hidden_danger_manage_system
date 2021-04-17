@@ -45,6 +45,14 @@ public class TaskController {
         return model;
     }
 
+    @RequestMapping("/readTask.html/{problemId}")
+    public Object readTaskPage(@PathVariable Long problemId){
+        ModelAndView model = new ModelAndView();
+        model.addObject("problemId",problemId);
+        model.setViewName("task/readTask");
+        return model;
+    }
+
     @RequestMapping("/historyTask.html")
     public Object historyTaskPage(){
         return "task/historyTask";

@@ -21,8 +21,8 @@ public class Constants {
 
     //不同身份主页配置(更好的方式是写在数据库里)
     public static final int ADMIN_ID = 5;
-    public static final String ADMIN_INDEX = "system/test.html";
-    public static final String OTHER_INDEX = "system/otherIndex.html";
+    public static final String ADMIN_INDEX = "index/adminIndex.html";
+    public static final String OTHER_INDEX = "index/otherIndex.html";
     public static final String LOGO_PATH = "images/logo.png";
 
     //bpmn上传路径

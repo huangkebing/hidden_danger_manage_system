@@ -23,16 +23,6 @@ public class SystemController {
         this.menuService = menuService;
     }
 
-    @RequestMapping("/test.html")
-    public Object test() {
-        return "test";
-    }
-
-    @RequestMapping("/otherIndex.html")
-    public Object otherIndexPage() {
-        return "otherIndex";
-    }
-
     /**
      * 跳转到资源管理页面
      */

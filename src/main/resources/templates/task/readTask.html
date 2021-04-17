@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<!--suppress ALL-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<link rel="stylesheet" th:href="@{/layuimini/lib/layui-v2.5.5/css/layui.css}" media="all">
+<link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
+<link rel="stylesheet" th:href="@{/layuimini/lib/font-awesome-4.7.0/css/font-awesome.min.css}" media="all">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+    .layui-flow-more a cite{
+        background-color: #19CAAD;
+        color: white;
+    }
+    .layui-elem-quote{
+        padding: 10px 15px 10px 15px;
+    }
+    .w-e-text-container{
+        margin-left: 110px!important;
+        height: 210px!important;
+        z-index: 0!important;
+    }
+    .w-e-menu{
+        z-index: 1!important;
+    }
+    body .btnStyle .layui-layer-btn a{background:#019688;border: #019688;padding: 4px 20px}
+    .nameLink{
+        cursor: pointer;
+        color: #1E9FFF;
+    }
+    .nameLink:hover{
+        color: #1aa094;
+    }
+    img{
+        width: 250px;
+        cursor: pointer;
+    }
+    a {
+        color: #1E9FFF;
+    }
+    table ,table td, table th{
+        border: 1px solid #999;
+        border-spacing: 0;/*去掉单元格间隙*/
+    }
+    pre{
+        background-color: #f1f1f1;
+        border-radius: 3px;
+        padding: 3px 5px;
+        margin: 0 3px;
+    }
+    blockquote{
+        display: block;
+        border-left: 8px solid #d0e5f2;
+        padding: 5px 10px;
+        margin: 10px 0;
+        line-height: 1.4;
+        font-size: 100%;
+        background-color: #f1f1f1;
+    }
+    .picture ol,.picture ul{
+        margin: 10px 0 10px 20px;
+    }
+    .picture ol li,.w-e-text ol li{
+        list-style-type: decimal;
+    }
+    .picture ul li,.w-e-text ul li{
+        list-style-type: disc;
+    }
+    .userTipItem{
+        margin-left: 50px;margin-top: 10px;margin-bottom: 10px;
+        vertical-align: top;
+    }
+    .userTipIcon{
+        color: grey;
+        vertical-align: top;
+        margin-top: 3px;
+    }
+    .userTipHr{
+        margin-left: 50px;
+        margin-right: 50px;
+    }
+    .high{
+        font-size: 18px;
+        color: red;
+    }
+    .middle{
+        font-size: 27px;
+        color: orange;
+    }
+    .low{
+        font-size: 18px;
+        color: green;
+    }
+</style>
+<body>
+<div class="layui-col-md8">
+    <div class="layuimini-container">
+        <div class="layuimini-main layui-row">
+            <div>
+                <div id="priorityDiv" style="display: inline-block;vertical-align: top;margin-top: 9px;"></div>
+                <h1 id="title" style="display: inline-block"></h1>
+                <div class="layui-btn-group" style="display:inline-block;margin-left: 20px;vertical-align: top;margin-top: 5px">
+                    <button type="button" id="process" class="layui-btn layui-btn-sm">进度查看</button>
+                </div>
+            </div>
+
+            <blockquote class="layui-elem-quote" style="margin-top: 10px">隐患信息</blockquote>
+            <div style="margin-left: 10px;margin-top: 10px;margin-bottom: 10px;vertical-align: top;">
+                <i class="fa fa-user-o userTipIcon"></i>
+                <div id="createUser" style="display: inline-block;margin-left: 10px;cursor: pointer;"></div>
+            </div>
+            <div style="margin-left: 10px;margin-top: 10px;margin-bottom: 10px;vertical-align: top;">
+                <i class="fa fa-file-text-o userTipIcon"></i>
+                <div id="typeName" style="display: inline-block;margin-left: 10px;"></div>
+            </div>
+            <div style="margin-left: 10px;margin-top: 10px;margin-bottom: 10px;vertical-align: top;">
+                <i class="fa fa-clock-o userTipIcon"></i>
+                <div id="create" style="display: inline-block;margin-left: 10px;"></div>
+            </div>
+            <div style="margin-left: 10px;margin-top: 10px;margin-bottom: 10px;vertical-align: top;">
+                <i class="fa fa-arrow-circle-o-up userTipIcon"></i>
+                <div id="modify" style="display: inline-block;margin-left: 10px;"></div>
+            </div>
+            <blockquote class="layui-elem-quote" style="margin-top: 10px">隐患描述</blockquote>
+            <div id="description" class="picture" style="margin-left: 10px"></div>
+            <blockquote class="layui-elem-quote" style="margin-top: 10px">备注信息</blockquote>
+            <ul class="flow-default picture" id="remarksFlow"></ul>
+        </div>
+    </div>
+</div>
+<div class="layui-col-md4">
+    <div class="layuimini-container">
+        <div class="layuimini-main">
+            <blockquote class="layui-elem-quote">附件列表</blockquote>
+            <ul class="flow-default" id="fileFlow"></ul>
+        </div>
+    </div>
+</div>
+
+<div id="userTip" style="display: none">
+    <div class="userTipItem">
+        <i class="fa fa-user-o userTipIcon"></i>
+        <div id="userTipName" style="display: inline-block;margin-left: 10px">
+        </div>
+    </div>
+    <hr class="userTipHr">
+    <div class="userTipItem">
+        <i class="fa fa-address-book-o userTipIcon"></i>
+        <div id="userTipRole" style="display: inline-block;margin-left: 10px">
+        </div>
+    </div>
+    <hr class="userTipHr">
+    <div class="userTipItem">
+        <i class="fa fa-envelope-o userTipIcon"></i>
+        <div id="userTipEmail" style="display: inline-block;margin-left: 10px">
+        </div>
+    </div>
+    <hr class="userTipHr">
+    <div class="userTipItem">
+        <i class="fa fa-phone userTipIcon"></i>
+        <div id="userTipPhone" style="display: inline-block;margin-left: 10px">
+        </div>
+    </div>
+    <hr class="userTipHr">
+    <div class="userTipItem">
+        <i class="fa fa-pencil-square-o userTipIcon"></i>
+        <div id="userTipRemark" style="display: inline-block;margin-left: 10px;margin-right: 10px;width: 200px">
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/layuimini/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
+<script th:src="@{/layuimini/lib/jquery-3.4.1/jquery-3.4.1.min.js}" charset="utf-8"></script>
+<script th:src="@{/layuimini/js/lay-config.js}" charset="utf-8"></script>
+<script th:src="@{/js/url.js}"></script>
+<script th:inline="javascript">
+    var initData;
+    var currTaskId;
+    var form;
+    var layerIndex;
+    var remarksList = new Array();
+    var remarksEditer;
+
+    layui.use(['form', 'table', 'flow', 'wangEditor', 'upload'], function () {
+        form = layui.form;
+        var $ = layui.$;
+        var flow = layui.flow,
+            wangEditor = layui.wangEditor,
+            upload = layui.upload;
+        var taskEditer;
+
+        $.ajax({
+            url: basePath + "/task/getDetailTask/" + [[${problemId}]],
+            type: "GET",
+            success: function(result){
+                var data = result.data;
+                $("#createUser").html('<a className="nameLink" onClick="userLinkClick()" userid="' + data.problem.userId + '">'+
+                    data.problem.username + '(' + data.problem.email + ') ' +
+                    ' </a>');
+                $("#title").html(data.problem.name);
+                $("#description").html(data.problem.description);
+                $("#typeName").html(data.problem.typeName);
+                $("#create").html(layui.util.toDateString(data.problem.create, 'yyyy-MM-dd HH:mm:ss'));
+                $("#modify").html(layui.util.toDateString(data.problem.modify, 'yyyy-MM-dd HH:mm:ss'));
+                if(data.problem.priority == 1){
+                    $("#priorityDiv").html('<i class="low fa fa-chevron-down"></i>');
+                } else if(data.problem.priority == 2){
+                    $("#priorityDiv").html('<i class="middle fa fa-angle-double-up"></i>');
+                } else if(data.problem.priority == 3){
+                    $("#priorityDiv").html('<i class="high fa fa-warning"></i>');
+                }
+                $("#priorityDiv").attr("value",data.problem.priority);
+            }
+        });
+
+        flow.load({
+            elem: '#fileFlow' //流加载容器
+            ,scrollElem: '#fileFlow' //滚动条所在元素，一般不用填，此处只是演示需要。
+            ,isAuto: false
+            ,isLazyimg: true
+            ,done: function(page, next){ //加载下一页
+                //模拟插入
+                $.ajax({
+                    url: basePath + "/task/getFiles/" + [[${problemId}]] + "/" + page + "/4",    //后台数据请求地址
+                    type: "GET",
+                    success: function(result){
+                        console.log(result);
+                        var data = result.data;
+                        var pageSize = Math.ceil(result.count / 4);
+                        var lis = [];
+                        for (let i = 0; i < data.length; i++) {
+                            lis.push(createFilesDiv(data[i]));
+                        }
+                        next(lis.join(''), page < pageSize);
+                    }
+                });
+            },
+            skin: 'btnStyle'
+        });
+
+        flow.load({
+            elem: '#remarksFlow' //流加载容器
+            ,scrollElem: '#remarksFlow' //滚动条所在元素，一般不用填，此处只是演示需要。
+            ,isAuto: false
+            ,isLazyimg: true
+            ,done: function(page, next){ //加载下一页
+                $.ajax({
+                    url: basePath + "/task/getRemarks/" + [[${problemId}]] + "/" + page + "/4",    //后台数据请求地址
+                    type: "GET",
+                    success: function(result){
+                        var data = result.data;
+                        var pageSize = Math.ceil(result.count / 4);
+                        var lis = [];
+                        for (let i = 0; i < data.length; i++) {
+                            lis.push(createRemarksDiv(data[i]));
+                        }
+                        next(lis.join(''), page < pageSize);
+                    }
+                });
+            },
+            skin: 'btnStyle'
+        });
+
+        $(".picture").delegate("img","click",function(){
+            var target = $(event.target);
+            window.open(target.attr("src"));
+        });
+
+        $("#process").click(function (){
+            var src = basePath + "/task/speedOfProgress/" + [[${problemId}]];
+            layer.open({
+                title: '处理进度',
+                type: 1,
+                shade: 0.2,
+                maxmin:true,
+                shadeClose: true,
+                area: ['100%', '100%'],
+                shadeClose: true,
+                content: '<iframe src="'+ src+'" width="100%" height="100%"></iframe>'
+            });
+        })
+    });
+
+    function createRemarksDiv(data){
+        remarksList.push(data);
+        return '<div class="layui-row grid-demo grid-demo-bg1" style="border-radius:16px;border: #F2F2F2 8px solid;margin-bottom: 10px;">' +
+            '      <div class="layui-col-md12" style="margin-top: 8px;padding-left: 8px">\n' +
+                        data.context +
+            '      </div>' +
+            '      <div class="layui-col-md12" style="color: grey;margin: 5px 15px 5px 0;padding-right:5px;font-size: 15px;text-align: right">' +
+            '           <i class="fa fa-clock-o"></i>&nbsp;' +
+                            layui.util.toDateString(data.modify, 'yyyy-MM-dd HH:mm:ss') + '&nbsp;By&nbsp;' +
+            '           <a class="nameLink" onclick="userLinkClick()" userid="' + data.userId + '">'+
+                            data.username + '(' + data.email + ')  ' +
+            '           </a>'+
+            '      </div>' +
+            '    </div>'
+    }
+
+    function createFilesDiv(data){
+        return '<div class="layui-row grid-demo grid-demo-bg1" style="border-radius:10px;border: #F2F2F2 5px solid;margin-bottom: 10px;">' +
+            '      <div class="layui-col-md12" style="margin-top: 4px;padding-left: 8px">' +
+            '           <a href="'+ data.filePath +'" target="_blank">' +
+                            data.context +
+            '           </a>'+
+            '      </div>' +
+            '    </div>'
+    }
+
+    function userLinkClick() {
+        var target = $(event.target);
+        $.ajax({
+            type: "GET",
+            url: basePath + "/user/getUserById/" + target.attr("userid"),
+            success: function (result) {
+                $("#userTipName").html(result.username);
+                $("#userTipRole").html(result.role.name);
+                $("#userTipEmail").html(result.email);
+                $("#userTipPhone").html(result.phone);
+                $("#userTipRemark").html(result.remark);
+                var index = layer.open({
+                    title: '用户信息',
+                    type: 1,
+                    area: ['300px', '300px'],
+                    content: $("#userTip"),
+                })
+            },
+            error: function () {
+                layer.msg('系统错误，请联系系统管理员',{icon: 2});
+            }
+        });
+    }
+</script>
+</body>
+</html>

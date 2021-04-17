@@ -68,11 +68,12 @@
 <script th:src="@{/layuimini/js/lay-config.js}" charset="utf-8"></script>
 <script th:src="@{/js/url.js}"></script>
 <script th:inline="none">
-    layui.use(['form', 'table', 'laydate'], function () {
+    layui.use(['form', 'table', 'laydate', 'miniTab'], function () {
         var $ = layui.jquery,
             form = layui.form,
             table = layui.table,
-            laydate = layui.laydate;
+            laydate = layui.laydate,
+            miniTab = layui.miniTab;
 
         table.render({
             elem: '#currentTableId',
@@ -156,25 +157,11 @@
         table.on('tool(currentTableFilter)', function (obj) {
             var data = obj.data;
             if (obj.event === 'edit') {
-
-                var index = layer.open({
-                    title: '编辑用户',
-                    type: 2,
-                    shade: 0.2,
-                    maxmin:true,
-                    shadeClose: true,
-                    area: ['100%', '100%'],
-                    content: '../page/table/edit.html',
-                });
-                $(window).on("resize", function () {
-                    layer.full(index);
+                miniTab.openNewTabByIframe({
+                    href: basePath + "/task/detailTask.html/" + data.id,
+                    title: "查看问题",
                 });
                 return false;
-            } else if (obj.event === 'delete') {
-                layer.confirm('真的删除行么', function (index) {
-                    obj.del();
-                    layer.close(index);
-                });
             }
         });
 

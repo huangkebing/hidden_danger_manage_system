@@ -29,6 +29,9 @@
             font-size: 15px;
             color: green;
         }
+        .layui-elem-quote{
+            padding: 10px 15px 10px 15px;
+        }
     </style>
 </head>
 <body>
@@ -37,7 +40,8 @@
 <div class="layui-col-md5" id="leftDiv">
     <div class="layuimini-container">
         <div class="layuimini-main">
-            123
+            <blockquote class="layui-elem-quote">近期动态</blockquote>
+            <ul class="flow-default" id="resentFlow"></ul>
         </div>
     </div>
 </div>
@@ -56,11 +60,12 @@
 <script th:src="@{/layuimini/js/lay-config.js}" charset="utf-8"></script>
 <script th:src="@{/js/url.js}"></script>
 <script th:inline="none">
-    layui.use(['form', 'table', 'miniTab'], function () {
+    layui.use(['form', 'table', 'miniTab','flow'], function () {
         var $ = layui.jquery,
             form = layui.form,
             table = layui.table,
-            miniTab = layui.miniTab;
+            miniTab = layui.miniTab,
+            flow = layui.flow;
 
         var taskTable = table.render({
             elem: '#currentTableId',
@@ -103,7 +108,80 @@
                 return false;
             }
         });
+
+        flow.load({
+            elem: '#resentFlow' //流加载容器
+            ,scrollElem: '#resentFlow' //滚动条所在元素，一般不用填，此处只是演示需要。
+            ,isAuto: false
+            ,isLazyimg: true
+            ,done: function(page, next){ //加载下一页
+                $.ajax({
+                    url: basePath + "/index/getResent/" + page + "/5",    //后台数据请求地址
+                    type: "GET",
+                    success: function(result){
+                        console.log(result);
+                        var data = result.data;
+                        var pageSize = Math.ceil(result.count / 5);
+                        var lis = [];
+                        for (let i = 0; i < data.length; i++) {
+                            lis.push(createResentDiv(data[i]));
+                        }
+                        next(lis.join(''), page < pageSize);
+                    }
+                });
+            },
+            skin: 'btnStyle'
+        });
     });
+
+    function createResentDiv(data){
+        remarksList.push(data);
+        var context = '<div class="layui-row grid-demo grid-demo-bg1" style="border-radius:16px;border: #F2F2F2 8px solid;margin-bottom: 10px;">' +
+            '      <div class="layui-col-md12" style="color: grey;margin: 5px 15px 5px 0;padding-right:5px;font-size: 15px;text-align: right">' +
+            '           <i class="fa fa-clock-o"></i>&nbsp;' +
+            layui.util.toDateString(data.time, 'yyyy-MM-dd HH:mm:ss') +
+            '      </div>' +
+            '      <div class="layui-col-md12" style="margin-top: 8px;padding-left: 8px">';
+
+        if(data.type == 1){
+            context +=  '<a class="nameLink" onclick="userLinkClick()" userid="' + data.userId + '">'+
+                data.username + '(' + data.email + ')  ' +
+                '           </a>'+ '创建了隐患：' +
+                '<a class="nameLink" onclick="userLinkClick()" problemId="' + data.problemId + '">' +
+                data.problemName + '</a>'
+        } else if(data.type == 2){
+            context +=  '<a class="nameLink" onclick="userLinkClick()" userid="' + data.userId + '">'+
+                data.username + '(' + data.email + ')  ' +
+                '           </a>'+ '删除了隐患：' +
+                '<a class="nameLink" onclick="userLinkClick()" problemId="' + data.problemId + '">' +
+                data.problemName + '</a>'
+        } else if(data.type == 3){
+            context +=  '<a class="nameLink" onclick="userLinkClick()" userid="' + data.userId + '">'+
+                data.username + '(' + data.email + ')  ' +
+                '           </a>'+ '关闭了隐患：' +
+                '<a class="nameLink" onclick="userLinkClick()" problemId="' + data.problemId + '">' +
+                data.problemName + '</a>'
+        } else if(data.type == 4){
+            context +=  '<a class="nameLink" onclick="userLinkClick()" userid="' + data.userId + '">'+
+                data.username + '(' + data.email + ')  ' +
+                '           </a>'+ '将隐患：' +
+                '<a class="nameLink" onclick="userLinkClick()" problemId="' + data.problemId + '">' +
+                data.problemName + '</a>' + '转交给' +
+                '<a class="nameLink" onclick="userLinkClick()" userid="' + data.toUserId + '">'+
+                data.toUsername + '(' + data.toEmail + ')  ' +
+                '           </a>'
+        } else if(data.type == 5){
+            context +=  '<a class="nameLink" onclick="userLinkClick()" userid="' + data.userId + '">'+
+                data.username + '(' + data.email + ')  ' +
+                '           </a>'+ '处理了隐患：' +
+                '<a class="nameLink" onclick="userLinkClick()" problemId="' + data.problemId + '">' +
+                data.problemName + '</a>' + ' 的' + data.taskName + '节点'
+        }
+
+        context += '      </div>' +
+            '    </div>';
+        return context;
+    }
 </script>
 
 </body>

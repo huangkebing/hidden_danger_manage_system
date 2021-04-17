@@ -80,26 +80,68 @@
         margin-left: 50px;
         margin-right: 50px;
     }
+    .high{
+        font-size: 18px;
+        color: red;
+    }
+    .middle{
+        font-size: 27px;
+        color: orange;
+    }
+    .low{
+        font-size: 18px;
+        color: green;
+    }
 </style>
 <body>
 <div class="layui-col-md8">
     <div class="layuimini-container">
         <div class="layuimini-main layui-row">
-            <div id="createUser"></div>
-            <div id="title"></div>
-            <div id="description" class="picture"></div>
-            <div id="typeName"></div>
-            <div id="priorityDiv"></div>
             <div>
-                <button type="button" id="addRemarks" class="layui-btn layui-btn-normal">添加备注</button>
-                <button type="button" id="editTaskBtn" class="layui-btn layui-btn-normal">修改隐患</button>
-                <button type="button" id="editFile" class="layui-btn layui-btn-normal">上传附件</button>
-                <button type="button" id="taskToOther" class="layui-btn layui-btn-normal">任务转交</button>
-                <button type="button" id="process" class="layui-btn layui-btn-normal">处理进度</button>
-                <button type="button" id="closeTask" class="layui-btn layui-btn-normal">关闭任务</button>
-                <button type="button" id="deleteTask" class="layui-btn layui-btn-normal">删除任务</button>
+                <div id="priorityDiv" style="display: inline-block;vertical-align: top;margin-top: 9px;"></div>
+                <h1 id="title" style="display: inline-block"></h1>
+                <div id="btnBar" class="layui-btn-group" style="display:inline-block;margin-left: 20px;vertical-align: top;margin-top: 5px"></div>
             </div>
-            <div id="btnBar"></div>
+            <div style="margin-top:10px;margin-bottom: 10px">
+                <div class="layui-btn-group" style="margin-left: 20px">
+                    <button type="button" id="addRemarks" class="layui-btn layui-btn-normal layui-btn-sm">添加备注</button>
+                    <button type="button" id="editFile" class="layui-btn layui-btn-normal layui-btn-sm">上传附件</button>
+                </div>
+
+                <div class="layui-btn-group" style="margin-left: 20px">
+                    <button type="button" id="editTaskBtn" class="layui-btn layui-btn-warm layui-btn-sm">修改隐患</button>
+                    <button type="button" id="taskToOther" class="layui-btn layui-btn-warm layui-btn-sm">任务转交</button>
+                </div>
+
+                <div class="layui-btn-group" style="margin-left: 20px">
+                    <button type="button" id="closeTask" class="layui-btn layui-btn-danger layui-btn-sm">关闭任务</button>
+                    <button type="button" id="deleteTask" class="layui-btn layui-btn-danger layui-btn-sm">删除任务</button>
+                </div>
+
+                <div class="layui-btn-group" style="margin-left: 20px">
+                    <button type="button" id="process" class="layui-btn layui-btn-sm">进度查看</button>
+                </div>
+            </div>
+
+            <blockquote class="layui-elem-quote" style="margin-top: 10px">隐患信息</blockquote>
+            <div style="margin-left: 10px;margin-top: 10px;margin-bottom: 10px;vertical-align: top;">
+                <i class="fa fa-user-o userTipIcon"></i>
+                <div id="createUser" style="display: inline-block;margin-left: 10px;cursor: pointer;"></div>
+            </div>
+            <div style="margin-left: 10px;margin-top: 10px;margin-bottom: 10px;vertical-align: top;">
+                <i class="fa fa-file-text-o userTipIcon"></i>
+                <div id="typeName" style="display: inline-block;margin-left: 10px;"></div>
+            </div>
+            <div style="margin-left: 10px;margin-top: 10px;margin-bottom: 10px;vertical-align: top;">
+                <i class="fa fa-clock-o userTipIcon"></i>
+                <div id="create" style="display: inline-block;margin-left: 10px;"></div>
+            </div>
+            <div style="margin-left: 10px;margin-top: 10px;margin-bottom: 10px;vertical-align: top;">
+                <i class="fa fa-arrow-circle-o-up userTipIcon"></i>
+                <div id="modify" style="display: inline-block;margin-left: 10px;"></div>
+            </div>
+            <blockquote class="layui-elem-quote" style="margin-top: 10px">隐患描述</blockquote>
+            <div id="description" class="picture" style="margin-left: 10px"></div>
             <blockquote class="layui-elem-quote" style="margin-top: 10px">备注信息</blockquote>
             <ul class="flow-default picture" id="remarksFlow"></ul>
         </div>
@@ -252,13 +294,25 @@
                 initData = data.task;
                 for (var index = 0;index < initData.length;index++){
                     var dataTmp = initData[index];
-                    $("#btnBar").append('<button type="button" onclick="task()" value="' + index + '">'+ dataTmp.taskName+'</button>');
+                    $("#btnBar").append('<button type="button" class="layui-btn layui-btn-sm" onclick="task()" value="' + index + '">'+ dataTmp.taskName+'</button>');
                 }
-                $("#createUser").html(data.problem.username);
+
+                $("#createUser").html('<a className="nameLink" onClick="userLinkClick()" userid="' + data.problem.userId + '">'+
+                    data.problem.username + '(' + data.problem.email + ') ' +
+                    ' </a>');
                 $("#title").html(data.problem.name);
                 $("#description").html(data.problem.description);
                 $("#typeName").html(data.problem.typeName);
-                $("#priorityDiv").html(data.problem.priority);
+                $("#create").html(layui.util.toDateString(data.problem.create, 'yyyy-MM-dd HH:mm:ss'));
+                $("#modify").html(layui.util.toDateString(data.problem.modify, 'yyyy-MM-dd HH:mm:ss'));
+                if(data.problem.priority == 1){
+                    $("#priorityDiv").html('<i class="low fa fa-chevron-down"></i>');
+                } else if(data.problem.priority == 2){
+                    $("#priorityDiv").html('<i class="middle fa fa-angle-double-up"></i>');
+                } else if(data.problem.priority == 3){
+                    $("#priorityDiv").html('<i class="high fa fa-warning"></i>');
+                }
+                $("#priorityDiv").attr("value",data.problem.priority);
             }
         });
 
@@ -437,7 +491,7 @@
         $("#editTaskBtn").click(function (){
             $("#name").val($("#title").text());
             $("#type").val($("#typeName").text());
-            $("#priority").val($("#priorityDiv").text())
+            $("#priority").val($("#priorityDiv").attr("value"))
             taskEditer.txt.html($("#description").html());
             form.render();
             var index = layer.open({
@@ -657,7 +711,6 @@
             type: "GET",
             url: basePath + "/user/getUserById/" + target.attr("userid"),
             success: function (result) {
-                console.log(result);
                 $("#userTipName").html(result.username);
                 $("#userTipRole").html(result.role.name);
                 $("#userTipEmail").html(result.email);
