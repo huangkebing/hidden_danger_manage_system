@@ -21,7 +21,7 @@ public interface TaskService extends IService<Problem> {
 
     R getDetailTask(Long problemId);
 
-    R completeTask(String taskId, Map<String,Object> processVariables);
+    R completeTask(String taskId, Map<String,Object> processVariables, String context);
 
     List<ProcessVariable> getBeginVariable(Long typeId);
 

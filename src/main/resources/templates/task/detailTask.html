@@ -156,12 +156,22 @@
     </div>
 </div>
 <form id="operateTask" class="layui-form" style="display: none">
-    <div class="layui-form-item" id="variables"></div>
-    <div class="layui-form-item" style="margin-left: 70px">
-        <div class="layui-input-block">
-            <button class="layui-btn" id="submit" style="padding: 0 20px" lay-submit="" lay-filter="operate">提交
-            </button>
-            <button type="reset" id="reset" style="visibility: hidden" class="layui-btn">重置</button>
+    <div class="layuimini-container">
+        <div class="layuimini-main">
+            <div class="layui-form-item" id="variables"></div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">隐患描述<span> &nbsp;</span></label>
+                <div id="completeTask">
+                    <p>处理说明</p>
+                </div>
+            </div>
+            <div class="layui-form-item" style="margin-left: 70px">
+                <div class="layui-input-block">
+                    <button class="layui-btn" id="submit" style="padding: 0 20px" lay-submit="" lay-filter="operate">提交
+                    </button>
+                    <button type="reset" id="reset" style="visibility: hidden" class="layui-btn">重置</button>
+                </div>
+            </div>
         </div>
     </div>
 </form>
@@ -462,6 +472,44 @@
         };
         remarksEditer.create();
 
+
+        var completeEditer = new wangEditor('#completeTask');
+        completeEditer.customConfig.showMenuTooltips = true;
+        completeEditer.customConfig.uploadImgServer = basePath + "/file/uploadFile";
+        completeEditer.customConfig.uploadFileName = 'file';
+        completeEditer.customConfig.pasteFilterStyle = false;
+        completeEditer.customConfig.uploadImgMaxLength = 5;
+        completeEditer.customConfig.uploadImgMaxSize = 10 * 1024 * 1024 // 10M
+        completeEditer.customConfig.uploadImgParams = {
+            flag : 'remarks'
+        };
+        completeEditer.customConfig.menus = [
+            'head', 'bold', 'fontSize', 'italic', 'underline', 'strikeThrough', 'indent',
+            'lineHeight', 'foreColor', 'backColor', 'link', 'list', 'todo', 'justify', 'quote', 'image',
+            'table', 'code', 'splitLine', 'undo', 'redo'
+        ];
+        completeEditer.customConfig.uploadImgHooks = {
+            // 上传超时
+            timeout: function (xhr, editor) {
+                layer.msg('上传超时！')
+            },
+            // 如果服务器端返回的不是 {errno:0, data: [...]} 这种格式，可使用该配置
+            customInsert: function (insertImg, result, editor) {
+                if (result.code == 0) {
+                    var data = result.data;
+                    for (let i = 0; i < data.length; i++) {
+                        insertImg(data[i].url);
+                    }
+                } else {
+                    layer.msg(result.message,{icon : 2});
+                }
+            }
+        };
+        completeEditer.customConfig.customAlert = function (info) {
+            layer.msg(info);
+        };
+        completeEditer.create();
+
         //表单提交
         form.on('submit(operate)', function (data) {
             $.ajax({
@@ -469,7 +517,8 @@
                 url: basePath + "/task/completeTask",
                 data: {
                     taskId : currTaskId,
-                    variables : data.field
+                    variables : data.field,
+                    context : completeEditer.txt.html()
                 },
                 success: function (result) {
                     if(result.code === 0){
@@ -827,7 +876,7 @@
         layerIndex = layer.open({
             title: target.text(),
             type: 1,
-            area: ['450px', '240px'],
+            area: ['900px', '400px'],
             content: $("#operateTask"),
             cancel: function(layero,index){
                 $("#reset").click();

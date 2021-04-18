@@ -220,7 +220,7 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
 
     @Override
     @Transactional
-    public R completeTask(String taskId, Map<String,Object> processVariables) {
+    public R completeTask(String taskId, Map<String,Object> processVariables, String context) {
         //根据taskId查询出task
         Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
 

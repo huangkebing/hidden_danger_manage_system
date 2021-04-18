@@ -83,8 +83,8 @@ public class TaskController {
 
     @PostMapping("/completeTask")
     @ResponseBody
-    public Object completeTask(String taskId, @RequestParam Map<String, Object> processVariables){
-        return taskService.completeTask(taskId,processVariables);
+    public Object completeTask(String taskId, @RequestParam Map<String, Object> processVariables, String context){
+        return taskService.completeTask(taskId,processVariables, context);
     }
 
     @GetMapping("/historyTask")
