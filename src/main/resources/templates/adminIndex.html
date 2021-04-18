@@ -16,15 +16,18 @@
             border-radius: 5px;
             text-align: center;
         }
-        .top-panel > .layui-card-body{
+
+        .top-panel > .layui-card-body {
             height: 60px;
         }
-        .top-panel-number{
-            line-height:60px;
+
+        .top-panel-number {
+            line-height: 60px;
             font-size: 30px;
         }
-        .top-panel-tips{
-            line-height:30px;
+
+        .top-panel-tips {
+            line-height: 30px;
             font-size: 12px
         }
     </style>
@@ -89,6 +92,7 @@
     </div>
 </div>
 <script th:src="@{/layuimini/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
+<script th:src="@{/layuimini/lib/jquery-3.4.1/jquery-3.4.1.min.js}"></script>
 <script th:src="@{/layuimini/js/lay-config.js}" charset="utf-8"></script>
 <script th:src="@{/js/url.js}"></script>
 <script>
@@ -97,14 +101,12 @@
             layer = layui.layer,
             echarts = layui.echarts;
 
-        $.ajax({
-            url: basePath + "/index/adminIndexNumbers",    //后台数据请求地址
-            type: "GET",
-            success: function(result){
-                $("#userNumber").html(result.userNumber);
-                $("#roleNumber").html(result.roleNumber);
-                $("#problemNumber").html(result.problemNumber);
-                $("#processNumber").html(result.processNumber);
+        //初始化
+        init();
+
+        window.addEventListener("storage", function (e) {
+            if (e.key == 'adminIndex') {
+                init();
             }
         });
         /**
@@ -167,7 +169,7 @@
         $.ajax({
             url: basePath + "/index/countByType",    //后台数据请求地址
             type: "GET",
-            success: function(result){
+            success: function (result) {
                 var optionPies = {
                     title: {
                         text: '隐患分布',
@@ -210,6 +212,19 @@
         }
 
     });
+
+    function init() {
+        $.ajax({
+            url: basePath + "/index/adminIndexNumbers",    //后台数据请求地址
+            type: "GET",
+            success: function (result) {
+                $("#userNumber").html(result.userNumber);
+                $("#roleNumber").html(result.roleNumber);
+                $("#problemNumber").html(result.problemNumber);
+                $("#processNumber").html(result.processNumber);
+            }
+        });
+    }
 </script>
 </body>
 </html>

@@ -54,10 +54,12 @@
                     <a href="javascript:;" id="username" th:text="${session.loginUser.name}"></a>
                     <dl class="layui-nav-child">
                         <dd>
-                            <a href="javascript:;" layuimini-content-href="user/userInfo.html" data-title="基本资料" data-icon="fa fa-gears">基本资料</a>
+                            <a href="javascript:;" layuimini-content-href="user/userInfo.html" data-title="基本资料"
+                               data-icon="fa fa-gears">基本资料</a>
                         </dd>
                         <dd>
-                            <a href="javascript:;" layuimini-content-href="user/password.html" data-title="修改密码" data-icon="fa fa-gears">修改密码</a>
+                            <a href="javascript:;" layuimini-content-href="user/password.html" data-title="修改密码"
+                               data-icon="fa fa-gears">修改密码</a>
                         </dd>
                         <dd>
                             <hr>
@@ -123,7 +125,7 @@
 <script th:src="@{/layuimini/lib/jquery-3.4.1/jquery-3.4.1.min.js}"></script>
 <script th:src="@{/js/url.js}"></script>
 <script th:inline="javascript">
-    layui.use(['jquery', 'layer', 'miniAdmin','miniTongji'], function () {
+    layui.use(['jquery', 'layer', 'miniAdmin', 'miniTongji'], function () {
         var $ = layui.jquery,
             layer = layui.layer,
             miniAdmin = layui.miniAdmin,
@@ -142,11 +144,11 @@
         miniAdmin.render(options);
     });
 
-    function toLogin(){
+    function toLogin() {
         $("#logout span").click();
     }
 
-    function reload(){
+    function reload() {
         window.location.reload(true);
     }
 </script>

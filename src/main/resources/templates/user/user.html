@@ -10,11 +10,23 @@
     <link rel="stylesheet" th:href="@{/layuimini/lib/layui-v2.5.5/css/layui.css}" media="all">
     <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
     <style>
-        .layui-form-select dl { max-height:120px; }
+        body .btnStyle .layui-layer-btn a {
+            background: #019688;
+            border: #019688;
+            padding: 4px 20px
+        }
+
+        .layui-layer-content {
+            overflow: visible !important;
+        }
+
+        .layui-form-select dl {
+            max-height: 200px;
+        }
+
         .layui-form-checkbox {
             margin-bottom: 5px;
         }
-        body .btnStyle .layui-layer-btn a{background:#019688;border: #019688;padding: 4px 20px}
     </style>
 </head>
 <body>
@@ -52,7 +64,9 @@
                             </div>
                         </div>
                         <div class="layui-inline">
-                            <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                            <button type="submit" class="layui-btn layui-btn-primary" lay-submit
+                                    lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索
+                            </button>
                         </div>
                     </div>
                 </form>
@@ -62,7 +76,7 @@
         <!--工具栏-->
         <script type="text/html" id="toolbar">
             <div class="layui-btn-container">
-                <button class="layui-btn layui-btn-sm data-add-btn" lay-event="add"> 添加 </button>
+                <button class="layui-btn layui-btn-sm data-add-btn" lay-event="add"> 添加</button>
             </div>
         </script>
 
@@ -91,6 +105,15 @@
 
         <!--用户新增、修改表单-->
         <form id="operateUser" class="layui-form" style="display: none">
+            <div class="layui-form-item" style="margin-top: 10px">
+                <label class="layui-form-label">用户邮箱<span style="color: red"> *</span></label>
+                <div class="layui-input-block" style="width: 300px;">
+                    <input type="text" name="email" id="email" lay-verify="required" lay-reqtext="请输入用户邮箱"
+                           placeholder="用户邮箱"
+                           autocomplete="off" style="width: 225px;display: inline-block" class="layui-input"> @163.com
+                </div>
+            </div>
+
             <div class="layui-form-item" style="margin-top: 20px">
                 <label class="layui-form-label">用户角色<span style="color: red"> *</span></label>
                 <div class="layui-input-block" style="width: 300px;">
@@ -100,15 +123,7 @@
                 </div>
             </div>
 
-            <div class="layui-form-item" style="margin-top: 10px">
-                <label class="layui-form-label">用户邮箱<span style="color: red"> *</span></label>
-                <div class="layui-input-block" style="width: 300px;">
-                    <input type="text" name="email" id="email" lay-verify="required" lay-reqtext="请输入用户邮箱" placeholder="用户邮箱"
-                           autocomplete="off" style="width: 225px;display: inline-block" class="layui-input"> @163.com
-                </div>
-            </div>
-
-            <div class="layui-form-item" style="margin-left: 70px">
+            <div class="layui-form-item" style="margin-left: 70px;margin-bottom: 12px">
                 <div class="layui-input-block">
                     <button class="layui-btn" id="submit" style="padding: 0 20px" lay-submit="" lay-filter="operate">提交
                     </button>
@@ -140,16 +155,30 @@
         var flag = 0;
 
         //动态生成角色下拉框
-        $.ajax({
-            url: basePath + "/role/getAllRole",    //后台数据请求地址
-            type: "GET",
-            success: function(result){
-                for (var index = 0;index < result.length;index++){
-                    var dataTmp = result[index];
-                    $('#role').append(new Option(dataTmp.name,dataTmp.id));//往下拉菜单里添加元素
-                    $('#roleSearch').append(new Option(dataTmp.name,dataTmp.id));//往下拉菜单里添加元素
+        function initSelect() {
+            $.ajax({
+                url: basePath + "/role/getAllRole",    //后台数据请求地址
+                type: "GET",
+                success: function (result) {
+                    $('#role').empty();
+                    $('#roleSearch').empty();
+                    $('#role').append(new Option("请选择(可搜索)", ""));//往下拉菜单里添加元素
+                    $('#roleSearch').append(new Option("请选择(可搜索)", ""));//往下拉菜单里添加元素
+                    for (var index = 0; index < result.length; index++) {
+                        var dataTmp = result[index];
+                        $('#role').append(new Option(dataTmp.name, dataTmp.id));//往下拉菜单里添加元素
+                        $('#roleSearch').append(new Option(dataTmp.name, dataTmp.id));//往下拉菜单里添加元素
+                    }
+                    form.render();
                 }
-                form.render();
+            });
+        }
+
+        initSelect();
+
+        window.addEventListener("storage", function (e) {
+            if (e.key == 'roleSelect') {
+                initSelect();
             }
         });
 
@@ -157,22 +186,22 @@
             $.ajax({
                 url: basePath + "/question/getQuestionWithUser/" + currObj.data.id,    //后台数据请求地址
                 type: "GET",
-                success: function(result){
+                success: function (result) {
                     $("#leftDiv").empty();
                     $("#rightDiv").empty();
-                    for (var index = 0;index < result.length;index++){
+                    for (var index = 0; index < result.length; index++) {
                         var dataTmp = result[index];
-                        if(index % 2 === 0){
-                            if(dataTmp.checked === true){
-                                $("#leftDiv").append('<input type="checkbox" style="margin-bottom: 5px" name="type" value="'+ dataTmp.id +'" title="'+ dataTmp.name+'" checked><br>')
+                        if (index % 2 === 0) {
+                            if (dataTmp.checked === true) {
+                                $("#leftDiv").append('<input type="checkbox" style="margin-bottom: 5px" name="type" value="' + dataTmp.id + '" title="' + dataTmp.name + '" checked><br>')
                             } else {
-                                $("#leftDiv").append('<input type="checkbox" style="margin-bottom: 5px" name="type" value="'+ dataTmp.id +'" title="'+ dataTmp.name+'"><br>')
+                                $("#leftDiv").append('<input type="checkbox" style="margin-bottom: 5px" name="type" value="' + dataTmp.id + '" title="' + dataTmp.name + '"><br>')
                             }
                         } else {
-                            if(dataTmp.checked === true){
-                                $("#rightDiv").append('<input type="checkbox" style="margin-bottom: 5px" name="type" value="'+ dataTmp.id +'" title="'+ dataTmp.name+'" checked><br>')
+                            if (dataTmp.checked === true) {
+                                $("#rightDiv").append('<input type="checkbox" style="margin-bottom: 5px" name="type" value="' + dataTmp.id + '" title="' + dataTmp.name + '" checked><br>')
                             } else {
-                                $("#rightDiv").append('<input type="checkbox" style="margin-bottom: 5px" name="type" value="'+ dataTmp.id +'" title="'+ dataTmp.name+'"><br>')
+                                $("#rightDiv").append('<input type="checkbox" style="margin-bottom: 5px" name="type" value="' + dataTmp.id + '" title="' + dataTmp.name + '"><br>')
                             }
                         }
                     }
@@ -181,26 +210,35 @@
             });
         }
 
+        window.addEventListener("storage", function (e) {
+            if (e.key == 'user') {
+                renderBox()
+            }
+        });
+
         var userTable = table.render({
             elem: '#userTable',
             url: basePath + '/user/getUser',
             toolbar: '#toolbar',
             defaultToolbar: ['filter', 'exports'],
             cols: [[
-                {type: "numbers", width: 50,fixed: 'left'},
-                {field: 'email',minWidth: 240, title: '邮箱'},
-                {field: 'name',minWidth: 180, title: '角色', templet: function (d) {
+                {type: "numbers", width: 50, fixed: 'left'},
+                {field: 'email', minWidth: 240, title: '邮箱'},
+                {
+                    field: 'name', minWidth: 180, title: '角色', templet: function (d) {
                         if (d.role == null) {
                             return '<div>角色不存在</div>';
                         } else {
-                            return '<div>'+ d.role.name + '</div>';
+                            return '<div>' + d.role.name + '</div>';
                         }
                     }
                 },
-                {field: 'create', title: '创建时间', width: 160,sort: true,templet:
+                {
+                    field: 'create', title: '创建时间', width: 160, sort: true, templet:
                         "<div>{{layui.util.toDateString(d.create, 'yyyy-MM-dd HH:mm:ss')}}</div>"
                 },
-                {field: 'create', title: '创建时间', width: 160,sort: true,templet:
+                {
+                    field: 'create', title: '创建时间', width: 160, sort: true, templet:
                         "<div>{{layui.util.toDateString(d.create, 'yyyy-MM-dd HH:mm:ss')}}</div>"
                 },
                 {title: '账号状态修改', width: 120, toolbar: '#userState', align: "center"},
@@ -245,9 +283,9 @@
                 var index = layer.open({
                     title: '添加用户',
                     type: 1,
-                    area: ['450px', '240px'],
+                    area: ['450px', '215px'],
                     content: $("#operateUser"),
-                    cancel: function(layero,index){
+                    cancel: function (layero, index) {
                         $("#reset").click();
                     }
                 });
@@ -261,19 +299,19 @@
             if (obj.event === 'edit') {
                 flag = 1;
                 console.log(obj.data.role);
-                if(obj.data.role !== undefined){
+                if (obj.data.role !== undefined) {
                     $("#role").val(obj.data.role.id);
                 }
                 var email = obj.data.email;
                 $("#email").val(email.substr(0, email.length - 8));
-                $("#email").attr("disabled",true);
+                $("#email").attr("disabled", true);
                 form.render();
                 var index = layer.open({
                     title: '修改用户',
                     type: 1,
-                    area: ['450px', '240px'],
+                    area: ['450px', '215px'],
                     content: $("#operateUser"),
-                    cancel: function(layero,index){
+                    cancel: function (layero, index) {
                         $("#email").removeAttr("disabled");
                         $("#reset").click();
                     }
@@ -284,98 +322,95 @@
                         type: "POST",
                         url: basePath + "/user/deleteUser",
                         data: {
-                            id : data.id
+                            id: data.id
                         },
                         success: function (result) {
-                            if(result.code === 0){
-                                layer.msg("删除用户成功！",{icon: 1});
+                            if (result.code === 0) {
+                                layer.msg("删除用户成功！", {icon: 1});
+                                localStorage.setItem('adminIndex', generateUUID());
                                 userTable.reload();
-                            }
-                            else{
-                                layer.msg(result.message,{icon: 2});
+                            } else {
+                                layer.msg(result.message, {icon: 2});
                             }
                         },
                         error: function () {
-                            layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                            layer.msg('系统错误，请联系系统管理员', {icon: 2});
                         }
                     });
                     layer.close(index);
                 });
-            } else if (obj.event === 'active'){
+            } else if (obj.event === 'active') {
                 $.ajax({
                     type: "POST",
                     url: basePath + "/user/userState",
                     data: {
-                        id : obj.data.id,
-                        live : 1
+                        id: obj.data.id,
+                        live: 1
                     },
                     success: function (result) {
-                        if(result.code === 0){
-                            layer.msg("激活用户成功！",{icon: 1});
+                        if (result.code === 0) {
+                            layer.msg("激活用户成功！", {icon: 1});
                             userTable.reload();
-                        }
-                        else{
-                            layer.msg(result.message,{icon: 2});
+                        } else {
+                            layer.msg(result.message, {icon: 2});
                         }
                     },
                     error: function () {
-                        layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                        layer.msg('系统错误，请联系系统管理员', {icon: 2});
                     }
                 });
-            } else if (obj.event === 'frozen'){
+            } else if (obj.event === 'frozen') {
                 $.ajax({
                     type: "POST",
                     url: basePath + "/user/userState",
                     data: {
-                        id : obj.data.id,
-                        live : 0
+                        id: obj.data.id,
+                        live: 0
                     },
                     success: function (result) {
-                        if(result.code === 0){
-                            layer.msg("冻结用户成功！",{icon: 1});
+                        if (result.code === 0) {
+                            layer.msg("冻结用户成功！", {icon: 1});
                             userTable.reload();
-                        }
-                        else{
-                            layer.msg(result.message,{icon: 2});
+                        } else {
+                            layer.msg(result.message, {icon: 2});
                         }
                     },
                     error: function () {
-                        layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                        layer.msg('系统错误，请联系系统管理员', {icon: 2});
                     }
                 });
-            } else if (obj.event === 'question'){
+            } else if (obj.event === 'question') {
                 renderBox();
                 var index = layer.open({
                     title: '用户分配隐患类型',
                     type: 1,
-                    area: ['320px', '400px'],
+                    area: ['340px', '400px'],
                     content: $("#typeDiv"),
                     btn: ['提交'],
                     btnAlign: 'c',
                     skin: 'btnStyle',
-                    yes: function(){
+                    yes: function () {
                         var standards = "";
-                        $("input:checkbox[name='type']:checked").each(function() {
+                        $("input:checkbox[name='type']:checked").each(function () {
                             standards += $(this).val() + ',';
                         });
                         $.ajax({
                             type: "POST",
                             url: basePath + "/user/userToQuestion",
                             data: {
-                                userId : currObj.data.id,
-                                questionIds : standards
+                                userId: currObj.data.id,
+                                questionIds: standards
                             },
                             success: function (result) {
-                                if(result.code === 0){
+                                if (result.code === 0) {
                                     layer.closeAll();
-                                    layer.msg("用户分配隐患类型成功！",{icon: 1});
-                                }
-                                else{
-                                    layer.msg(result.message,{icon: 2});
+                                    layer.msg("用户分配隐患类型成功！", {icon: 1});
+                                } else {
+                                    layer.msg(result.message, {icon: 2});
                                 }
                             },
                             error: function () {
-                                layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                                layer.msg('系统错误，请联系系统管理员', {icon: 2});
                             }
                         });
                     }
@@ -385,58 +420,57 @@
 
         //表单提交
         form.on('submit(operate)', function (data) {
-            if($("#role").val() === ""){
-                layer.msg("请选择角色!",{icon: 2});
+            if ($("#role").val() === "") {
+                layer.msg("请选择角色!", {icon: 2});
                 return false;
             }
             //新增提交
-            if(flag === 0){
+            if (flag === 0) {
                 $.ajax({
                     type: "POST",
                     url: basePath + "/user/addUser",
                     data: {
-                        email : data.field.email + "@163.com",
-                        role : data.field.role
+                        email: data.field.email + "@163.com",
+                        role: data.field.role
                     },
                     success: function (result) {
-                        if(result.code === 0){
+                        if (result.code === 0) {
                             layer.closeAll();
                             $("#reset").click();
-                            layer.msg("新增用户成功！",{icon: 1});
+                            layer.msg("新增用户成功！", {icon: 1});
+                            localStorage.setItem('adminIndex', generateUUID());
                             userTable.reload();
-                        }
-                        else{
-                            layer.msg(result.message,{icon: 2});
+                        } else {
+                            layer.msg(result.message, {icon: 2});
                         }
                     },
                     error: function () {
-                        layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                        layer.msg('系统错误，请联系系统管理员', {icon: 2});
                     }
                 });
             }
             //修改提交
-            else if(flag === 1){
+            else if (flag === 1) {
                 $.ajax({
                     type: "POST",
                     url: basePath + "/user/updateUser",
                     data: {
-                        id : currObj.data.id,
-                        role : data.field.role
+                        id: currObj.data.id,
+                        role: data.field.role
                     },
                     success: function (result) {
-                        if(result.code === 0){
+                        if (result.code === 0) {
                             layer.closeAll();
                             $("#email").removeAttr("disabled");
                             $("#reset").click();
-                            layer.msg("修改用户成功！",{icon: 1});
+                            layer.msg("修改用户成功！", {icon: 1});
                             userTable.reload();
-                        }
-                        else{
-                            layer.msg(result.message,{icon: 2});
+                        } else {
+                            layer.msg(result.message, {icon: 2});
                         }
                     },
                     error: function () {
-                        layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                        layer.msg('系统错误，请联系系统管理员', {icon: 2});
                     }
                 });
             }

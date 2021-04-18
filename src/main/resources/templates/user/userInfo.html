@@ -10,7 +10,11 @@
     <link rel="stylesheet" th:href="@{/layuimini/lib/layui-v2.5.5/css/layui.css}" media="all">
     <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
     <style>
-        .layui-form-item .layui-input-company {width: auto;padding-right: 10px;line-height: 38px;}
+        .layui-form-item .layui-input-company {
+            width: auto;
+            padding-right: 10px;
+            line-height: 38px;
+        }
     </style>
 </head>
 <body>
@@ -21,19 +25,22 @@
             <div class="layui-form-item">
                 <label class="layui-form-label required">账号昵称</label>
                 <div class="layui-input-block">
-                    <input type="text" name="name" placeholder="请输入账号昵称" th:value="${session.loginUser.name}" lay-verify="required" lay-reqtext="账号昵称不能为空" class="layui-input">
+                    <input type="text" name="name" placeholder="请输入账号昵称" th:value="${session.loginUser.name}"
+                           lay-verify="required" lay-reqtext="账号昵称不能为空" class="layui-input" autocomplete="off">
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">手机</label>
                 <div class="layui-input-block">
-                    <input type="number" name="mobile" autocomplete="off" placeholder="请输入手机" class="layui-input" th:value="${session.loginUser.mobile}">
+                    <input type="number" name="mobile" autocomplete="off" placeholder="请输入手机" class="layui-input"
+                           th:value="${session.loginUser.mobile}">
                 </div>
             </div>
             <div class="layui-form-item layui-form-text">
                 <label class="layui-form-label">座右铭</label>
                 <div class="layui-input-block">
-                    <textarea name="remark" class="layui-textarea" th:value="${session.loginUser.remark}" autocomplete="off" placeholder="请输入座右铭"></textarea>
+                    <textarea name="remark" class="layui-textarea" th:value="${session.loginUser.remark}"
+                              autocomplete="off" placeholder="请输入座右铭"></textarea>
                 </div>
             </div>
 
@@ -50,7 +57,7 @@
 <script th:src="@{/layuimini/js/lay-config.js}" charset="utf-8"></script>
 <script th:src="@{/layuimini/lib/jquery-3.4.1/jquery-3.4.1.min.js}"></script>
 <script>
-    layui.use(['form','miniTab'], function () {
+    layui.use(['form', 'miniTab'], function () {
         var form = layui.form,
             layer = layui.layer,
             miniTab = layui.miniTab;
@@ -62,7 +69,7 @@
                 url: basePath + "/user/updateUserInfo",
                 data: data.field,
                 success: function (result) {
-                    if(result.code === 0){
+                    if (result.code === 0) {
                         var index = layer.alert("个人信息修改成功", {
                             title: '提示'
                         }, function () {
@@ -70,13 +77,12 @@
                             window.parent.reload();
                             miniTab.deleteCurrentByIframe();
                         });
-                    }
-                    else{
-                        layer.msg(result.message,{icon: 2});
+                    } else {
+                        layer.msg(result.message, {icon: 2});
                     }
                 },
                 error: function () {
-                    layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                    layer.msg('系统错误，请联系系统管理员', {icon: 2});
                 }
             });
             return false;

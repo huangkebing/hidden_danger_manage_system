@@ -26,13 +26,13 @@
                     <div class="group">
                         <label for="toMail" class="label">邮&nbsp;&nbsp;&nbsp;&nbsp;箱</label>
                         <input id="toMail" name="toMail" type="text" class="input" style="width: 240px"
-                               placeholder="请输入登录邮箱" autocomplete="off"
-                               value="huangkebing2"><span style="color: #000000;font-size: 16px">@163.com</span>
+                               placeholder="请输入登录邮箱" autocomplete="off"><span style="color: #000000;font-size: 16px">@163.com</span>
                     </div>
                     <div class="hr"></div>
                     <div class="group">
                         <label for="code" class="label">验证码</label>
-                        <input id="code" name="code" type="text" class="input" autocomplete="off" style="width: 110px" placeholder="验证码">
+                        <input id="code" name="code" type="text" class="input" autocomplete="off" style="width: 110px"
+                               placeholder="验证码">
                         <button class="button" type="button"
                                 style="line-height:15px;height:40px;width: 220px;cursor: pointer" id="sendCode">发送验证码
                         </button>
@@ -42,7 +42,7 @@
                         <input id="check" type="checkbox" name="remember" class="check" checked>
                         <label for="check"><span class="icon"></span>记住我</label>
                     </div>
-                    <div style="text-align: center;color: red;font-size: 18px" th:if="${param.error1}"
+                    <div id="tip1" style="text-align: center;color: red;font-size: 18px" th:if="${param.error1}"
                          th:text="${session['SPRING_SECURITY_LAST_EXCEPTION'].message}"></div>
                     <div class="group" style="padding-top: 20px">
                         <input type="submit" class="button" style="cursor: pointer;" value="登&nbsp;录">
@@ -52,21 +52,20 @@
                     <div class="group">
                         <label for="username" class="label">邮&nbsp;&nbsp;&nbsp;&nbsp;箱</label>
                         <input id="username" name="username" type="text" class="input" style="width: 240px"
-                               placeholder="请输入登录邮箱" autocomplete="off"
-                               value="huangkebing2"><span style="color: #000000;font-size: 16px">@163.com</span>
+                               placeholder="请输入登录邮箱" autocomplete="off"><span style="color: #000000;font-size: 16px">@163.com</span>
                     </div>
                     <div class="hr"></div>
                     <div class="group">
                         <label for="password" class="label">密&nbsp;&nbsp;&nbsp;&nbsp;码</label>
                         <input id="password" name="password" type="password" class="input" data-type="password"
-                               style="width: 330px" value="123456" autocomplete="off" placeholder="请输入密码">
+                               style="width: 330px" autocomplete="off" placeholder="请输入密码">
                     </div>
                     <div class="hrPass"></div>
                     <div class="group" hidden>
                         <input id="check" type="checkbox" name="remember" class="check" checked>
                         <label for="check"><span class="icon"></span>记住我</label>
                     </div>
-                    <div style="text-align: center;color: red;font-size: 18px" th:if="${param.error2}"
+                    <div id="tip2" style="text-align: center;color: red;font-size: 18px" th:if="${param.error2}"
                          th:text="${session['SPRING_SECURITY_LAST_EXCEPTION'].message}"></div>
                     <div class="group" style="padding-top: 20px">
                         <input type="submit" class="button" style="cursor: pointer;" value="登&nbsp;录">
@@ -81,18 +80,22 @@
     layui.use(['layer'], function () {
         let layer = layui.layer;
 
+        if ($("#tip1").html() === undefined && $("#tip2").html() !== undefined) {
+            $("#tab-1").removeAttr("checked");
+            $("#tab-2").attr("checked", true);
+        }
+
         $("#sendCode").click(function () {
             let toMail = $("#toMail").val();
             $.ajax({
                 type: "GET",
                 url: basePath + "/login/validateCode/" + toMail,
                 success: function (result) {
-                    if(result.code == 0){
+                    if (result.code == 0) {
                         layer.msg('验证码发送成功!', {icon: 1});
                         content = $("#sendCode").html();
                         time();
-                    }
-                    else {
+                    } else {
                         layer.msg(result.message, {icon: 2});
                     }
                 },
