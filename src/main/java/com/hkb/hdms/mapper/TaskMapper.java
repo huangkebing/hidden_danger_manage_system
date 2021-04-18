@@ -17,9 +17,9 @@ public interface TaskMapper {
 
     Long getTodoCount(@Param("email") String email, @Param("groups") List<String> groups);
 
-    List<Problem> getHistoryInstances(@Param("email") String email, @Param("groups") List<String> groups, int limit , int offset, String begin, String end);
+    List<Problem> getHistoryInstances(@Param("email") String email, @Param("groups") List<String> groups, int limit , int offset,String name, String priority, String begin, String end);
 
-    Long getHistoryCount(@Param("email") String email, @Param("groups") List<String> groups, String begin, String end);
+    Long getHistoryCount(@Param("email") String email, @Param("groups") List<String> groups, String name, String priority, String begin, String end);
 
     List<Problem> getSolveingInstances(@Param("email") String email, @Param("groups") List<String> groups, int limit , int offset);
 

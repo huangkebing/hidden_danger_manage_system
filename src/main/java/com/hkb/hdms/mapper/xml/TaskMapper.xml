@@ -2,11 +2,11 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hkb.hdms.mapper.TaskMapper">
     <select id="getTodoInstances" resultType="com.hkb.hdms.model.pojo.Problem">
-        select P.id, P.instance_id, P.name, P.priority
+        select distinct P.*
         from ACT_RU_TASK RES inner join ACT_RU_IDENTITYLINK I on I.TASK_ID_ = RES.ID_
         inner join hdms_problem P on RES.PROC_INST_ID_ = P.instance_id
         WHERE RES.ASSIGNEE_ is null and I.TYPE_ = 'candidate' and I.USER_ID_ = #{email}
-        GROUP BY P.id, P.instance_id, P.name, P.priority ORDER BY MAX(RES.CREATE_TIME_) DESC
+        ORDER BY P.modify DESC
         LIMIT #{limit} OFFSET #{offset}
     </select>
 
@@ -16,43 +16,52 @@
         WHERE RES.ASSIGNEE_ is null and I.TYPE_ = 'candidate' and I.USER_ID_ = #{email}
     </select>
 
-    <resultMap id="selectMap" type="com.hkb.hdms.model.pojo.Problem">
-        <result column="PROC_INST_ID_" property="instanceId"/>
-        <result column="END_TIME_" property="create"/>
-    </resultMap>
-
-    <select id="getHistoryInstances" resultMap="selectMap">
-        select distinct P.*, HPI.END_TIME_
+    <select id="getHistoryInstances" resultType="com.hkb.hdms.model.pojo.Problem">
+        select distinct P.*
         from ACT_HI_TASKINST RES inner join ACT_HI_IDENTITYLINK HI on HI.TASK_ID_ = RES.ID_
         inner join ACT_HI_PROCINST HPI ON RES.PROC_INST_ID_ = HPI.ID_
         inner join hdms_problem P on RES.PROC_INST_ID_ = P.instance_id
         WHERE HPI.END_TIME_ is not null and RES.ASSIGNEE_ is null
         <if test="begin != null and begin != ''">
-            and HPI.END_TIME_ &gt;= #{begin}
+            and P.modify &gt;= #{begin}
         </if>
         <if test="end != null and end != ''">
-            and HPI.END_TIME_ &lt;= #{end}
+            and P.modify &lt;= #{end}
+        </if>
+        <if test="name != null and name != ''">
+            and P.name like #{name}
+        </if>
+        <if test="priority != null and priority != ''">
+            and P.priority = #{priority}
         </if>
         and HI.TYPE_ = 'candidate' and HI.USER_ID_ = #{email}
-        ORDER BY HPI.END_TIME_ DESC
+        ORDER BY P.modify DESC
         LIMIT #{limit} OFFSET #{offset}
     </select>
 
     <select id="getHistoryCount" resultType="Long">
         select COUNT(distinct RES.PROC_INST_ID_)
-        from ACT_HI_TASKINST RES inner join ACT_HI_IDENTITYLINK HI on HI.TASK_ID_ = RES.ID_ inner join ACT_HI_PROCINST HPI ON RES.PROC_INST_ID_ = HPI.ID_
+        from ACT_HI_TASKINST RES inner join ACT_HI_IDENTITYLINK HI on HI.TASK_ID_ = RES.ID_
+            inner join ACT_HI_PROCINST HPI ON RES.PROC_INST_ID_ = HPI.ID_
+            inner join hdms_problem P on RES.PROC_INST_ID_ = P.instance_id
         WHERE HPI.END_TIME_ is not null and RES.ASSIGNEE_ is null
         <if test="begin != null and begin != ''">
-            and HPI.END_TIME_ &gt;= #{begin}
+            and P.modify &gt;= #{begin}
         </if>
         <if test="end != null and end != ''">
-            and HPI.END_TIME_ &lt;= #{end}
+            and P.modify &lt;= #{end}
+        </if>
+        <if test="name != null and name != ''">
+            and P.name like #{name}
+        </if>
+        <if test="priority != null and priority != ''">
+            and P.priority = #{priority}
         </if>
         and HI.TYPE_ = 'candidate' and HI.USER_ID_ = #{email}
     </select>
 
-    <select id="getSolveingInstances" resultMap="selectMap">
-        select distinct P.*,HPI.START_TIME_ as END_TIME_
+    <select id="getSolveingInstances" resultType="com.hkb.hdms.model.pojo.Problem">
+        select distinct P.*
         from ACT_HI_TASKINST RES inner join ACT_HI_IDENTITYLINK HI on HI.TASK_ID_ = RES.ID_
         inner join ACT_HI_PROCINST HPI ON RES.PROC_INST_ID_ = HPI.ID_
         inner join hdms_problem P ON RES.PROC_INST_ID_ = P.instance_id
@@ -60,12 +69,9 @@
         and NOT EXISTS(
         select RT.PROC_INST_ID_
         from ACT_RU_TASK RT inner join ACT_RU_IDENTITYLINK I on I.TASK_ID_ = RT.ID_
-        WHERE RT.ASSIGNEE_ is null and I.TYPE_ = 'candidate' and ( I.USER_ID_ = #{email} or I.GROUP_ID_ IN
-        <foreach collection="groups" item="group" open="(" close=")" separator=",">
-            #{group}
-        </foreach>
-        ) and RT.PROC_INST_ID_ = RES.PROC_INST_ID_)
-        ORDER BY HPI.START_TIME_ DESC
+        WHERE RT.ASSIGNEE_ is null and I.TYPE_ = 'candidate' and I.USER_ID_ = #{email}
+        and RT.PROC_INST_ID_ = RES.PROC_INST_ID_)
+        ORDER BY P.modify DESC
         LIMIT #{limit} OFFSET #{offset}
     </select>
 
@@ -77,11 +83,8 @@
         and NOT EXISTS(
         select RT.PROC_INST_ID_
         from ACT_RU_TASK RT inner join ACT_RU_IDENTITYLINK I on I.TASK_ID_ = RT.ID_
-        WHERE RT.ASSIGNEE_ is null and I.TYPE_ = 'candidate' and ( I.USER_ID_ = #{email} or I.GROUP_ID_ IN
-        <foreach collection="groups" item="group" open="(" close=")" separator=",">
-            #{group}
-        </foreach>
-        ) and RT.PROC_INST_ID_ = RES.PROC_INST_ID_)
+        WHERE RT.ASSIGNEE_ is null and I.TYPE_ = 'candidate' and I.USER_ID_ = #{email}
+          and RT.PROC_INST_ID_ = RES.PROC_INST_ID_)
     </select>
 
     <delete id="deleteHiUsers">

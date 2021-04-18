@@ -16,6 +16,7 @@ import com.hkb.hdms.service.TaskService;
 import com.hkb.hdms.service.TypeService;
 import com.hkb.hdms.utils.NoticeUtil;
 import com.hkb.hdms.utils.TaskHandlerUtil;
+import com.mysql.cj.util.StringUtils;
 import org.activiti.api.runtime.shared.identity.UserGroupManager;
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.bpmn.model.FlowNode;
@@ -292,7 +293,7 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
     }
 
     @Override
-    public Map<String, Object> getHistoryTask(String begin, String end, int page, int limit) {
+    public Map<String, Object> getHistoryTask(String name, String priority, String begin, String end, int page, int limit) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("code", 0);
         map.put("msg", "");
@@ -306,10 +307,13 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         User loginUser = (User) session.getAttribute(Constants.LOGIN_USER_KEY);
         List<String> groups = userGroupManager.getUserGroups(loginUser.getEmail());
 
-        List<Problem> problems = taskMapper.getHistoryInstances(loginUser.getEmail(), groups, limit, offset, begin, end);
+        if(!StringUtils.isNullOrEmpty(name)){
+            name = "%" + name + "%";
+        }
+        List<Problem> problems = taskMapper.getHistoryInstances(loginUser.getEmail(), groups, limit, offset,name, priority, begin, end);
 
         map.put("data", problems);
-        map.put("count", taskMapper.getHistoryCount(loginUser.getEmail(), groups, begin, end));
+        map.put("count", taskMapper.getHistoryCount(loginUser.getEmail(), groups,name, priority, begin, end));
         return map;
     }
 

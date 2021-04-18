@@ -89,10 +89,12 @@ public class TaskController {
 
     @GetMapping("/historyTask")
     @ResponseBody
-    public Object getHistoryTask(@RequestParam(required = false) String begin,
+    public Object getHistoryTask(@RequestParam(required = false) String name,
+                              @RequestParam(required = false) String priority,
+                              @RequestParam(required = false) String begin,
                               @RequestParam(required = false) String end,
                               int page, int limit){
-        return taskService.getHistoryTask(begin, end, page, limit);
+        return taskService.getHistoryTask(name, priority, begin, end, page, limit);
     }
 
     @GetMapping("/SolveingTask")
