@@ -11,44 +11,64 @@
     <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
     <link rel="stylesheet" th:href="@{/layuimini/lib/font-awesome-4.7.0/css/font-awesome.min.css}" media="all">
     <style>
-        .todo{
+        .todo {
             cursor: pointer;
         }
-        .todo:hover{
+
+        .todo:hover {
             color: #1aa094;
         }
-        .high{
+
+        .high {
             font-size: 15px;
             color: red;
         }
-        .middle{
+
+        .middle {
             font-size: 24px;
             color: orange;
         }
-        .low{
+
+        .nameLink {
+            color: #1E9FFF;
+            cursor: pointer;
+        }
+
+        .low {
             font-size: 15px;
             color: green;
         }
-        .layui-elem-quote{
+
+        .layui-elem-quote {
             padding: 10px 15px 10px 15px;
         }
-        .userTipItem{
-            margin-left: 50px;margin-top: 10px;margin-bottom: 10px;
+
+        .userTipItem {
+            margin-left: 50px;
+            margin-top: 10px;
+            margin-bottom: 10px;
             vertical-align: top;
         }
-        .userTipIcon{
+
+        .userTipIcon {
             color: grey;
             vertical-align: top;
             margin-top: 3px;
         }
-        .userTipHr{
+
+        .userTipHr {
             margin-left: 50px;
             margin-right: 50px;
         }
     </style>
 </head>
 <body>
-
+<script type="text/html" id="toolbar">
+    <div class="layui-btn-container">
+        <span class="layui-card-header" style="font-size: 16px;font-weight: bold;"><i
+                class="layui-icon layui-icon-form"></i><span> 待处理隐患</span></span>
+    </div>
+</script>
 
 <div class="layui-col-md5" id="leftDiv">
     <div class="layuimini-container">
@@ -106,32 +126,34 @@
     var miniTab;
 
 
-    layui.use(['form', 'table', 'miniTab','flow'], function () {
+    layui.use(['form', 'table', 'miniTab', 'flow'], function () {
         var $ = layui.jquery,
             form = layui.form,
             table = layui.table,
             flow = layui.flow;
         miniTab = layui.miniTab;
-        
+
         var taskTable = table.render({
             elem: '#currentTableId',
             url: basePath + '/task/getMyTask',
-            toolbar: '#toolbarDemo',
+            toolbar: '#toolbar',
             defaultToolbar: [],
             cols: [[
                 {type: "numbers", width: 50},
-                {field: 'name', minWidth: 300, title: '任务名称', templet: function (d){
+                {
+                    field: 'name', minWidth: 300, title: '任务名称', templet: function (d) {
                         var res = '<a class="todo" lay-event="edit">';
-                        if(d.priority === 3){
+                        if (d.priority === 3) {
                             res += '<i class="high fa fa-warning"></i>';
-                        } else if(d.priority === 2){
+                        } else if (d.priority === 2) {
                             res += '<i class="middle fa fa-angle-double-up"></i>';
-                        } else if(d.priority === 1){
+                        } else if (d.priority === 1) {
                             res += '<i class="low fa fa-chevron-down"></i>';
                         }
                         res += '<span>&nbsp;&nbsp;' + d.name + '</span></a>';
                         return res;
-                    }}
+                    }
+                }
             ]],
             limits: [10, 15, 20, 25, 50, 100],
             limit: 15,
@@ -139,7 +161,7 @@
         });
 
         window.addEventListener("storage", function (e) {
-            if(e.key == 'taskTable'){
+            if (e.key == 'taskTable') {
                 taskTable.reload();
             }
         });
@@ -157,14 +179,14 @@
 
         flow.load({
             elem: '#resentFlow' //流加载容器
-            ,scrollElem: '#resentFlow' //滚动条所在元素，一般不用填，此处只是演示需要。
-            ,isAuto: false
-            ,isLazyimg: true
-            ,done: function(page, next){ //加载下一页
+            , scrollElem: '#resentFlow' //滚动条所在元素，一般不用填，此处只是演示需要。
+            , isAuto: false
+            , isLazyimg: true
+            , done: function (page, next) { //加载下一页
                 $.ajax({
                     url: basePath + "/index/getResent/" + page + "/5",    //后台数据请求地址
                     type: "GET",
-                    success: function(result){
+                    success: function (result) {
                         console.log(result);
                         var data = result.data;
                         var pageSize = Math.ceil(result.count / 5);
@@ -180,46 +202,46 @@
         });
     });
 
-    function createResentDiv(beginData){
+    function createResentDiv(beginData) {
         var data = JSON.parse(beginData);
-        var context = '<div class="layui-row grid-demo grid-demo-bg1" style="border-radius:16px;border: #F2F2F2 8px solid;margin-bottom: 10px;">' +
-            '      <div class="layui-col-md12" style="color: grey;margin: 5px 15px 5px 0;padding-right:5px;font-size: 15px;text-align: right">' +
+        var context = '<div class="layui-row grid-demo grid-demo-bg1" style="border-radius:16px;border: #F2F2F2 4px solid;margin-bottom: 10px;">' +
+            '      <div class="layui-col-md12" style="color: grey;margin: 5px 0 5px 10px;padding-right:5px;font-size: 15px;text-align: left">' +
             '           <i class="fa fa-clock-o"></i>&nbsp;' +
             layui.util.toDateString(data.time, 'yyyy-MM-dd HH:mm:ss') +
             '      </div>' +
-            '      <div class="layui-col-md12" style="margin-top: 8px;padding-left: 8px">';
+            '      <div class="layui-col-md12" style="margin-bottom: 8px;padding-left: 8px">';
 
-        if(data.type === 1){
-            context +=  '<a class="nameLink" onclick="userLinkClick()" userid="' + data.userId + '">'+
+        if (data.type === 1) {
+            context += '<a class="nameLink" onclick="userLinkClick()" userid="' + data.userId + '">' +
                 data.username + '(' + data.email + ')  ' +
-                '           </a>'+ '创建了隐患：' +
+                '           </a>' + '创建了隐患：' +
                 '<a class="nameLink" onclick="problemClick()" problemId="' + data.problemId + '">' +
                 data.problemName + '</a>'
-        } else if(data.type === 2){
-            context +=  '<a class="nameLink" onclick="userLinkClick()" userid="' + data.userId + '">'+
+        } else if (data.type === 2) {
+            context += '<a class="nameLink" onclick="userLinkClick()" userid="' + data.userId + '">' +
                 data.username + '(' + data.email + ')  ' +
-                '           </a>'+ '删除了隐患：' +
+                '           </a>' + '删除了隐患：' +
                 '<a class="nameLink" onclick="problemClick()" problemId="' + data.problemId + '">' +
                 data.problemName + '</a>'
-        } else if(data.type === 3){
-            context +=  '<a class="nameLink" onclick="userLinkClick()" userid="' + data.userId + '">'+
+        } else if (data.type === 3) {
+            context += '<a class="nameLink" onclick="userLinkClick()" userid="' + data.userId + '">' +
                 data.username + '(' + data.email + ')  ' +
-                '           </a>'+ '关闭了隐患：' +
+                '           </a>' + '关闭了隐患：' +
                 '<a class="nameLink" onclick="problemClick()" problemId="' + data.problemId + '">' +
                 data.problemName + '</a>'
-        } else if(data.type === 4){
-            context +=  '<a class="nameLink" onclick="userLinkClick()" userid="' + data.userId + '">'+
+        } else if (data.type === 4) {
+            context += '<a class="nameLink" onclick="userLinkClick()" userid="' + data.userId + '">' +
                 data.username + '(' + data.email + ')  ' +
-                '           </a>'+ '将隐患：' +
+                '           </a>' + '将隐患：' +
                 '<a class="nameLink" onclick="problemClick()" problemId="' + data.problemId + '">' +
                 data.problemName + '</a>' + '转交给' +
-                '<a class="nameLink" onclick="userLinkClick()" userid="' + data.toUserId + '">'+
+                '<a class="nameLink" onclick="userLinkClick()" userid="' + data.toUserId + '">' +
                 data.toUsername + '(' + data.toEmail + ')  ' +
                 '           </a>'
-        } else if(data.type === 5){
-            context +=  '<a class="nameLink" onclick="userLinkClick()" userid="' + data.userId + '">'+
+        } else if (data.type === 5) {
+            context += '<a class="nameLink" onclick="userLinkClick()" userid="' + data.userId + '">' +
                 data.username + '(' + data.email + ')  ' +
-                '           </a>'+ '处理了隐患：' +
+                '           </a>' + '处理了隐患：' +
                 '<a class="nameLink" onclick="problemClick()" problemId="' + data.problemId + '">' +
                 data.problemName + '</a>' + ' 的' + data.taskName + '节点'
         }
@@ -238,12 +260,12 @@
                 $("#userTipName").html(result.username);
                 $("#userTipRole").html(result.role.name);
                 $("#userTipEmail").html(result.email);
-                if(result.phone == undefined){
+                if (result.phone == undefined) {
                     $("#userTipPhone").html("未填写");
-                } else{
+                } else {
                     $("#userTipPhone").html(result.phone);
                 }
-                if(result.remark == undefined){
+                if (result.remark == undefined) {
                     $("#userTipRemark").html("未填写");
                 } else {
                     $("#userTipRemark").html(result.remark);
@@ -256,12 +278,12 @@
                 })
             },
             error: function () {
-                layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                layer.msg('系统错误，请联系系统管理员', {icon: 2});
             }
         });
     }
 
-    function problemClick(){
+    function problemClick() {
         var target = $(event.target);
         miniTab.openNewTabByIframe({
             href: basePath + "/task/readTask.html/" + target.attr("problemId"),

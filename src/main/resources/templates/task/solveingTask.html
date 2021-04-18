@@ -11,21 +11,25 @@
     <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
     <link rel="stylesheet" th:href="@{/layuimini/lib/font-awesome-4.7.0/css/font-awesome.min.css}" media="all">
     <style>
-        .todo{
+        .todo {
             cursor: pointer;
         }
-        .todo:hover{
+
+        .todo:hover {
             color: #1aa094;
         }
-        .high{
+
+        .high {
             font-size: 15px;
             color: red;
         }
-        .middle{
+
+        .middle {
             font-size: 24px;
             color: orange;
         }
-        .low{
+
+        .low {
             font-size: 15px;
             color: green;
         }
@@ -34,8 +38,14 @@
 <body>
 <div class="layuimini-container">
     <div class="layuimini-main">
-        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+        <script type="text/html" id="toolbar">
+            <div class="layui-btn-container">
+                <span class="layui-card-header" style="font-size: 16px;font-weight: bold;"><i
+                        class="layui-icon layui-icon-form"></i><span> 处理中隐患</span></span>
+            </div>
+        </script>
 
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
     </div>
 </div>
 <script th:src="@{/layuimini/lib/layui-v2.5.5/layui.js}" charset="utf-8"></script>
@@ -49,33 +59,41 @@
             laydate = layui.laydate,
             miniTab = layui.miniTab;
 
-        table.render({
+        var solveingTable = table.render({
             elem: '#currentTableId',
             url: basePath + '/task/SolveingTask',
-            toolbar: '#toolbarDemo',
+            toolbar: '#toolbar',
             defaultToolbar: ['filter', 'exports'],
             cols: [[
                 {type: "numbers", width: 50, fixed: 'left'},
-                {field: 'name', minWidth: 300, title: '任务名称', templet: function (d){
-                    var res = '<a class="todo" lay-event="edit">';
-                    if(d.priority === 3){
-                        res += '<i class="high fa fa-warning"></i>';
-                    } else if(d.priority === 2){
-                        res += '<i class="middle fa fa-angle-double-up"></i>';
-                    } else if(d.priority === 1){
-                        res += '<i class="low fa fa-chevron-down"></i>';
+                {
+                    field: 'name', minWidth: 300, title: '任务名称', templet: function (d) {
+                        var res = '<a class="todo" lay-event="edit">';
+                        if (d.priority === 3) {
+                            res += '<i class="high fa fa-warning"></i>';
+                        } else if (d.priority === 2) {
+                            res += '<i class="middle fa fa-angle-double-up"></i>';
+                        } else if (d.priority === 1) {
+                            res += '<i class="low fa fa-chevron-down"></i>';
+                        }
+                        res += '<span>&nbsp;&nbsp;' + d.name + '</span></a>';
+                        return res;
                     }
-                    res += '<span>&nbsp;&nbsp;' + d.name + '</span></a>';
-                    return res;
-                }},
-                {field: 'create', title: '完成时间', width: 160,sort: true,templet:
+                },
+                {
+                    field: 'create', title: '最近更新时间', width: 300, align: 'center', sort: true, templet:
                         "<div>{{layui.util.toDateString(d.create, 'yyyy-MM-dd HH:mm:ss')}}</div>"
                 }
             ]],
             limits: [10, 15, 20, 25, 50, 100],
             limit: 15,
-            page: true,
-            skin: 'line'
+            page: true
+        });
+
+        window.addEventListener("storage", function (e) {
+            if (e.key == 'solveingTable') {
+                solveingTable.reload();
+            }
         });
 
         table.on('tool(currentTableFilter)', function (obj) {

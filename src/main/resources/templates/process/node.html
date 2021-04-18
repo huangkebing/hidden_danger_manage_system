@@ -11,9 +11,13 @@
     <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
     <style>
         .layui-layer-content {
-            overflow: visible!important;
+            overflow: visible !important;
         }
-        .layui-form-select dl { max-height:200px; }
+
+        .layui-form-select dl {
+            max-height: 200px;
+        }
+
         .layui-form-checkbox {
             margin-bottom: 5px;
         }
@@ -24,7 +28,8 @@
     <div class="layuimini-main">
         <script type="text/html" id="toolbar">
             <div class="layui-btn-container">
-                <span class="layui-card-header" style="font-size: 16px;font-weight: bold;"><i class="layui-icon layui-icon-form"></i><span th:text='${processName}'></span></span>
+                <span class="layui-card-header" style="font-size: 16px;font-weight: bold;"><i
+                        class="layui-icon layui-icon-form"></i><span th:text='${processName}'></span></span>
             </div>
         </script>
 
@@ -38,7 +43,8 @@
             <div class="layui-form-item" style="margin-top: 10px">
                 <label class="layui-form-label">节点名称<span style="color: red"> *</span></label>
                 <div class="layui-input-block" style="width: 300px;">
-                    <input type="text" name="name" id="name" lay-verify="required" lay-reqtext="请输入节点名称" placeholder="节点名称"
+                    <input type="text" name="name" id="name" lay-verify="required" lay-reqtext="请输入节点名称"
+                           placeholder="节点名称"
                            autocomplete="off" disabled class="layui-input">
                 </div>
             </div>
@@ -80,11 +86,11 @@
         $.ajax({
             url: basePath + "/role/getAllRole",    //后台数据请求地址
             type: "GET",
-            success: function(result){
+            success: function (result) {
                 $("#role").append(new Option("默认", 0));
-                for (var index = 0;index < result.length;index++){
+                for (var index = 0; index < result.length; index++) {
                     var dataTmp = result[index];
-                    $('#role').append(new Option(dataTmp.name,dataTmp.id));//往下拉菜单里添加元素
+                    $('#role').append(new Option(dataTmp.name, dataTmp.id));//往下拉菜单里添加元素
                 }
                 form.render();
             }
@@ -96,22 +102,26 @@
             toolbar: '#toolbar',
             defaultToolbar: ['filter', 'exports'],
             cols: [[
-                {type: "numbers", width: 50 , fixed: 'left'},
-                {field: 'name', minWidth: 200, title: '节点名称', templet: function (d) {
-                    if(d.name == null || d.name == undefined){
-                        return '<div>未命名节点</div>'
-                    } else {
-                        return '<div>' + d.name + '</div>'
+                {type: "numbers", width: 50, fixed: 'left'},
+                {
+                    field: 'name', minWidth: 200, title: '节点名称', templet: function (d) {
+                        if (d.name == null || d.name == undefined) {
+                            return '<div>未命名节点</div>'
+                        } else {
+                            return '<div>' + d.name + '</div>'
+                        }
                     }
-                }},
+                },
                 {field: 'roleName', minWidth: 200, title: '处理人类型'},
-                {field: 'create', title: '创建时间',width: 160,sort: true, templet:
+                {
+                    field: 'create', title: '创建时间', width: 160, sort: true, templet:
                         "<div>{{layui.util.toDateString(d.create, 'yyyy-MM-dd HH:mm:ss')}}</div>"
                 },
-                {field: 'modify', title: '修改时间',width: 160,sort: true, templet:
+                {
+                    field: 'modify', title: '修改时间', width: 160, sort: true, templet:
                         "<div>{{layui.util.toDateString(d.modify, 'yyyy-MM-dd HH:mm:ss')}}</div>"
                 },
-                {title: '操作', width: 150, toolbar: '#nodeTableBar', align: "center",fixed: 'right'}
+                {title: '操作', width: 150, toolbar: '#nodeTableBar', align: "center", fixed: 'right'}
             ]]
         });
 
@@ -127,7 +137,7 @@
                     type: 1,
                     area: ['450px', '220px'],
                     content: $("#operateNode"),
-                    cancel: function(layero,index){
+                    cancel: function (layero, index) {
                         $("#reset").click();
                     }
                 });
@@ -137,8 +147,8 @@
 
         //表单提交
         form.on('submit(operate)', function (data) {
-            if($("#role").val() === ""){
-                layer.msg("请选择角色!",{icon: 2});
+            if ($("#role").val() === "") {
+                layer.msg("请选择角色!", {icon: 2});
                 return false;
             }
             //新增提交
@@ -146,22 +156,21 @@
                 type: "POST",
                 url: basePath + "/process/updateNodeRole",
                 data: {
-                    nodeId : currObj.data.nodeId,
-                    roleId : data.field.role,
-                    roleName : $("#role").find("option:selected").text()
+                    nodeId: currObj.data.nodeId,
+                    roleId: data.field.role,
+                    roleName: $("#role").find("option:selected").text()
                 },
                 success: function (result) {
-                    if(result.code === 0){
+                    if (result.code === 0) {
                         layer.closeAll();
-                        layer.msg("节点修改成功！",{icon: 1});
+                        layer.msg("节点修改成功！", {icon: 1});
                         nodeTable.reload();
-                    }
-                    else{
-                        layer.msg(result.message,{icon: 2});
+                    } else {
+                        layer.msg(result.message, {icon: 2});
                     }
                 },
                 error: function () {
-                    layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                    layer.msg('系统错误，请联系系统管理员', {icon: 2});
                 }
             });
             return false;

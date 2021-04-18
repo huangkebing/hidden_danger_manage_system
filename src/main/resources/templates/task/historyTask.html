@@ -11,21 +11,25 @@
     <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
     <link rel="stylesheet" th:href="@{/layuimini/lib/font-awesome-4.7.0/css/font-awesome.min.css}" media="all">
     <style>
-        .todo{
+        .todo {
             cursor: pointer;
         }
-        .todo:hover{
+
+        .todo:hover {
             color: #1aa094;
         }
-        .high{
+
+        .high {
             font-size: 15px;
             color: red;
         }
-        .middle{
+
+        .middle {
             font-size: 24px;
             color: orange;
         }
-        .low{
+
+        .low {
             font-size: 15px;
             color: green;
         }
@@ -43,7 +47,8 @@
                         <div class="layui-inline">
                             <label class="layui-form-label">隐患名称</label>
                             <div class="layui-input-inline">
-                                <input type="text" name="name" placeholder="隐患名称" class="layui-input" autocomplete="off"/>
+                                <input type="text" name="name" placeholder="隐患名称" class="layui-input"
+                                       autocomplete="off"/>
                             </div>
                         </div>
                         <div class="layui-inline">
@@ -70,12 +75,21 @@
                             </div>
                         </div>
                         <div class="layui-inline">
-                            <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                            <button type="submit" class="layui-btn layui-btn-primary" lay-submit
+                                    lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索
+                            </button>
                         </div>
                     </div>
                 </form>
             </div>
         </fieldset>
+
+        <script type="text/html" id="toolbar">
+            <div class="layui-btn-container">
+                <span class="layui-card-header" style="font-size: 16px;font-weight: bold;"><i
+                        class="layui-icon layui-icon-form"></i><span> 历史隐患</span></span>
+            </div>
+        </script>
 
         <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
 
@@ -92,43 +106,51 @@
             laydate = layui.laydate,
             miniTab = layui.miniTab;
 
-        table.render({
+        var historyTable = table.render({
             elem: '#currentTableId',
             url: basePath + '/task/historyTask',
-            toolbar: '#toolbarDemo',
+            toolbar: '#toolbar',
             defaultToolbar: ['filter', 'exports'],
             cols: [[
                 {type: "numbers", width: 50, fixed: 'left'},
-                {field: 'name', minWidth: 300, title: '任务名称', templet: function (d){
-                    var res = '<a class="todo" lay-event="edit">';
-                    if(d.priority === 3){
-                        res += '<i class="high fa fa-warning"></i>';
-                    } else if(d.priority === 2){
-                        res += '<i class="middle fa fa-angle-double-up"></i>';
-                    } else if(d.priority === 1){
-                        res += '<i class="low fa fa-chevron-down"></i>';
+                {
+                    field: 'name', minWidth: 300, title: '任务名称', templet: function (d) {
+                        var res = '<a class="todo" lay-event="edit">';
+                        if (d.priority === 3) {
+                            res += '<i class="high fa fa-warning"></i>';
+                        } else if (d.priority === 2) {
+                            res += '<i class="middle fa fa-angle-double-up"></i>';
+                        } else if (d.priority === 1) {
+                            res += '<i class="low fa fa-chevron-down"></i>';
+                        }
+                        res += '<span>&nbsp;&nbsp;' + d.name + '</span></a>';
+                        return res;
                     }
-                    res += '<span>&nbsp;&nbsp;' + d.name + '</span></a>';
-                    return res;
-                }},
-                {field: 'create', title: '完成时间', width: 160,sort: true,templet:
+                },
+                {
+                    field: 'create', title: '完成时间', width: 300, sort: true, align: 'center', templet:
                         "<div>{{layui.util.toDateString(d.modify, 'yyyy-MM-dd HH:mm:ss')}}</div>"
                 }
             ]],
             limits: [10, 15, 20, 25, 50, 100],
             limit: 15,
-            page: true,
-            skin: 'line'
+            page: true
+        });
+
+        window.addEventListener("storage", function (e) {
+            if (e.key == 'historyTable') {
+                historyTable.reload();
+            }
         });
 
         laydate.render({
             elem: '#begin'
-            ,type: 'datetime'
+            , type: 'datetime'
         });
 
         laydate.render({
             elem: '#end'
-            ,type: 'datetime'
+            , type: 'datetime'
         });
         // 监听搜索操作
         form.on('submit(data-search-btn)', function (data) {

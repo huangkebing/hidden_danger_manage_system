@@ -9,47 +9,62 @@
     <title>Title</title>
 </head>
 <style>
-    .layui-flow-more a cite{
+    .layui-flow-more a cite {
         background-color: #19CAAD;
         color: white;
     }
-    .layui-elem-quote{
+
+    .layui-elem-quote {
         padding: 10px 15px 10px 15px;
     }
-    .w-e-text-container{
-        margin-left: 110px!important;
-        height: 210px!important;
-        z-index: 0!important;
+
+    .w-e-text-container {
+        margin-left: 110px !important;
+        height: 210px !important;
+        z-index: 0 !important;
     }
-    .w-e-menu{
-        z-index: 1!important;
+
+    .w-e-menu {
+        z-index: 1 !important;
     }
-    body .btnStyle .layui-layer-btn a{background:#019688;border: #019688;padding: 4px 20px}
-    .nameLink{
+
+    body .btnStyle .layui-layer-btn a {
+        background: #019688;
+        border: #019688;
+        padding: 4px 20px
+    }
+
+    .nameLink {
         cursor: pointer;
         color: #1E9FFF;
     }
-    .nameLink:hover{
+
+    .nameLink:hover {
         color: #1aa094;
     }
-    img{
+
+    img {
         width: 250px;
         cursor: pointer;
     }
+
     a {
         color: #1E9FFF;
     }
-    table ,table td, table th{
+
+    table, table td, table th {
         border: 1px solid #999;
-        border-spacing: 0;/*去掉单元格间隙*/
+        border-spacing: 0; /*去掉单元格间隙*/
     }
-    pre{
+
+    pre {
         background-color: #f1f1f1;
         border-radius: 3px;
         padding: 3px 5px;
         margin: 0 3px;
     }
-    blockquote{
+
+    blockquote {
         display: block;
         border-left: 8px solid #d0e5f2;
         padding: 5px 10px;
@@ -58,37 +73,48 @@
         font-size: 100%;
         background-color: #f1f1f1;
     }
-    .picture ol,.picture ul{
+
+    .picture ol, .picture ul {
         margin: 10px 0 10px 20px;
     }
-    .picture ol li,.w-e-text ol li{
+
+    .picture ol li, .w-e-text ol li {
         list-style-type: decimal;
     }
-    .picture ul li,.w-e-text ul li{
+
+    .picture ul li, .w-e-text ul li {
         list-style-type: disc;
     }
-    .userTipItem{
-        margin-left: 50px;margin-top: 10px;margin-bottom: 10px;
+
+    .userTipItem {
+        margin-left: 50px;
+        margin-top: 10px;
+        margin-bottom: 10px;
         vertical-align: top;
     }
-    .userTipIcon{
+
+    .userTipIcon {
         color: grey;
         vertical-align: top;
         margin-top: 3px;
     }
-    .userTipHr{
+
+    .userTipHr {
         margin-left: 50px;
         margin-right: 50px;
     }
-    .high{
+
+    .high {
         font-size: 18px;
         color: red;
     }
-    .middle{
+
+    .middle {
         font-size: 27px;
         color: orange;
     }
-    .low{
+
+    .low {
         font-size: 18px;
         color: green;
     }
@@ -100,22 +126,31 @@
             <div>
                 <div id="priorityDiv" style="display: inline-block;vertical-align: top;margin-top: 9px;"></div>
                 <h1 id="title" style="display: inline-block"></h1>
-                <div id="btnBar" class="layui-btn-group" style="display:inline-block;margin-left: 20px;vertical-align: top;margin-top: 5px"></div>
+                <div id="btnBar" class="layui-btn-group"
+                     style="display:inline-block;margin-left: 20px;vertical-align: top;margin-top: 5px"></div>
             </div>
             <div style="margin-top:10px;margin-bottom: 10px">
-                <div class="layui-btn-group" style="margin-left: 20px">
-                    <button type="button" id="addRemarks" class="layui-btn layui-btn-normal layui-btn-sm">添加备注</button>
-                    <button type="button" id="editFile" class="layui-btn layui-btn-normal layui-btn-sm">上传附件</button>
-                </div>
+                <div id="operateBtns" style="display: inline-block">
+                    <div class="layui-btn-group" style="margin-left: 20px">
+                        <button type="button" id="addRemarks" class="layui-btn layui-btn-normal layui-btn-sm">添加备注
+                        </button>
+                        <button type="button" id="editFile" class="layui-btn layui-btn-normal layui-btn-sm">上传附件
+                        </button>
+                    </div>
 
-                <div class="layui-btn-group" style="margin-left: 20px">
-                    <button type="button" id="editTaskBtn" class="layui-btn layui-btn-warm layui-btn-sm">修改隐患</button>
-                    <button type="button" id="taskToOther" class="layui-btn layui-btn-warm layui-btn-sm">任务转交</button>
-                </div>
+                    <div class="layui-btn-group" style="margin-left: 20px">
+                        <button type="button" id="editTaskBtn" class="layui-btn layui-btn-warm layui-btn-sm">修改隐患
+                        </button>
+                        <button type="button" id="taskToOther" class="layui-btn layui-btn-warm layui-btn-sm">任务转交
+                        </button>
+                    </div>
 
-                <div class="layui-btn-group" style="margin-left: 20px">
-                    <button type="button" id="closeTask" class="layui-btn layui-btn-danger layui-btn-sm">关闭任务</button>
-                    <button type="button" id="deleteTask" class="layui-btn layui-btn-danger layui-btn-sm">删除任务</button>
+                    <div class="layui-btn-group" style="margin-left: 20px">
+                        <button type="button" id="closeTask" class="layui-btn layui-btn-danger layui-btn-sm">关闭任务
+                        </button>
+                        <button type="button" id="deleteTask" class="layui-btn layui-btn-danger layui-btn-sm">删除任务
+                        </button>
+                    </div>
                 </div>
 
                 <div class="layui-btn-group" style="margin-left: 20px">
@@ -165,7 +200,7 @@
                     <p>处理说明</p>
                 </div>
             </div>
-            <div class="layui-form-item" style="margin-left: 70px">
+            <div class="layui-form-item" style="margin-left: 270px">
                 <div class="layui-input-block">
                     <button class="layui-btn" id="submit" style="padding: 0 20px" lay-submit="" lay-filter="operate">提交
                     </button>
@@ -181,7 +216,8 @@
             <div class="layui-form-item" style="margin-top: 20px">
                 <label class="layui-form-label">隐患名称<span style="color: red"> *</span></label>
                 <div class="layui-input-block">
-                    <input type="text" name="name" id="name" lay-verify="required" lay-reqtext="请输入隐患名称" placeholder="隐患名称"
+                    <input type="text" name="name" id="name" lay-verify="required" lay-reqtext="请输入隐患名称"
+                           placeholder="隐患名称"
                            autocomplete="off" class="layui-input">
                 </div>
             </div>
@@ -298,16 +334,19 @@
         $.ajax({
             url: basePath + "/task/getDetailTask/" + [[${problemId}]],
             type: "GET",
-            success: function(result){
+            success: function (result) {
                 var data = result.data;
                 //保存任务相关的数据
                 initData = data.task;
-                for (var index = 0;index < initData.length;index++){
+                if (initData.length === 0) {
+                    $("#operateBtns").css("display", "none");
+                }
+                for (var index = 0; index < initData.length; index++) {
                     var dataTmp = initData[index];
-                    $("#btnBar").append('<button type="button" class="layui-btn layui-btn-sm" onclick="task()" value="' + index + '">'+ dataTmp.taskName+'</button>');
+                    $("#btnBar").append('<button type="button" class="layui-btn layui-btn-sm" onclick="task()" value="' + index + '">' + dataTmp.taskName + '</button>');
                 }
 
-                $("#createUser").html('<a className="nameLink" onClick="userLinkClick()" userid="' + data.problem.userId + '">'+
+                $("#createUser").html('<a className="nameLink" onClick="userLinkClick()" userid="' + data.problem.userId + '">' +
                     data.problem.username + '(' + data.problem.email + ') ' +
                     ' </a>');
                 $("#title").html(data.problem.name);
@@ -315,24 +354,24 @@
                 $("#typeName").html(data.problem.typeName);
                 $("#create").html(layui.util.toDateString(data.problem.create, 'yyyy-MM-dd HH:mm:ss'));
                 $("#modify").html(layui.util.toDateString(data.problem.modify, 'yyyy-MM-dd HH:mm:ss'));
-                if(data.problem.priority == 1){
+                if (data.problem.priority == 1) {
                     $("#priorityDiv").html('<i class="low fa fa-chevron-down"></i>');
-                } else if(data.problem.priority == 2){
+                } else if (data.problem.priority == 2) {
                     $("#priorityDiv").html('<i class="middle fa fa-angle-double-up"></i>');
-                } else if(data.problem.priority == 3){
+                } else if (data.problem.priority == 3) {
                     $("#priorityDiv").html('<i class="high fa fa-warning"></i>');
                 }
-                $("#priorityDiv").attr("value",data.problem.priority);
+                $("#priorityDiv").attr("value", data.problem.priority);
             }
         });
 
         $.ajax({
             url: basePath + "/user/getTransferTaskUser/" + [[${problemId}]],    //后台数据请求地址
             type: "GET",
-            success: function(result){
-                for (var index = 0;index < result.length;index++){
+            success: function (result) {
+                for (var index = 0; index < result.length; index++) {
                     var dataTmp = result[index];
-                    $('#email').append(new Option(dataTmp.name + "(" + dataTmp.email + ")",dataTmp.email));//往下拉菜单里添加元素
+                    $('#email').append(new Option(dataTmp.name + "(" + dataTmp.email + ")", dataTmp.email));//往下拉菜单里添加元素
                 }
                 form.render();
             }
@@ -340,15 +379,15 @@
 
         flow.load({
             elem: '#fileFlow' //流加载容器
-            ,scrollElem: '#fileFlow' //滚动条所在元素，一般不用填，此处只是演示需要。
-            ,isAuto: false
-            ,isLazyimg: true
-            ,done: function(page, next){ //加载下一页
+            , scrollElem: '#fileFlow' //滚动条所在元素，一般不用填，此处只是演示需要。
+            , isAuto: false
+            , isLazyimg: true
+            , done: function (page, next) { //加载下一页
                 //模拟插入
                 $.ajax({
                     url: basePath + "/task/getFiles/" + [[${problemId}]] + "/" + page + "/4",    //后台数据请求地址
                     type: "GET",
-                    success: function(result){
+                    success: function (result) {
                         console.log(result);
                         var data = result.data;
                         var pageSize = Math.ceil(result.count / 4);
@@ -365,14 +404,14 @@
 
         flow.load({
             elem: '#remarksFlow' //流加载容器
-            ,scrollElem: '#remarksFlow' //滚动条所在元素，一般不用填，此处只是演示需要。
-            ,isAuto: false
-            ,isLazyimg: true
-            ,done: function(page, next){ //加载下一页
+            , scrollElem: '#remarksFlow' //滚动条所在元素，一般不用填，此处只是演示需要。
+            , isAuto: false
+            , isLazyimg: true
+            , done: function (page, next) { //加载下一页
                 $.ajax({
                     url: basePath + "/task/getRemarks/" + [[${problemId}]] + "/" + page + "/4",    //后台数据请求地址
                     type: "GET",
-                    success: function(result){
+                    success: function (result) {
                         var data = result.data;
                         var pageSize = Math.ceil(result.count / 4);
                         var lis = [];
@@ -393,7 +432,7 @@
             data: {
                 problemId: [[${problemId}]]
             },
-            done: function(res){
+            done: function (res) {
                 location.reload();
             }
         });
@@ -406,7 +445,7 @@
         taskEditer.customConfig.uploadImgMaxLength = 5;
         taskEditer.customConfig.uploadImgMaxSize = 10 * 1024 * 1024 // 10M
         taskEditer.customConfig.uploadImgParams = {
-            flag : 'remarks'
+            flag: 'remarks'
         };
         taskEditer.customConfig.menus = [
             'head', 'bold', 'fontSize', 'italic', 'underline', 'strikeThrough', 'indent',
@@ -426,7 +465,7 @@
                         insertImg(data[i].url);
                     }
                 } else {
-                    layer.msg(result.message,{icon : 2});
+                    layer.msg(result.message, {icon: 2});
                 }
             }
         };
@@ -443,7 +482,7 @@
         remarksEditer.customConfig.uploadImgMaxLength = 5;
         remarksEditer.customConfig.uploadImgMaxSize = 10 * 1024 * 1024 // 10M
         remarksEditer.customConfig.uploadImgParams = {
-            flag : 'remarks'
+            flag: 'remarks'
         };
         remarksEditer.customConfig.menus = [
             'head', 'bold', 'fontSize', 'italic', 'underline', 'strikeThrough', 'indent',
@@ -463,7 +502,7 @@
                         insertImg(data[i].url);
                     }
                 } else {
-                    layer.msg(result.message,{icon : 2});
+                    layer.msg(result.message, {icon: 2});
                 }
             }
         };
@@ -481,7 +520,7 @@
         completeEditer.customConfig.uploadImgMaxLength = 5;
         completeEditer.customConfig.uploadImgMaxSize = 10 * 1024 * 1024 // 10M
         completeEditer.customConfig.uploadImgParams = {
-            flag : 'remarks'
+            flag: 'remarks'
         };
         completeEditer.customConfig.menus = [
             'head', 'bold', 'fontSize', 'italic', 'underline', 'strikeThrough', 'indent',
@@ -501,7 +540,7 @@
                         insertImg(data[i].url);
                     }
                 } else {
-                    layer.msg(result.message,{icon : 2});
+                    layer.msg(result.message, {icon: 2});
                 }
             }
         };
@@ -516,28 +555,30 @@
                 type: "POST",
                 url: basePath + "/task/completeTask",
                 data: {
-                    taskId : currTaskId,
-                    variables : data.field,
-                    context : completeEditer.txt.html()
+                    taskId: currTaskId,
+                    variables: data.field,
+                    context: completeEditer.txt.html()
                 },
                 success: function (result) {
-                    if(result.code === 0){
-                        layer.msg("处理隐患成功！",{icon: 1});
+                    if (result.code === 0) {
+                        layer.msg("处理隐患成功！", {icon: 1});
                         layer.close(layerIndex);
-                        parent.layui.table.reload('currentTableId');
-                    }
-                    else{
-                        layer.msg(result.message,{icon: 2});
+                        localStorage.setItem('taskTable', generateUUID());
+                        localStorage.setItem('solveingTable', generateUUID());
+                        localStorage.setItem('historyTable', generateUUID());
+                        location.reload();
+                    } else {
+                        layer.msg(result.message, {icon: 2});
                     }
                 },
                 error: function () {
-                    layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                    layer.msg('系统错误，请联系系统管理员', {icon: 2});
                 }
             });
             return false;
         });
 
-        $("#editTaskBtn").click(function (){
+        $("#editTaskBtn").click(function () {
             $("#name").val($("#title").text());
             $("#type").val($("#typeName").text());
             $("#priority").val($("#priorityDiv").attr("value"))
@@ -551,27 +592,26 @@
                 btn: ['提交'],
                 btnAlign: 'c',
                 skin: 'btnStyle',
-                yes: function(data){
+                yes: function (data) {
                     $.ajax({
                         type: "POST",
                         url: basePath + "/task/updateProblem",
                         data: {
-                            id : [[${problemId}]],
-                            name : $("#name").val(),
-                            priority : $("#priority").val(),
-                            description : taskEditer.txt.html()
+                            id: [[${problemId}]],
+                            name: $("#name").val(),
+                            priority: $("#priority").val(),
+                            description: taskEditer.txt.html()
                         },
                         success: function (result) {
-                            if(result.code === 0){
-                                localStorage.setItem('taskTable',generateUUID());
+                            if (result.code === 0) {
+                                localStorage.setItem('taskTable', generateUUID());
                                 location.reload();
-                            }
-                            else{
-                                layer.msg(result.message,{icon: 2});
+                            } else {
+                                layer.msg(result.message, {icon: 2});
                             }
                         },
                         error: function () {
-                            layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                            layer.msg('系统错误，请联系系统管理员', {icon: 2});
                         }
                     });
                     return false;
@@ -579,12 +619,12 @@
             });
         });
 
-        $(".picture").delegate("img","click",function(){
+        $(".picture").delegate("img", "click", function () {
             var target = $(event.target);
             window.open(target.attr("src"));
         });
 
-        $("#addRemarks").click(function (){
+        $("#addRemarks").click(function () {
             remarksEditer.txt.html("");
             var index = layer.open({
                 title: '添加备注',
@@ -594,24 +634,23 @@
                 btn: ['提交'],
                 btnAlign: 'c',
                 skin: 'btnStyle',
-                yes: function(data){
+                yes: function (data) {
                     $.ajax({
                         type: "POST",
                         url: basePath + "/task/addRemarks",
                         data: {
-                            problemId : [[${problemId}]],
-                            remark : remarksEditer.txt.html()
+                            problemId: [[${problemId}]],
+                            remark: remarksEditer.txt.html()
                         },
                         success: function (result) {
-                            if(result.code === 0){
+                            if (result.code === 0) {
                                 location.reload();
-                            }
-                            else{
-                                layer.msg(result.message,{icon: 2});
+                            } else {
+                                layer.msg(result.message, {icon: 2});
                             }
                         },
                         error: function () {
-                            layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                            layer.msg('系统错误，请联系系统管理员', {icon: 2});
                         }
                     });
                     return false;
@@ -619,13 +658,13 @@
             })
         });
 
-        $("#taskToOther").click(function (){
+        $("#taskToOther").click(function () {
             var index = layer.open({
                 title: '移交任务',
                 type: 1,
                 area: ['450px', '240px'],
                 content: $("#tranferForm"),
-                cancel: function(layero,index){
+                cancel: function (layero, index) {
                     $("#reset").click();
                 }
             });
@@ -637,34 +676,36 @@
                 type: "POST",
                 url: basePath + "/task/transferTask",
                 data: {
-                    email : data.field.email,
-                    problemId : [[${problemId}]]
+                    email: data.field.email,
+                    problemId: [[${problemId}]]
                 },
                 success: function (result) {
-                    if(result.code === 0){
-                        layer.msg("移交任务成功！",{icon: 1});
-                    }
-                    else{
-                        layer.msg(result.message,{icon: 2});
+                    if (result.code === 0) {
+                        layer.msg("移交任务成功！", {icon: 1});
+                        localStorage.setItem('taskTable', generateUUID());
+                        localStorage.setItem('solveingTable', generateUUID());
+                        location.reload();
+                    } else {
+                        layer.msg(result.message, {icon: 2});
                     }
                 },
                 error: function () {
-                    layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                    layer.msg('系统错误，请联系系统管理员', {icon: 2});
                 }
             });
         });
 
-        $("#process").click(function (){
+        $("#process").click(function () {
             var src = basePath + "/task/speedOfProgress/" + [[${problemId}]];
             layer.open({
                 title: '处理进度',
                 type: 1,
                 shade: 0.2,
-                maxmin:true,
+                maxmin: true,
                 shadeClose: true,
                 area: ['100%', '100%'],
                 shadeClose: true,
-                content: '<iframe src="'+ src+'" width="100%" height="100%"></iframe>'
+                content: '<iframe src="' + src + '" width="100%" height="100%"></iframe>'
             });
         })
 
@@ -674,11 +715,14 @@
                     type: "POST",
                     url: basePath + "/task/closeTask",
                     data: {
-                        problemId : [[${problemId}]]
+                        problemId: [[${problemId}]]
                     },
                     success: function (result) {
                         if (result.code === 0) {
                             layer.msg('关闭成功', {icon: 1});
+                            localStorage.setItem('taskTable', generateUUID());
+                            localStorage.setItem('historyTable', generateUUID());
+                            location.reload();
                         } else {
                             layer.msg(result.message, {icon: 2});
                         }
@@ -697,11 +741,14 @@
                     type: "POST",
                     url: basePath + "/task/deleteTask",
                     data: {
-                        problemId : [[${problemId}]]
+                        problemId: [[${problemId}]]
                     },
                     success: function (result) {
                         if (result.code === 0) {
                             layer.msg('删除成功', {icon: 1});
+                            localStorage.setItem('taskTable', generateUUID());
+                            localStorage.setItem('historyTable', generateUUID());
+                            miniTab.deleteCurrentByIframe();
                         } else {
                             layer.msg(result.message, {icon: 2});
                         }
@@ -715,11 +762,11 @@
         })
     });
 
-    function createRemarksDiv(data){
+    function createRemarksDiv(data) {
         remarksList.push(data);
         return '<div class="layui-row grid-demo grid-demo-bg1" style="border-radius:16px;border: #F2F2F2 8px solid;margin-bottom: 10px;">' +
             '      <div class="layui-col-md11" style="margin-top: 8px;padding-left: 8px">\n' +
-                        data.context +
+            data.context +
             '      </div>' +
             '      <div class="layui-col-md1" style="margin-top: 10px">' +
             '           <a class="button1Link" onclick="editRemarks()" style="margin-left:10px;margin-right: 10px;color: #1e88e5;font-size: 15px;cursor: pointer">' +
@@ -731,20 +778,20 @@
             '      </div>' +
             '      <div class="layui-col-md12" style="color: grey;margin: 5px 15px 5px 0;padding-right:5px;font-size: 15px;text-align: right">' +
             '           <i class="fa fa-clock-o"></i>&nbsp;' +
-                            layui.util.toDateString(data.modify, 'yyyy-MM-dd HH:mm:ss') + '&nbsp;By&nbsp;' +
-            '           <a class="nameLink" onclick="userLinkClick()" userid="' + data.userId + '">'+
-                            data.username + '(' + data.email + ')  ' +
-            '           </a>'+
+            layui.util.toDateString(data.modify, 'yyyy-MM-dd HH:mm:ss') + '&nbsp;By&nbsp;' +
+            '           <a class="nameLink" onclick="userLinkClick()" userid="' + data.userId + '">' +
+            data.username + '(' + data.email + ')  ' +
+            '           </a>' +
             '      </div>' +
             '    </div>'
     }
 
-    function createFilesDiv(data){
+    function createFilesDiv(data) {
         return '<div class="layui-row grid-demo grid-demo-bg1" style="border-radius:10px;border: #F2F2F2 5px solid;margin-bottom: 10px;">' +
             '      <div class="layui-col-md11" style="margin-top: 4px;padding-left: 8px">' +
-            '           <a href="'+ data.filePath +'" target="_blank">' +
-                            data.context +
-            '           </a>'+
+            '           <a href="' + data.filePath + '" target="_blank">' +
+            data.context +
+            '           </a>' +
             '      </div>' +
             '      <div class="layui-col-md1" style="margin-top: 3px">' +
             '           <a class="button2Link" onclick="deleteRemarks()" style="color: #ff3d3d;font-size: 15px;cursor: pointer">' +
@@ -773,7 +820,7 @@
                 })
             },
             error: function () {
-                layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                layer.msg('系统错误，请联系系统管理员', {icon: 2});
             }
         });
     }
@@ -789,24 +836,23 @@
             btn: ['提交'],
             btnAlign: 'c',
             skin: 'btnStyle',
-            yes: function(data){
+            yes: function (data) {
                 $.ajax({
                     type: "POST",
                     url: basePath + "/task/updateRemarks",
                     data: {
-                        id : remarksList[target.attr("remarkid") - 1].id,
-                        context : remarksEditer.txt.html()
+                        id: remarksList[target.attr("remarkid") - 1].id,
+                        context: remarksEditer.txt.html()
                     },
                     success: function (result) {
-                        if(result.code === 0){
+                        if (result.code === 0) {
                             location.reload();
-                        }
-                        else{
-                            layer.msg(result.message,{icon: 2});
+                        } else {
+                            layer.msg(result.message, {icon: 2});
                         }
                     },
                     error: function () {
-                        layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                        layer.msg('系统错误，请联系系统管理员', {icon: 2});
                     }
                 });
                 return false;
@@ -845,29 +891,29 @@
         currTaskId = data.taskId;
 
         $("#variables").empty();
-        for (var index = 0;index < data.variables.length;index++){
+        for (var index = 0; index < data.variables.length; index++) {
             var dataTmp = data.variables[index];
             //二元型流程变量
-            if(dataTmp.type === 1){
+            if (dataTmp.type === 1) {
                 var input_html =
                     '<div class="layui-form-item">\n' +
                     '    <label class="layui-form-label">' + dataTmp.title + '</label>\n' +
                     '    <div class="layui-input-block">\n' +
-                    '        <input type="radio" name="'+ dataTmp.name +'" value="1" title="'+ dataTmp.tip1 +'" checked="">\n' +
-                    '        <input type="radio" name="'+ dataTmp.name +'" value="0" title="'+ dataTmp.tip0 +'">\n' +
+                    '        <input type="radio" name="' + dataTmp.name + '" value="1" title="' + dataTmp.tip1 + '" checked="">\n' +
+                    '        <input type="radio" name="' + dataTmp.name + '" value="0" title="' + dataTmp.tip0 + '">\n' +
                     '    </div>\n' +
                     '</div>';
                 $("#variables").append(input_html);
                 form.render();
             }
             //连续型流程变量
-            else if(dataTmp.type === 2){
+            else if (dataTmp.type === 2) {
                 var input_html =
                     '<div class="layui-form-item">\n' +
-                    '   <label class="layui-form-label">'+ dataTmp.title + ':</label>\n' +
+                    '   <label class="layui-form-label">' + dataTmp.title + ':</label>\n' +
                     '   <div class="layui-input-block">\n' +
                     '       <input type="text" name="' + dataTmp.name + '" placeholder="' + dataTmp.title
-                    + '" class="layui-input" lay-verify="required" lay-reqtext="请输入'+ dataTmp.title +'" />\n' +
+                    + '" class="layui-input" lay-verify="required" lay-reqtext="请输入' + dataTmp.title + '" />\n' +
                     '   </div>\n' +
                     '</div>';
                 $("#variables").append(input_html);
@@ -876,9 +922,9 @@
         layerIndex = layer.open({
             title: target.text(),
             type: 1,
-            area: ['900px', '400px'],
+            area: ['900px', '430px'],
             content: $("#operateTask"),
-            cancel: function(layero,index){
+            cancel: function (layero, index) {
                 $("#reset").click();
             }
         });

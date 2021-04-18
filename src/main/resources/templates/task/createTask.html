@@ -10,19 +10,30 @@
     <link rel="stylesheet" th:href="@{/layuimini/lib/layui-v2.5.5/css/layui.css}" media="all">
     <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
     <style>
-        .w-e-text-container{
-            margin-left: 110px!important;
-            height: 180px!important;
-            z-index: 0!important;
+        .w-e-text-container {
+            margin-left: 110px !important;
+            height: 180px !important;
+            z-index: 0 !important;
         }
-        .w-e-menu{
-            z-index: 1!important;
+
+        .w-e-menu {
+            z-index: 1 !important;
         }
-        img{
+
+        img {
             width: 250px;
         }
-        .layui-layer-wrap{
-            margin-top: 30px!important;
+
+        .layui-layer-wrap {
+            margin-top: 30px !important;
+        }
+
+        .w-e-text ol li {
+            list-style-type: decimal;
+        }
+
+        .w-e-text ul li {
+            list-style-type: disc;
         }
     </style>
 </head>
@@ -39,13 +50,15 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">隐患名称:</label>
                 <div class="layui-input-block">
-                    <input type="text" name="name" placeholder="隐患名称" class="layui-input" lay-verify="required" lay-reqtext="请输入隐患名称" autocomplete="off"/>
+                    <input type="text" name="name" placeholder="隐患名称" class="layui-input" lay-verify="required"
+                           lay-reqtext="请输入隐患名称" autocomplete="off"/>
                 </div>
             </div>
             <div class="layui-form-item">
                 <label class="layui-form-label">隐患类型:</label>
                 <div class="layui-input-block">
-                    <select id="questionType" name="typeId" lay-verify="required" lay-reqtext="请选择隐患类型" lay-filter="problemType">
+                    <select id="questionType" name="typeId" lay-verify="required" lay-reqtext="请选择隐患类型"
+                            lay-filter="problemType">
                         <option value="" selected>请选择(可搜索)</option>
                     </select>
                 </div>
@@ -85,7 +98,7 @@
 <script th:src="@{/layuimini/js/lay-config.js}" charset="utf-8"></script>
 <script th:src="@{/js/url.js}"></script>
 <script th:inline="javaScript">
-    layui.use([ 'form', 'wangEditor', 'miniTab'], function () {
+    layui.use(['form', 'wangEditor', 'miniTab'], function () {
         var $ = layui.$,
             form = layui.form,
             wangEditor = layui.wangEditor,
@@ -94,10 +107,10 @@
         $.ajax({
             url: basePath + "/question/getQuestionFilterByUser",    //后台数据请求地址
             type: "GET",
-            success: function(result){
-                for (var index = 0;index < result.length;index++){
+            success: function (result) {
+                for (var index = 0; index < result.length; index++) {
                     var dataTmp = result[index];
-                    $('#questionType').append(new Option(dataTmp.name,dataTmp.id));//往下拉菜单里添加元素
+                    $('#questionType').append(new Option(dataTmp.name, dataTmp.id));//往下拉菜单里添加元素
                 }
                 form.render();
             }
@@ -111,7 +124,7 @@
         editor.customConfig.uploadImgMaxLength = 5;
         editor.customConfig.uploadImgMaxSize = 10 * 1024 * 1024 // 10M
         editor.customConfig.uploadImgParams = {
-            flag : 'remarks'
+            flag: 'remarks'
         };
         editor.customConfig.menus = [
             'head', 'bold', 'fontSize', 'italic', 'underline', 'strikeThrough', 'indent',
@@ -131,7 +144,7 @@
                         insertImg(data[i].url);
                     }
                 } else {
-                    layer.msg(result.message,{icon : 2});
+                    layer.msg(result.message, {icon: 2});
                 }
             }
         };
@@ -140,8 +153,8 @@
         };
         editor.create();
 
-        form.on('select(problemType)', function(data){
-            if(data.value === "") {
+        form.on('select(problemType)', function (data) {
+            if (data.value === "") {
                 $("#variables").empty();
                 return false;
             }
@@ -150,29 +163,29 @@
                 url: basePath + "/task/getBeginVariable/" + data.value,
                 success: function (result) {
                     $("#variables").empty();
-                    for (var index = 0;index < result.length;index++){
+                    for (var index = 0; index < result.length; index++) {
                         var dataTmp = result[index];
                         //二元型流程变量
-                        if(dataTmp.type === 1){
+                        if (dataTmp.type === 1) {
                             var input_html =
                                 '<div class="layui-form-item">\n' +
                                 '    <label class="layui-form-label">' + dataTmp.title + '</label>\n' +
                                 '    <div class="layui-input-block">\n' +
-                                '        <input type="radio" name="'+ dataTmp.name +'" value="1" title="'+ dataTmp.tip1 +'" checked="">\n' +
-                                '        <input type="radio" name="'+ dataTmp.name +'" value="0" title="'+ dataTmp.tip0 +'">\n' +
+                                '        <input type="radio" name="' + dataTmp.name + '" value="1" title="' + dataTmp.tip1 + '" checked="">\n' +
+                                '        <input type="radio" name="' + dataTmp.name + '" value="0" title="' + dataTmp.tip0 + '">\n' +
                                 '    </div>\n' +
                                 '</div>';
                             $("#variables").append(input_html);
                             form.render();
                         }
                         //连续型流程变量
-                        else if(dataTmp.type === 2){
+                        else if (dataTmp.type === 2) {
                             var input_html =
                                 '<div class="layui-form-item">\n' +
-                                '   <label class="layui-form-label">'+ dataTmp.title + ':</label>\n' +
+                                '   <label class="layui-form-label">' + dataTmp.title + ':</label>\n' +
                                 '   <div class="layui-input-block">\n' +
                                 '       <input type="text" name="' + dataTmp.name + '" placeholder="' + dataTmp.title
-                                + '" class="layui-input" lay-verify="required" lay-reqtext="请输入'+ dataTmp.title +'" />\n' +
+                                + '" class="layui-input" lay-verify="required" lay-reqtext="请输入' + dataTmp.title + '" />\n' +
                                 '   </div>\n' +
                                 '</div>';
                             $("#variables").append(input_html);
@@ -180,7 +193,7 @@
                     }
                 },
                 error: function () {
-                    layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                    layer.msg('系统错误，请联系系统管理员', {icon: 2});
                 }
             });
         });
@@ -190,38 +203,38 @@
                 type: "POST",
                 url: basePath + "/task/createTask",
                 data: {
-                    name : data.field.name,
-                    description : editor.txt.html(),
-                    priority : data.field.priority,
-                    typeId : data.field.typeId,
-                    variables : data.field
+                    name: data.field.name,
+                    description: editor.txt.html(),
+                    priority: data.field.priority,
+                    typeId: data.field.typeId,
+                    variables: data.field
                 },
                 success: function (result) {
-                    if(result.code === 0){
-                        localStorage.setItem('taskTable',generateUUID());
+                    if (result.code === 0) {
+                        localStorage.setItem('taskTable', generateUUID());
+                        localStorage.setItem('solveingTable', generateUUID());
                         layer.open({
                             type: 1,
-                            title:'创建成功',
+                            title: '创建成功',
                             area: '300px;',
                             shade: 0.8,
                             btn: ['再建一个', '不了谢谢'],
                             btnAlign: 'c',
                             moveType: 1, //拖拽模式，0或者1
                             content: $("#tip"),
-                            yes: function (){
+                            yes: function () {
                                 location.reload();
                             },
-                            btn2: function (){
+                            btn2: function () {
                                 miniTab.deleteCurrentByIframe();
                             }
                         });
-                    }
-                    else{
-                        layer.msg(result.message,{icon: 2});
+                    } else {
+                        layer.msg(result.message, {icon: 2});
                     }
                 },
                 error: function () {
-                    layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                    layer.msg('系统错误，请联系系统管理员', {icon: 2});
                 }
             });
             return false;

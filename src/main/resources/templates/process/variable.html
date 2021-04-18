@@ -28,7 +28,9 @@
                             </div>
                         </div>
                         <div class="layui-inline">
-                            <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                            <button type="submit" class="layui-btn layui-btn-primary" lay-submit
+                                    lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索
+                            </button>
                         </div>
                     </div>
                 </form>
@@ -38,11 +40,13 @@
         <script type="text/html" id="toolbar">
             <div class="layui-btn-container">
                 <div class="layui-btn-container">
-                    <span class="layui-card-header" style="font-size: 16px;font-weight: bold;"><i class="layui-icon layui-icon-form"></i><span th:text='${processName}'></span></span>
+                    <span class="layui-card-header" style="font-size: 16px;font-weight: bold;"><i
+                            class="layui-icon layui-icon-form"></i><span th:text='${processName}'></span></span>
                 </div>
                 <br>
-                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add1"> 添加二元变量 </button>
-                <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="add2"> 添加连续变量 </button>
+                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add1"> 添加二元变量</button>
+                <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="add2"> 添加连续变量
+                </button>
             </div>
         </script>
 
@@ -57,7 +61,8 @@
             <div class="layui-form-item" style="margin-top: 20px">
                 <label class="layui-form-label">任务节点<span style="color: red"> *</span></label>
                 <div class="layui-input-block" style="width: 300px;">
-                    <select class="layui-form-select" name="taskTwo" id="taskTwo" lay-verify="required" lay-reqtext="请选择任务节点" lay-search>
+                    <select class="layui-form-select" name="taskTwo" id="taskTwo" lay-verify="required"
+                            lay-reqtext="请选择任务节点" lay-search>
                         <option value="" selected>请选择(可搜索)</option>
                     </select>
                 </div>
@@ -66,7 +71,8 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">变量名称<span style="color: red"> *</span></label>
                 <div class="layui-input-block" style="width: 300px;">
-                    <input type="text" name="name" lay-verify="required" lay-reqtext="请输入变量名称" id="name" placeholder="变量名称" autocomplete="off"
+                    <input type="text" name="name" lay-verify="required" lay-reqtext="请输入变量名称" id="name"
+                           placeholder="变量名称" autocomplete="off"
                            class="layui-input">
                 </div>
             </div>
@@ -74,7 +80,8 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">提示文字<span style="color: red"> *</span></label>
                 <div class="layui-input-block" style="width: 300px;">
-                    <input type="text" name="title" lay-verify="required" lay-reqtext="请输入提示文字" id="title" placeholder="提示文字" autocomplete="off"
+                    <input type="text" name="title" lay-verify="required" lay-reqtext="请输入提示文字" id="title"
+                           placeholder="提示文字" autocomplete="off"
                            class="layui-input">
                 </div>
             </div>
@@ -82,7 +89,8 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">true提示<span style="color: red"> *</span></label>
                 <div class="layui-input-block" style="width: 300px;">
-                    <input type="text" name="tip1" lay-verify="required" lay-reqtext="请输入true提示" id="tip1" placeholder="true值的提示文字" autocomplete="off"
+                    <input type="text" name="tip1" lay-verify="required" lay-reqtext="请输入true提示" id="tip1"
+                           placeholder="true值的提示文字" autocomplete="off"
                            class="layui-input">
                 </div>
             </div>
@@ -90,7 +98,8 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">false提示<span style="color: red"> *</span></label>
                 <div class="layui-input-block" style="width: 300px;">
-                    <input type="text" name="tip0" lay-verify="required" lay-reqtext="请输入false提示" id="tip0" placeholder="false值的提示文字" autocomplete="off"
+                    <input type="text" name="tip0" lay-verify="required" lay-reqtext="请输入false提示" id="tip0"
+                           placeholder="false值的提示文字" autocomplete="off"
                            class="layui-input">
                 </div>
             </div>
@@ -108,7 +117,8 @@
             <div class="layui-form-item" style="margin-top: 20px">
                 <label class="layui-form-label">任务节点<span style="color: red"> *</span></label>
                 <div class="layui-input-block" style="width: 300px;">
-                    <select class="layui-form-select" name="taskNormal" lay-verify="required" lay-reqtext="请选择任务节点" id="taskNormal" lay-search>
+                    <select class="layui-form-select" name="taskNormal" lay-verify="required" lay-reqtext="请选择任务节点"
+                            id="taskNormal" lay-search>
                         <option value="" selected>请选择(可搜索)</option>
                     </select>
                 </div>
@@ -117,7 +127,8 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">变量名称<span style="color: red"> *</span></label>
                 <div class="layui-input-block" style="width: 300px;">
-                    <input type="text" name="name" lay-verify="required" lay-reqtext="请输入变量名称" id="nameNormal" placeholder="变量名称" autocomplete="off"
+                    <input type="text" name="name" lay-verify="required" lay-reqtext="请输入变量名称" id="nameNormal"
+                           placeholder="变量名称" autocomplete="off"
                            class="layui-input">
                 </div>
             </div>
@@ -125,7 +136,8 @@
             <div class="layui-form-item">
                 <label class="layui-form-label">提示文字<span style="color: red"> *</span></label>
                 <div class="layui-input-block" style="width: 300px;">
-                    <input type="text" name="title" lay-verify="required" lay-reqtext="请输入提示文字" id="titleNormal" placeholder="提示文字" autocomplete="off"
+                    <input type="text" name="title" lay-verify="required" lay-reqtext="请输入提示文字" id="titleNormal"
+                           placeholder="提示文字" autocomplete="off"
                            class="layui-input">
                 </div>
             </div>
@@ -159,12 +171,12 @@
         $.ajax({
             url: basePath + "/process/getTaskOption/" + processId,
             type: "GET",
-            success: function(result){
-                for (var index = 0;index < result.length;index++){
+            success: function (result) {
+                for (var index = 0; index < result.length; index++) {
                     var dataTmp = result[index];
-                    $('#taskSearch').append(new Option(dataTmp.name,dataTmp.id));//往下拉菜单里添加元素
-                    $('#taskTwo').append(new Option(dataTmp.name,dataTmp.id));//往下拉菜单里添加元素
-                    $('#taskNormal').append(new Option(dataTmp.name,dataTmp.id));//往下拉菜单里添加元素
+                    $('#taskSearch').append(new Option(dataTmp.name, dataTmp.id));//往下拉菜单里添加元素
+                    $('#taskTwo').append(new Option(dataTmp.name, dataTmp.id));//往下拉菜单里添加元素
+                    $('#taskNormal').append(new Option(dataTmp.name, dataTmp.id));//往下拉菜单里添加元素
                 }
                 form.render();
             }
@@ -179,10 +191,11 @@
                 {type: "numbers", width: 50, fixed: 'left'},
                 {field: 'nodeName', width: 200, title: '节点名称'},
                 {field: 'name', width: 120, title: '流程变量'},
-                {field: 'type', width: 120, title: '变量类型', templet: function (d) {
+                {
+                    field: 'type', width: 120, title: '变量类型', templet: function (d) {
                         if (d.type == 1) {
                             return '<span class="layui-badge" style="background-color:#19CAAD;">二元型变量</span>';
-                        } else if(d.type == 2) {
+                        } else if (d.type == 2) {
                             return '<span class="layui-badge" style="background-color: #ECAD9E">连续型变量</span>';
                         }
                     }
@@ -190,13 +203,15 @@
                 {field: 'title', width: 240, title: '提示文字'},
                 {field: 'tip1', width: 160, title: '二元型true提示'},
                 {field: 'tip0', width: 160, title: '二元型false提示'},
-                {field: 'create', title: '创建时间', width: 160,sort: true, templet:
+                {
+                    field: 'create', title: '创建时间', width: 160, sort: true, templet:
                         "<div>{{layui.util.toDateString(d.create, 'yyyy-MM-dd HH:mm:ss')}}</div>"
                 },
-                {field: 'modify', title: '修改时间',width: 160,sort: true, templet:
+                {
+                    field: 'modify', title: '修改时间', width: 160, sort: true, templet:
                         "<div>{{layui.util.toDateString(d.modify, 'yyyy-MM-dd HH:mm:ss')}}</div>"
                 },
-                {title: '操作', minWidth: 150, toolbar: '#variableTableBar', align: "center", fixed : 'right'}
+                {title: '操作', minWidth: 150, toolbar: '#variableTableBar', align: "center", fixed: 'right'}
             ]],
             limits: [10, 15, 20, 25, 50, 100],
             limit: 15,
@@ -223,7 +238,7 @@
                     curr: 1
                 },
                 where: {
-                    nodeId : data.field.task
+                    nodeId: data.field.task
                 }
             }, 'data');
 
@@ -241,7 +256,7 @@
                     type: 1,
                     area: ['450px', '400px'],
                     content: $("#twoForm"),
-                    cancel: function(layero,index){
+                    cancel: function (layero, index) {
                         $("#reset").click();
                     }
                 });
@@ -252,7 +267,7 @@
                     type: 1,
                     area: ['450px', '280px'],
                     content: $("#normalForm"),
-                    cancel: function(layero,index){
+                    cancel: function (layero, index) {
                         $("#resetNormal").click();
                     }
                 });
@@ -264,7 +279,7 @@
             currObj = obj;
             if (obj.event === 'edit') {
                 flag = 1;
-                if(data.type == 1){
+                if (data.type == 1) {
                     $("#taskTwo").val(data.nodeId + data.beginVariable);
                     $("#name").val(data.name);
                     $("#title").val(data.title);
@@ -276,12 +291,11 @@
                         type: 1,
                         area: ['450px', '400px'],
                         content: $("#twoForm"),
-                        cancel: function(layero,index){
+                        cancel: function (layero, index) {
                             $("#reset").click();
                         }
                     });
-                }
-                else if(data.type == 2){
+                } else if (data.type == 2) {
                     $("#taskNormal").val(data.nodeId + data.beginVariable);
                     $("#nameNormal").val(data.name);
                     $("#titleNormal").val(data.title);
@@ -291,7 +305,7 @@
                         type: 1,
                         area: ['450px', '280px'],
                         content: $("#normalForm"),
-                        cancel: function(layero,index){
+                        cancel: function (layero, index) {
                             $("#resetNormal").click();
                         }
                     });
@@ -303,19 +317,18 @@
                         type: "POST",
                         url: basePath + "/process/deleteVariable",
                         data: {
-                            variableId : data.id
+                            variableId: data.id
                         },
                         success: function (result) {
-                            if(result.code === 0){
-                                layer.msg("删除流程变量成功！",{icon: 1});
+                            if (result.code === 0) {
+                                layer.msg("删除流程变量成功！", {icon: 1});
                                 variableTable.reload();
-                            }
-                            else{
-                                layer.msg(result.message,{icon: 2});
+                            } else {
+                                layer.msg(result.message, {icon: 2});
                             }
                         },
                         error: function () {
-                            layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                            layer.msg('系统错误，请联系系统管理员', {icon: 2});
                         }
                     });
                     layer.close(index);
@@ -326,65 +339,63 @@
         //表单提交
         form.on('submit(two)', function (data) {
             //新增提交
-            if(flag === 0){
+            if (flag === 0) {
                 $.ajax({
                     type: "POST",
                     url: basePath + "/process/addVariable",
                     data: {
-                        nodeId : data.field.taskTwo,
-                        nodeName : $("#taskTwo").find("option:selected").text(),
-                        processId : processId,
-                        name : data.field.name,
-                        type : 1,
-                        title : data.field.title,
-                        tip1 : data.field.tip1,
-                        tip0 : data.field.tip0
+                        nodeId: data.field.taskTwo,
+                        nodeName: $("#taskTwo").find("option:selected").text(),
+                        processId: processId,
+                        name: data.field.name,
+                        type: 1,
+                        title: data.field.title,
+                        tip1: data.field.tip1,
+                        tip0: data.field.tip0
                     },
                     success: function (result) {
-                        if(result.code === 0){
+                        if (result.code === 0) {
                             layer.closeAll();
                             $("#reset").click();
-                            layer.msg("新增流程变量成功！",{icon: 1});
+                            layer.msg("新增流程变量成功！", {icon: 1});
                             variableTable.reload();
-                        }
-                        else{
-                            layer.msg(result.message,{icon: 2});
+                        } else {
+                            layer.msg(result.message, {icon: 2});
                         }
                     },
                     error: function () {
-                        layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                        layer.msg('系统错误，请联系系统管理员', {icon: 2});
                     }
                 });
             }
             //修改提交
-            else if(flag === 1){
+            else if (flag === 1) {
                 $.ajax({
                     type: "POST",
                     url: basePath + "/process/updateVariable",
                     data: {
-                        id : currObj.data.id,
-                        nodeId : data.field.taskTwo,
-                        nodeName : $("#taskTwo").find("option:selected").text(),
-                        processId : processId,
-                        name : data.field.name,
-                        type : 1,
-                        title : data.field.title,
-                        tip1 : data.field.tip1,
-                        tip0 : data.field.tip0
+                        id: currObj.data.id,
+                        nodeId: data.field.taskTwo,
+                        nodeName: $("#taskTwo").find("option:selected").text(),
+                        processId: processId,
+                        name: data.field.name,
+                        type: 1,
+                        title: data.field.title,
+                        tip1: data.field.tip1,
+                        tip0: data.field.tip0
                     },
                     success: function (result) {
-                        if(result.code === 0){
+                        if (result.code === 0) {
                             layer.closeAll();
                             $("#reset").click();
-                            layer.msg("修改流程变量成功！",{icon: 1});
+                            layer.msg("修改流程变量成功！", {icon: 1});
                             variableTable.reload();
-                        }
-                        else{
-                            layer.msg(result.message,{icon: 2});
+                        } else {
+                            layer.msg(result.message, {icon: 2});
                         }
                     },
                     error: function () {
-                        layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                        layer.msg('系统错误，请联系系统管理员', {icon: 2});
                     }
                 });
             }
@@ -394,61 +405,59 @@
         //表单提交
         form.on('submit(normal)', function (data) {
             //新增提交
-            if(flag === 0){
+            if (flag === 0) {
                 $.ajax({
                     type: "POST",
                     url: basePath + "/process/addVariable",
                     data: {
-                        nodeId : data.field.taskNormal,
-                        nodeName : $("#taskNormal").find("option:selected").text(),
-                        processId : processId,
-                        name : data.field.name,
-                        type : 2,
-                        title : data.field.title
+                        nodeId: data.field.taskNormal,
+                        nodeName: $("#taskNormal").find("option:selected").text(),
+                        processId: processId,
+                        name: data.field.name,
+                        type: 2,
+                        title: data.field.title
                     },
                     success: function (result) {
-                        if(result.code === 0){
+                        if (result.code === 0) {
                             layer.closeAll();
                             $("#resetNormal").click();
-                            layer.msg("新增流程变量成功！",{icon: 1});
+                            layer.msg("新增流程变量成功！", {icon: 1});
                             variableTable.reload();
-                        }
-                        else{
-                            layer.msg(result.message,{icon: 2});
+                        } else {
+                            layer.msg(result.message, {icon: 2});
                         }
                     },
                     error: function () {
-                        layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                        layer.msg('系统错误，请联系系统管理员', {icon: 2});
                     }
                 });
             }
             //修改提交
-            else if(flag === 1){
+            else if (flag === 1) {
                 $.ajax({
                     type: "POST",
                     url: basePath + "/process/updateVariable",
                     data: {
-                        id : currObj.data.id,
-                        nodeId : data.field.taskNormal,
-                        nodeName : $("#taskNormal").find("option:selected").text(),
-                        processId : processId,
-                        name : data.field.name,
-                        type : 2,
-                        title : data.field.title
+                        id: currObj.data.id,
+                        nodeId: data.field.taskNormal,
+                        nodeName: $("#taskNormal").find("option:selected").text(),
+                        processId: processId,
+                        name: data.field.name,
+                        type: 2,
+                        title: data.field.title
                     },
                     success: function (result) {
-                        if(result.code === 0){
+                        if (result.code === 0) {
                             layer.closeAll();
                             $("#resetNormal").click();
-                            layer.msg("修改流程变量成功！",{icon: 1});
+                            layer.msg("修改流程变量成功！", {icon: 1});
                             variableTable.reload();
-                        }
-                        else{
-                            layer.msg(result.message,{icon: 2});
+                        } else {
+                            layer.msg(result.message, {icon: 2});
                         }
                     },
                     error: function () {
-                        layer.msg('系统错误，请联系系统管理员',{icon: 2});
+                        layer.msg('系统错误，请联系系统管理员', {icon: 2});
                     }
                 });
             }

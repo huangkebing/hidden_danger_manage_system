@@ -175,12 +175,8 @@
 <script th:src="@{/layuimini/js/lay-config.js}" charset="utf-8"></script>
 <script th:src="@{/js/url.js}"></script>
 <script th:inline="javascript">
-    var initData;
-    var currTaskId;
     var form;
-    var layerIndex;
     var remarksList = new Array();
-    var remarksEditer;
 
     layui.use(['form', 'table', 'flow', 'wangEditor', 'upload'], function () {
         form = layui.form;
@@ -188,7 +184,6 @@
         var flow = layui.flow,
             wangEditor = layui.wangEditor,
             upload = layui.upload;
-        var taskEditer;
 
         $.ajax({
             url: basePath + "/task/getDetailTask/" + [[${problemId}]],
