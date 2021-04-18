@@ -144,7 +144,10 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         problemInfo.setEmail(user.getEmail());
         problemInfo.setUsername(user.getName());
         problemInfo.setUserId(user.getId());
-        problemInfo.setContext(user.getName() + " 创建了问题：" + nowProblem.getName());
+
+        String s = "<p>" + user.getName() + "(" + user.getEmail() + ") 创建了问题：" + nowProblem.getName() + "</p>" + "<blockquote>问题名称</blockquote><p>" + problem.getName() + "</p>" + "<blockquote>问题描述</blockquote><p>" + problem.getDescription() + "</p>";
+
+        problemInfo.setContext(s);
         noticeUtil.insertRemark(problemInfo);
 
         //设置关注
@@ -162,7 +165,7 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         map.put("email", user.getEmail());
         map.put("problemId",nowProblem.getId());
         map.put("problemName",nowProblem.getName());
-        map.put("priority",nowProblem.getPriority());
+        map.put("time",new Date());
         noticeUtil.insertRedis(map);
 
         String message = user.getName() + "(" + user.getEmail() + ") 创建了隐患：" + nowProblem.getName();
@@ -254,7 +257,8 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         problemInfo.setEmail(user.getEmail());
         problemInfo.setUsername(user.getName());
         problemInfo.setUserId(user.getId());
-        problemInfo.setContext(user.getName() + "(" + user.getEmail()  + ") 处理了隐患：" + problem.getName() + " 中的" + taskName + " 节点");
+        String s = "<p>" + user.getName() + "(" + user.getEmail()  + ") 处理了隐患：" + problem.getName() + " 中的 " + taskName + " 任务</p>" + "<blockquote>处理备注</blockquote><p>" + context + "</p>";
+        problemInfo.setContext(s);
         noticeUtil.insertRemark(problemInfo);
 
         //设置关注
@@ -272,11 +276,11 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         map.put("email", user.getEmail());
         map.put("problemId",problem.getId());
         map.put("problemName",problem.getName());
-        map.put("priority",problem.getPriority());
+        map.put("time",new Date());
         map.put("taskName",taskName);
         noticeUtil.insertRedis(map);
 
-        String message = user.getName() + "(" + user.getEmail()  + ") 处理了隐患：" + problem.getName() + " 中的" + taskName + " 节点";
+        String message = user.getName() + "(" + user.getEmail()  + ") 处理了隐患：" + problem.getName() + " 中的 " + taskName + " 任务";
         noticeUtil.noticeMail(problem.getId(), message);
 
         noticeUtil.updateProblemModify(problem.getId());
@@ -341,6 +345,7 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
 
     @Override
     public R updateProblem(Problem problem) {
+        Problem oldProblem = problemMapper.selectById(problem.getId());
         if (this.update(problem, new UpdateWrapper<Problem>().eq("id",problem.getId()))) {
             Problem nowProblem = problemMapper.selectById(problem.getId());
             User user = (User) session.getAttribute(Constants.LOGIN_USER_KEY);
@@ -351,7 +356,8 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
             problemInfo.setEmail(user.getEmail());
             problemInfo.setUsername(user.getName());
             problemInfo.setUserId(user.getId());
-            problemInfo.setContext(user.getName() + " 编辑了隐患：" + nowProblem.getName());
+            String s = "<p>"+user.getName() + "(" + user.getEmail() + ") 编辑了隐患：" + nowProblem.getName() +"</p>" + "<blockquote>原问题名称</blockquote><p>" + oldProblem.getName() + "</p>" + "<blockquote>原问题描述</blockquote><p>" + oldProblem.getDescription() + "</p>" + "<blockquote>问题名称</blockquote><p>" + nowProblem.getName() + "</p>" + "<blockquote>问题描述</blockquote><p>" + nowProblem.getDescription() + "</p>";
+            problemInfo.setContext(s);
             noticeUtil.insertRemark(problemInfo);
 
             noticeUtil.updateProblemModify(nowProblem.getId());
@@ -442,7 +448,7 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         }
         ProblemInfo problemInfo = new ProblemInfo();
         problemInfo.setProblemId(problemId);
-        problemInfo.setContext(loginUser.getName() + "(" + loginUser.getEmail() + ") 把隐患" + problem.getName() + "移交给" + toUser.getName() + "(" + toUser.getEmail() + ")");
+        problemInfo.setContext(loginUser.getName() + "(" + loginUser.getEmail() + ") 把隐患 " + problem.getName() + " 移交给 " + toUser.getName() + "(" + toUser.getEmail() + ")");
         problemInfo.setType(1);
         problemInfo.setEmail(loginUser.getEmail());
         problemInfo.setUserId(loginUser.getId());
@@ -456,7 +462,7 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         map.put("email", loginUser.getEmail());
         map.put("problemId",problem.getId());
         map.put("problemName",problem.getName());
-        map.put("priority",problem.getPriority());
+        map.put("time",new Date());
         map.put("toUserId", toUser.getId());
         map.put("toUsername", toUser.getName());
         map.put("toEmail", toUser.getEmail());
@@ -502,7 +508,7 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         problemInfo.setEmail(user.getEmail());
         problemInfo.setUsername(user.getName());
         problemInfo.setUserId(user.getId());
-        problemInfo.setContext(user.getName() + "(" + user.getEmail()  + ") 关闭了问题：" + problem.getName());
+        problemInfo.setContext(user.getName() + "(" + user.getEmail()  + ") 关闭了隐患：" + problem.getName());
         noticeUtil.insertRemark(problemInfo);
 
         //设置关注
@@ -520,7 +526,7 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         map.put("email", user.getEmail());
         map.put("problemId",problem.getId());
         map.put("problemName",problem.getName());
-        map.put("priority",problem.getPriority());
+        map.put("time",new Date());
         noticeUtil.insertRedis(map);
 
         String message = user.getName() + "(" + user.getEmail() + ") 关闭了隐患：" + problem.getName();
@@ -545,7 +551,7 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         map.put("email", user.getEmail());
         map.put("problemId",problem.getId());
         map.put("problemName",problem.getName());
-        map.put("priority",problem.getPriority());
+        map.put("time",new Date());
         noticeUtil.insertRedis(map);
 
         runtimeService.deleteProcessInstance(problem.getInstanceId(), "隐患删除");
