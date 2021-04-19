@@ -19,6 +19,8 @@ import java.io.File;
 import java.util.*;
 
 /**
+ * 文件上传接口
+ *
  * @author huangkebing
  * 2021/04/13
  */
@@ -38,7 +40,8 @@ public class FileController {
 
     @RequestMapping("/uploadFile")
     @ResponseBody
-    public Object uploadFile(@RequestParam("file") List<MultipartFile> files, @RequestParam(required = false) String flag, @RequestParam(required = false) Long problemId){
+    public Object uploadFile(@RequestParam("file") List<MultipartFile> files, @RequestParam(required = false) String flag, @RequestParam(required = false) Long problemId) {
+        //文件按照年月划分一下
         LocalDate now = LocalDate.now();
         String month = now.getYear() + "年" + now.getMonthOfYear() + "月";
         String path = Constants.FILE_UPLOADMapping + month + "/";
@@ -63,7 +66,8 @@ public class FileController {
             }
             Map<String, Object> dataMap = new HashMap<>();
             dataMap.put("url", "/hdms/upload/" + month + "/" + fileName);
-            if(!"remarks".equals(flag)){
+            //不是富文本框的处理逻辑
+            if (!"remarks".equals(flag)) {
                 User user = (User) session.getAttribute(Constants.LOGIN_USER_KEY);
 
                 ProblemInfo info = new ProblemInfo();
@@ -78,7 +82,7 @@ public class FileController {
             }
             res.add(dataMap);
         }
-        if(!"remarks".equals(flag)){
+        if (!"remarks".equals(flag)) {
             return ReturnConstants.SUCCESS;
         }
         R success = new R(0, "Success");

@@ -32,7 +32,7 @@ public class NoticeUtil {
 
     private final ProblemMapper problemMapper;
 
-    private final RedisTemplate<String,Object> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     private final ProblemInfoMapper problemInfoMapper;
 
@@ -49,40 +49,58 @@ public class NoticeUtil {
         this.mailSender = mailSender;
     }
 
-    public void updateProblemModify(Long problemId){
+    /**
+     * 更新时间，同步进行
+     */
+    public void updateProblemModify(Long problemId) {
         Problem problem = new Problem();
         problem.setModify(new Date());
-        problemMapper.update(problem, new UpdateWrapper<Problem>().eq("id",problemId));
+        problemMapper.update(problem, new UpdateWrapper<Problem>().eq("id", problemId));
     }
 
-    public void insertRedis(Map<String, Object> map){
-        redisTemplate.opsForZSet().add(Constants.REDIS_KEY,JSON.toJSONString(map),System.currentTimeMillis());
+    /**
+     * 保存redis，异步
+     */
+    public void insertRedis(Map<String, Object> map) {
+        new Thread(() -> {
+            redisTemplate.opsForZSet().add(Constants.REDIS_KEY, JSON.toJSONString(map), System.currentTimeMillis());
+        }).start();
     }
 
-    public void insertRemark(ProblemInfo problemInfo){
+    /**
+     * 插入备注，同步执行
+     */
+    public void insertRemark(ProblemInfo problemInfo) {
         problemInfoMapper.insert(problemInfo);
     }
 
-    public void insertObserve(ProblemObserver problemObserver){
+
+    /**
+     * 插入关注，同步执行
+     */
+    public void insertObserve(ProblemObserver problemObserver) {
         ProblemObserver observer = problemObserverMapper.selectOne(new QueryWrapper<ProblemObserver>()
                 .eq("problem_id", problemObserver.getProblemId())
                 .eq("user_id", problemObserver.getUserId()));
 
-        if(ObjectUtils.isEmpty(observer)){
+        if (ObjectUtils.isEmpty(observer)) {
             problemObserverMapper.insert(problemObserver);
         }
     }
 
-    public void noticeMail(Long problemId, String message){
-        new Thread(()->{
+    /**
+     * 发送邮件，异步执行
+     */
+    public void noticeMail(Long problemId, String message) {
+        new Thread(() -> {
             List<ProblemObserver> observers = problemObserverMapper.selectList(new QueryWrapper<ProblemObserver>().eq("problem_id", problemId));
             List<String> emails = observers.stream().map(ProblemObserver::getEmail).collect(Collectors.toList());
-            if(emails.size() == 0){
+            if (emails.size() == 0) {
                 return;
             }
             String[] emailArray = new String[0];
             emailArray = emails.toArray(emailArray);
-            mailSender.sendMail(MailConstants.NOTICE, message, emailArray);
+            mailSender.sendMail(message, emailArray);
         }).start();
     }
 }

@@ -4,9 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.hkb.hdms.base.MailConstants;
-import com.hkb.hdms.base.R;
 import com.hkb.hdms.base.Constants;
+import com.hkb.hdms.base.R;
 import com.hkb.hdms.base.ReturnConstants;
 import com.hkb.hdms.mapper.ProblemMapper;
 import com.hkb.hdms.mapper.RoleMapper;
@@ -18,8 +17,8 @@ import com.hkb.hdms.model.pojo.User;
 import com.hkb.hdms.model.pojo.UserRole;
 import com.hkb.hdms.model.pojo.UserType;
 import com.hkb.hdms.service.SysUserService;
-import com.hkb.hdms.utils.UUIDUtil;
 import com.hkb.hdms.utils.RegisterMailSender;
+import com.hkb.hdms.utils.UUIDUtil;
 import com.mysql.cj.util.StringUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,7 +100,7 @@ public class SysUserServiceImpl extends ServiceImpl<UserMapper, User> implements
         }
         Page<UserDto> UserPage = new Page<>(page, limit);
 
-        if(!StringUtils.isNullOrEmpty(user.getEmail())){
+        if (!StringUtils.isNullOrEmpty(user.getEmail())) {
             user.setEmail("%" + user.getEmail() + "%");
         }
         List<UserDto> userDtos = userMapper.selectUsers(UserPage, user);
@@ -126,7 +125,7 @@ public class SysUserServiceImpl extends ServiceImpl<UserMapper, User> implements
         user.setPassword(new BCryptPasswordEncoder().encode(password));
 
         try {
-            mailSender.sendMail(MailConstants.REGISTER, password, user.getEmail());
+            mailSender.sendMail(password, user.getEmail());
         } catch (Exception e) {
             e.printStackTrace();
             return ReturnConstants.EMAIL_ERROR;
@@ -153,7 +152,7 @@ public class SysUserServiceImpl extends ServiceImpl<UserMapper, User> implements
     @Override
     @Transactional
     public R deleteUser(Long id) {
-        userTypeMapper.delete(new QueryWrapper<UserType>().eq("user_id",id));
+        userTypeMapper.delete(new QueryWrapper<UserType>().eq("user_id", id));
 
         if (this.removeById(id)) {
             return ReturnConstants.SUCCESS;
@@ -204,7 +203,7 @@ public class SysUserServiceImpl extends ServiceImpl<UserMapper, User> implements
                 userTypeMapper.insert(userType);
             }
 
-            if(deleteTypeIds.size() > 0){
+            if (deleteTypeIds.size() > 0) {
                 userTypeMapper.deleteBatchIds(deleteTypeIds);
             }
         } catch (Exception e) {
@@ -226,12 +225,11 @@ public class SysUserServiceImpl extends ServiceImpl<UserMapper, User> implements
         UserRole userRole = roleMapper.selectById(user.getRole());
         List<User> users;
         //该角色是否参与问题分配，不参与直接全部查出来
-        if(userRole.getQuestion() == 0){
+        if (userRole.getQuestion() == 0) {
             users = userMapper.selectList(new QueryWrapper<User>()
                     .eq("role", user.getRole())
-                    .eq("live",1));
-        }
-        else{
+                    .eq("live", 1));
+        } else {
             users = userMapper.selectUsersByTypeAndRole((long) user.getRole(), problem.getTypeId());
         }
         return users.stream().filter(fUser -> !fUser.getId().equals(user.getId())).collect(Collectors.toList());

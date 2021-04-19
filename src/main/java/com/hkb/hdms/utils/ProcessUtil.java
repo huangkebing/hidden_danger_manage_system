@@ -32,12 +32,12 @@ public class ProcessUtil {
         this.processNodeRoleMapper = processNodeRoleMapper;
     }
 
-    public Collection<FlowElement> getAllFlowElements(String processDefineId){
+    public Collection<FlowElement> getAllFlowElements(String processDefineId) {
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefineId);
         return bpmnModel.getMainProcess().getFlowElements();
     }
 
-    public void processNodeWithRole(Deployment deployment){
+    public void processNodeWithRole(Deployment deployment) {
         List<ProcessDefinition> definitions = repositoryService.createProcessDefinitionQuery().deploymentId(deployment.getId()).list();
         for (ProcessDefinition definition : definitions) {
             Collection<FlowElement> flowElements = getAllFlowElements(definition.getId());

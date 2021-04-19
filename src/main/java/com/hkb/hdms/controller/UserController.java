@@ -101,19 +101,19 @@ public class UserController {
 
     @PostMapping("/userToQuestion")
     @ResponseBody
-    public Object userToQuestion(Long userId, String questionIds){
+    public Object userToQuestion(Long userId, String questionIds) {
         return sysUserService.userToQuestion(userId, questionIds);
     }
 
     @GetMapping("/getUserById/{userId}")
     @ResponseBody
-    public Object getUserById(@PathVariable Long userId){
+    public Object getUserById(@PathVariable Long userId) {
         return sysUserService.getUserDtoById(userId);
     }
 
     @GetMapping("/getTransferTaskUser/{problemId}")
     @ResponseBody
-    public Object getTransferTaskUser(@PathVariable Long problemId){
+    public Object getTransferTaskUser(@PathVariable Long problemId) {
         return sysUserService.getTransferTaskUser(problemId);
     }
 }

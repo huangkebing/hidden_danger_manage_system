@@ -13,12 +13,12 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        String bpmnPath = System.getProperty("user.dir") + "\\bpmn\\";
+        String bpmnPath = System.getProperty("user.dir") + "/bpmn/";
 
         registry.addResourceHandler("/bpmn/**")
                 .addResourceLocations("file:" + bpmnPath);
 
-        String filePath = System.getProperty("user.dir") + "\\upload\\";
+        String filePath = System.getProperty("user.dir") + "/upload/";
 
         registry.addResourceHandler("/upload/**")
                 .addResourceLocations("file:" + filePath);

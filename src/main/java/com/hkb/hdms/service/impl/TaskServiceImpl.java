@@ -9,7 +9,6 @@ import com.hkb.hdms.base.Constants;
 import com.hkb.hdms.base.R;
 import com.hkb.hdms.base.ReturnConstants;
 import com.hkb.hdms.mapper.*;
-import com.hkb.hdms.model.dto.InstanceDto;
 import com.hkb.hdms.model.dto.ProblemDto;
 import com.hkb.hdms.model.pojo.*;
 import com.hkb.hdms.service.TaskService;
@@ -26,7 +25,6 @@ import org.activiti.engine.RepositoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.history.HistoricActivityInstance;
 import org.activiti.engine.history.HistoricProcessInstance;
-import org.activiti.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.activiti.image.ProcessDiagramGenerator;
@@ -39,7 +37,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.servlet.http.HttpSession;
 import java.io.InputStream;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author huangkebing

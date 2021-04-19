@@ -54,7 +54,7 @@ public class CronUtil {
             List<String> groups = userGroupManager.getUserGroups(user.getEmail());
             List<Problem> problems = taskMapper.getTodoInstances(user.getEmail(), groups, Integer.MAX_VALUE, 0);
             if (ObjectUtils.isNotEmpty(problems)) {
-                mailSender.sendMail(MailConstants.CRON, problems, user, user.getEmail());
+                mailSender.sendMail(problems, user, user.getEmail());
             }
         }
         log.info(LocalDate.now() + "每日提醒完成，处理了" + users.size() + "个用户");

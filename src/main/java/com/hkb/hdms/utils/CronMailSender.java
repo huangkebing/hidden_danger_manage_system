@@ -1,5 +1,6 @@
 package com.hkb.hdms.utils;
 
+import com.hkb.hdms.base.MailConstants;
 import com.hkb.hdms.model.pojo.Problem;
 import com.hkb.hdms.model.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +28,10 @@ public class CronMailSender {
         this.sender = sender;
     }
 
-    public void sendMail(String subject, List<Problem> problems, User user, String... to) {
+    public void sendMail(List<Problem> problems, User user, String... to) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
         //设置邮件主题
-        mailMessage.setSubject(subject);
+        mailMessage.setSubject(MailConstants.CRON);
         //设置邮件正文
         mailMessage.setText(contextBuild(problems, user));
         //选择邮件收件人
@@ -47,16 +48,16 @@ public class CronMailSender {
         for (int i = 0; i < problems.size(); i++) {
             Problem problem = problems.get(i);
             builder.append("        ").append(i + 1).append(". ").append(problem.getName()).append("，优先级：");
-            switch (problem.getPriority()){
+            switch (problem.getPriority()) {
                 case 1: {
                     builder.append("低\n");
                     break;
                 }
-                case 2 :{
+                case 2: {
                     builder.append("中\n");
                     break;
                 }
-                case 3 :{
+                case 3: {
                     builder.append("高\n");
                     break;
                 }

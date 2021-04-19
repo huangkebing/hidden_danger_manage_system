@@ -6,8 +6,6 @@ import com.hkb.hdms.mapper.ProcessNodeRoleMapper;
 import com.hkb.hdms.mapper.RoleMapper;
 import com.hkb.hdms.mapper.TaskMapper;
 import com.hkb.hdms.mapper.UserMapper;
-import com.hkb.hdms.model.dto.InstanceDto;
-import com.hkb.hdms.model.pojo.Problem;
 import com.hkb.hdms.model.pojo.ProcessNodeRole;
 import com.hkb.hdms.model.pojo.User;
 import com.hkb.hdms.model.pojo.UserRole;
@@ -16,10 +14,8 @@ import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -51,7 +47,7 @@ public class TaskHandlerUtil {
         this.taskMapper = taskMapper;
     }
 
-    public void setTaskHandler(ProcessInstance instance, Long typeId){
+    public void setTaskHandler(ProcessInstance instance, Long typeId) {
         List<Task> tasks = taskService.createTaskQuery().processInstanceId(instance.getProcessInstanceId()).list();
 
         for (Task task : tasks) {
@@ -62,20 +58,18 @@ public class TaskHandlerUtil {
             Long roleId = processNodeRole.getRoleId();
 
             //该任务是发起人的情况
-            if(roleId == 0L){
+            if (roleId == 0L) {
                 User loginUser = (User) session.getAttribute(Constants.LOGIN_USER_KEY);
                 taskService.addCandidateUser(task.getId(), loginUser.getEmail());
-            }
-            else{
+            } else {
                 UserRole userRole = roleMapper.selectById(roleId);
                 List<User> users;
                 //该角色是否参与问题分配，不参与直接全部查出来
-                if(userRole.getQuestion() == 0){
+                if (userRole.getQuestion() == 0) {
                     users = userMapper.selectList(new QueryWrapper<User>()
                             .eq("role", roleId)
-                            .eq("live",1));
-                }
-                else{
+                            .eq("live", 1));
+                } else {
                     users = userMapper.selectUsersByTypeAndRole(roleId, typeId);
                 }
                 for (User user : users) {
@@ -85,7 +79,7 @@ public class TaskHandlerUtil {
         }
     }
 
-    public void deleteCandidateUser(String taskId, String instanceId){
+    public void deleteCandidateUser(String taskId, String instanceId) {
         User user = (User) session.getAttribute(Constants.LOGIN_USER_KEY);
         taskMapper.deleteRuUsers(taskId, instanceId);
         taskMapper.deleteHiUsers(taskId, instanceId);

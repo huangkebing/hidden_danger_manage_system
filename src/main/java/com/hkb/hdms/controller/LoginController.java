@@ -37,6 +37,7 @@ public class LoginController {
     @GetMapping("/login/validateCode/{toMail}")
     @ResponseBody
     public Object validateCode(@PathVariable String toMail) {
+        System.out.println(toMail);
         return validateCodeService.createCode(toMail + Constants.EMAIL_SUFFIX);
     }
 }

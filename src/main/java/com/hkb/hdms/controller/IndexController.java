@@ -21,6 +21,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
+ * 首页处理接口
+ *
  * @author huangkebing
  * 2021/04/17
  */
@@ -28,7 +30,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/index")
 public class IndexController {
 
-    private final RedisTemplate<String,Object> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     private final UserMapper userMapper;
 
@@ -59,16 +61,16 @@ public class IndexController {
 
     @GetMapping("/getResent/{page}/{limit}")
     @ResponseBody
-    public Object getResent(@PathVariable long limit, @PathVariable long page){
+    public Object getResent(@PathVariable long limit, @PathVariable long page) {
         Map<String, Object> map = new HashMap<>();
-        map.put("data",redisTemplate.opsForZSet().reverseRange(Constants.REDIS_KEY, (page - 1) * limit, page * limit - 1));
+        map.put("data", redisTemplate.opsForZSet().reverseRange(Constants.REDIS_KEY, (page - 1) * limit, page * limit - 1));
         map.put("count", redisTemplate.opsForZSet().zCard(Constants.REDIS_KEY));
         return map;
     }
 
     @GetMapping("/adminIndexNumbers")
     @ResponseBody
-    public Object adminIndexNumbers(){
+    public Object adminIndexNumbers() {
         Map<String, Object> map = new HashMap<>();
         map.put("userNumber", userMapper.selectCount(null));
         map.put("roleNumber", roleMapper.selectCount(null));
@@ -79,7 +81,7 @@ public class IndexController {
 
     @GetMapping("/countByType")
     @ResponseBody
-    public Object countByType(){
+    public Object countByType() {
         Map<String, Object> map = new HashMap<>();
         List<IndexDto> indexDtos = problemMapper.countByType();
         List<String> names = indexDtos.stream().map(IndexDto::getName).collect(Collectors.toList());
@@ -90,7 +92,7 @@ public class IndexController {
 
     @GetMapping("/countByTypeAndWeekDay")
     @ResponseBody
-    public Object countByTypeAndWeekDay(){
+    public Object countByTypeAndWeekDay() {
         Map<String, Object> map = new HashMap<>();
         List<IndexDto> indexDtos = problemMapper.countByTypeAndWeekDay();
         List<String> names = indexDtos.stream().map(IndexDto::getName).collect(Collectors.toList());

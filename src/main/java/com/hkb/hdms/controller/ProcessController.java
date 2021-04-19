@@ -37,10 +37,10 @@ public class ProcessController {
     }
 
     @RequestMapping("/node.html/{processId}/{processName}")
-    public Object nodePage(@PathVariable String processId, @PathVariable String processName){
+    public Object nodePage(@PathVariable String processId, @PathVariable String processName) {
         ModelAndView model = new ModelAndView();
-        model.addObject("processId",processId);
-        if(StringUtils.isNullOrEmpty(processName) || "undefined".equals(processName)){
+        model.addObject("processId", processId);
+        if (StringUtils.isNullOrEmpty(processName) || "undefined".equals(processName)) {
             processName = "未命名";
         }
         processName += " 流程用户任务节点表";
@@ -50,10 +50,10 @@ public class ProcessController {
     }
 
     @RequestMapping("/variable.html/{processId}/{processName}")
-    public Object variablePage(@PathVariable String processId, @PathVariable String processName){
+    public Object variablePage(@PathVariable String processId, @PathVariable String processName) {
         ModelAndView model = new ModelAndView();
-        model.addObject("processId",processId);
-        if(StringUtils.isNullOrEmpty(processName) || "undefined".equals(processName)){
+        model.addObject("processId", processId);
+        if (StringUtils.isNullOrEmpty(processName) || "undefined".equals(processName)) {
             processName = "未命名";
         }
         processName += " 流程变量表";
@@ -182,38 +182,38 @@ public class ProcessController {
 
     @PostMapping("/updateNodeRole")
     @ResponseBody
-    public Object updateNodeRole(ProcessNodeRole processNodeRole){
+    public Object updateNodeRole(ProcessNodeRole processNodeRole) {
         return processService.updateNodeRole(processNodeRole);
     }
 
     @GetMapping("/getVariable")
     @ResponseBody
     public Object getVariable(@RequestParam(required = false) String nodeId,
-                              String processId, int page, int limit){
+                              String processId, int page, int limit) {
         return processService.getVariable(nodeId, processId, page, limit);
     }
 
     @PostMapping("/addVariable")
     @ResponseBody
-    public Object addVariable(ProcessVariable variable){
+    public Object addVariable(ProcessVariable variable) {
         return processService.addVariable(variable);
     }
 
     @PostMapping("/updateVariable")
     @ResponseBody
-    public Object updateVariable(ProcessVariable variable){
+    public Object updateVariable(ProcessVariable variable) {
         return processService.updateVariable(variable);
     }
 
     @PostMapping("/deleteVariable")
     @ResponseBody
-    public Object deleteVariable(Long variableId){
+    public Object deleteVariable(Long variableId) {
         return processService.deleteVariable(variableId);
     }
 
     @GetMapping("/getTaskOption/{processId}")
     @ResponseBody
-    public Object getTaskOption(@PathVariable String processId){
+    public Object getTaskOption(@PathVariable String processId) {
         return processService.getTaskOption(processId);
     }
 }

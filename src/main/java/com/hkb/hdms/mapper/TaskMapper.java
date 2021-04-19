@@ -1,6 +1,5 @@
 package com.hkb.hdms.mapper;
 
-import com.hkb.hdms.model.dto.InstanceDto;
 import com.hkb.hdms.model.pojo.Problem;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;

@@ -24,7 +24,7 @@ public class TypeController {
     }
 
     @RequestMapping("/question.html")
-    public Object questionPage(){
+    public Object questionPage() {
         return "question/question";
     }
 
@@ -39,31 +39,31 @@ public class TypeController {
 
     @GetMapping("/getQuestionWithUser/{userId}")
     @ResponseBody
-    public Object getAllQuestion(@PathVariable Long userId){
+    public Object getAllQuestion(@PathVariable Long userId) {
         return typeService.getQuestionWithUserId(userId);
     }
 
     @GetMapping("/getQuestionFilterByUser")
     @ResponseBody
-    public Object getQuestionFilterByUser(){
+    public Object getQuestionFilterByUser() {
         return typeService.getQuestionFilterByUser();
     }
 
     @PostMapping("/addQuestion")
     @ResponseBody
-    public Object addQuestion(Type type){
+    public Object addQuestion(Type type) {
         return typeService.addType(type);
     }
 
     @PostMapping("/updateQuestion")
     @ResponseBody
-    public Object updateQuestion(Type type){
+    public Object updateQuestion(Type type) {
         return typeService.updateType(type);
     }
 
     @PostMapping("/deleteQuestion")
     @ResponseBody
-    public Object deleteQuestion(Long id){
+    public Object deleteQuestion(Long id) {
         return typeService.deleteType(id);
     }
 }
