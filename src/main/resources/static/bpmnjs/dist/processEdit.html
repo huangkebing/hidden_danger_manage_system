@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="css/app.css"/>
     <link rel="stylesheet" href="../../layuimini/lib/layui-v2.5.5/css/layui.css" media="all">
     <link rel="stylesheet" href="../../layuimini/css/public.css" media="all">
+    <link rel="stylesheet" href="../../css/pageloader.css" media="all">
     <style>
         .item {
             display: none;
@@ -183,6 +184,11 @@
 </head>
 
 <body>
+
+<div id="load" class="load">
+    <section><span class="loader-113">Load&nbsp;ng      </span></section>
+</div>
+
 <div class="content with-diagram" id="js-drop-zone">
     <div class="message error">
         <div class="note">
@@ -217,6 +223,7 @@
 <div class="sy-mask cancel"></div>
 <script src="../../js/url.js" charset="utf-8"></script>
 <script src="index.js"></script>
+<script src="http://www.jq22.com/jquery/jquery-1.10.2.js"></script>
 <script src="../../layuimini/lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
 <script src="../../layuimini/js/lay-config.js" charset="utf-8"></script>
 <script>
@@ -231,6 +238,10 @@
             });
         });
     });
+
+    setTimeout(function(){
+        jQuery("#load").addClass('loadComplete');
+    },3000);
 </script>
 </body>
 </html>
