@@ -18,4 +18,6 @@ public interface TypeMapper extends BaseMapper<Type> {
     List<QueryTypeVo> selectTypes(Page<QueryTypeVo> page);
 
     List<TypeVo> selectTypesWithUser(Long userId);
+
+    List<TypeVo> selectAll();
 }

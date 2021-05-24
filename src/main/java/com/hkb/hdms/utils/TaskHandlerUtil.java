@@ -2,16 +2,15 @@ package com.hkb.hdms.utils;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.hkb.hdms.base.Constants;
-import com.hkb.hdms.mapper.ProcessNodeRoleMapper;
-import com.hkb.hdms.mapper.RoleMapper;
-import com.hkb.hdms.mapper.TaskMapper;
-import com.hkb.hdms.mapper.UserMapper;
+import com.hkb.hdms.mapper.*;
 import com.hkb.hdms.model.pojo.ProcessNodeRole;
+import com.hkb.hdms.model.pojo.TaskHandler;
 import com.hkb.hdms.model.pojo.User;
 import com.hkb.hdms.model.pojo.UserRole;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -37,20 +36,31 @@ public class TaskHandlerUtil {
 
     private final TaskMapper taskMapper;
 
+    private final TaskHandlerMapper taskHandlerMapper;
+
     @Autowired
-    public TaskHandlerUtil(TaskService taskService, ProcessNodeRoleMapper processNodeRoleMapper, HttpSession session, RoleMapper roleMapper, UserMapper userMapper, TaskMapper taskMapper) {
+    public TaskHandlerUtil(TaskService taskService, ProcessNodeRoleMapper processNodeRoleMapper, HttpSession session, RoleMapper roleMapper, UserMapper userMapper, TaskMapper taskMapper, TaskHandlerMapper taskHandlerMapper) {
         this.taskService = taskService;
         this.processNodeRoleMapper = processNodeRoleMapper;
         this.session = session;
         this.roleMapper = roleMapper;
         this.userMapper = userMapper;
         this.taskMapper = taskMapper;
+        this.taskHandlerMapper = taskHandlerMapper;
     }
 
     public void setTaskHandler(ProcessInstance instance, Long typeId) {
         List<Task> tasks = taskService.createTaskQuery().processInstanceId(instance.getProcessInstanceId()).list();
 
         for (Task task : tasks) {
+            List<TaskHandler> taskHandlers = taskHandlerMapper.selectList(new QueryWrapper<TaskHandler>()
+                    .eq("instance_id", task.getProcessInstanceId())
+                    .eq("task_id", task.getTaskDefinitionKey()));
+            //如果不为空表示是回退到这个节点，无需设置处理人
+            if(ObjectUtils.isNotEmpty(taskHandlers)){
+                taskService.addCandidateUser(task.getId(), taskHandlers.get(taskHandlers.size() - 1).getEmail());
+                continue;
+            }
             ProcessNodeRole processNodeRole = processNodeRoleMapper.selectOne(new QueryWrapper<ProcessNodeRole>()
                     .eq("process_id", instance.getProcessDefinitionId())
                     .eq("node_id", task.getTaskDefinitionKey()));

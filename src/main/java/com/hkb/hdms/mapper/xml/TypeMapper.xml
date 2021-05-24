@@ -25,4 +25,9 @@
              hdms_type as t
              where u.type_id = t.id and u.user_id = #{userId}
     </select>
+
+    <select id="selectAll" resultType="com.hkb.hdms.model.vo.TypeVo">
+        select t.id , t.name
+        from hdms_type as t
+    </select>
 </mapper>

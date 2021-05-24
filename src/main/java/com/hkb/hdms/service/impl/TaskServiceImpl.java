@@ -16,7 +16,6 @@ import com.hkb.hdms.service.TypeService;
 import com.hkb.hdms.utils.NoticeUtil;
 import com.hkb.hdms.utils.TaskHandlerUtil;
 import com.mysql.cj.util.StringUtils;
-import org.activiti.api.runtime.shared.identity.UserGroupManager;
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.bpmn.model.FlowNode;
 import org.activiti.bpmn.model.SequenceFlow;
@@ -59,13 +58,13 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
 
     private final ProcessVariableMapper processVariableMapper;
 
-    private final UserGroupManager userGroupManager;
-
     private final ProblemObserverMapper problemObserverMapper;
 
     private final ProblemMapper problemMapper;
 
     private final ProblemInfoMapper problemInfoMapper;
+
+    private final TaskHandlerMapper taskHandlerMapper;
 
     private final UserMapper userMapper;
 
@@ -82,17 +81,21 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
                            org.activiti.engine.TaskService taskService,
                            HttpSession session,
                            ProcessVariableMapper processVariableMapper,
-                           UserGroupManager userGroupManager,
                            TaskMapper taskMapper,
                            ProblemMapper problemMapper,
-                           ProblemInfoMapper problemInfoMapper, HistoryService historyService, RepositoryService repositoryService, ProblemObserverMapper problemObserverMapper, NoticeUtil noticeUtil, UserMapper userMapper) {
+                           ProblemInfoMapper problemInfoMapper,
+                           HistoryService historyService,
+                           RepositoryService repositoryService,
+                           ProblemObserverMapper problemObserverMapper,
+                           NoticeUtil noticeUtil,
+                           UserMapper userMapper,
+                           TaskHandlerMapper taskHandlerMapper) {
         this.typeService = typeService;
         this.runtimeService = runtimeService;
         this.taskHandlerUtil = taskHandlerUtil;
         this.taskService = taskService;
         this.session = session;
         this.processVariableMapper = processVariableMapper;
-        this.userGroupManager = userGroupManager;
         this.taskMapper = taskMapper;
         this.problemMapper = problemMapper;
         this.problemInfoMapper = problemInfoMapper;
@@ -101,6 +104,7 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         this.problemObserverMapper = problemObserverMapper;
         this.noticeUtil = noticeUtil;
         this.userMapper = userMapper;
+        this.taskHandlerMapper = taskHandlerMapper;
     }
 
     @Override
@@ -183,12 +187,10 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         int offset = (page - 1) * limit;
 
         User loginUser = (User) session.getAttribute(Constants.LOGIN_USER_KEY);
-        List<String> groups = userGroupManager.getUserGroups(loginUser.getEmail());
-
-        List<Problem> problems = taskMapper.getTodoInstances(loginUser.getEmail(), groups, limit, offset);
+        List<Problem> problems = taskMapper.getTodoInstances(loginUser.getEmail(), limit, offset);
 
         map.put("data", problems);
-        map.put("count", taskMapper.getTodoCount(loginUser.getEmail(), groups));
+        map.put("count", taskMapper.getTodoCount(loginUser.getEmail()));
 
         return map;
     }
@@ -219,7 +221,6 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
     }
 
     @Override
-    @Transactional
     public R completeTask(String taskId, Map<String,Object> processVariables, String context) {
         //根据taskId查询出task
         Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
@@ -236,10 +237,19 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         Map<String, Object> variablesMap = new HashMap<>();
         for (ProcessVariable variable : variables) {
             variablesMap.put(variable.getName(), processVariables.get("variables[" + variable.getName() + "]"));
+            taskService.removeVariable(taskId, variable.getName());
         }
         taskHandlerUtil.deleteCandidateUser(taskId, task.getProcessInstanceId());
+        TaskHandler taskHandler = new TaskHandler();
+        taskHandler.setTaskId(task.getTaskDefinitionKey());
+        taskHandler.setInstanceId(problem.getInstanceId());
+        taskHandler.setEmail(user.getEmail());
+
         //完成task
         taskService.complete(taskId, variablesMap);
+
+        taskHandlerMapper.insert(taskHandler);
+
         //尝试去设置后续出现的任务节点的处理人
         ProcessInstance instance = runtimeService.createProcessInstanceQuery().processInstanceId(task.getProcessInstanceId()).singleResult();
         //处理的是最后一个节点，complete之后instance会为null
@@ -306,15 +316,13 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         int offset = (page - 1) * limit;
 
         User loginUser = (User) session.getAttribute(Constants.LOGIN_USER_KEY);
-        List<String> groups = userGroupManager.getUserGroups(loginUser.getEmail());
-
         if(!StringUtils.isNullOrEmpty(name)){
             name = "%" + name + "%";
         }
-        List<Problem> problems = taskMapper.getHistoryInstances(loginUser.getEmail(), groups, limit, offset,name, priority, begin, end);
+        List<Problem> problems = taskMapper.getHistoryInstances(loginUser.getEmail(), limit, offset,name, priority, begin, end);
 
         map.put("data", problems);
-        map.put("count", taskMapper.getHistoryCount(loginUser.getEmail(), groups,name, priority, begin, end));
+        map.put("count", taskMapper.getHistoryCount(loginUser.getEmail(), name, priority, begin, end));
         return map;
     }
 
@@ -331,12 +339,10 @@ public class TaskServiceImpl extends ServiceImpl<ProblemMapper, Problem> impleme
         int offset = (page - 1) * limit;
 
         User loginUser = (User) session.getAttribute(Constants.LOGIN_USER_KEY);
-        List<String> groups = userGroupManager.getUserGroups(loginUser.getEmail());
-
-        List<Problem> problems = taskMapper.getSolveingInstances(loginUser.getEmail(), groups, limit, offset);
+        List<Problem> problems = taskMapper.getSolveingInstances(loginUser.getEmail(), limit, offset);
 
         map.put("data", problems);
-        map.put("count", taskMapper.getSolveingCount(loginUser.getEmail(), groups));
+        map.put("count", taskMapper.getSolveingCount(loginUser.getEmail()));
         return map;
     }
 

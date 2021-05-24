@@ -265,11 +265,7 @@ public class ProcessServiceImpl implements ProcessService {
     public R updateNodeRole(ProcessNodeRole processNodeRole) {
         UpdateWrapper<ProcessNodeRole> wrapper = new UpdateWrapper<ProcessNodeRole>().eq("node_id", processNodeRole.getNodeId());
         int update = processNodeRoleMapper.update(processNodeRole, wrapper);
-        if(update == 1){
-            return ReturnConstants.SUCCESS;
-        } else {
-            return ReturnConstants.FAILURE;
-        }
+        return ReturnConstants.SUCCESS;
     }
 
     @Override

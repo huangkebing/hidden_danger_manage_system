@@ -11,9 +11,11 @@ import com.hkb.hdms.mapper.TypeMapper;
 import com.hkb.hdms.mapper.UserTypeMapper;
 import com.hkb.hdms.model.pojo.Type;
 import com.hkb.hdms.model.pojo.User;
+import com.hkb.hdms.model.pojo.UserRole;
 import com.hkb.hdms.model.pojo.UserType;
 import com.hkb.hdms.model.vo.QueryTypeVo;
 import com.hkb.hdms.model.vo.TypeVo;
+import com.hkb.hdms.service.RoleService;
 import com.hkb.hdms.service.TypeService;
 import com.mysql.cj.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,15 +38,18 @@ public class TypeServiceImpl extends ServiceImpl<TypeMapper, Type> implements Ty
 
     private final UserTypeMapper userTypeMapper;
 
+    private final RoleService roleService;
+
     private final TypeMapper typeMapper;
 
     private final HttpSession session;
 
     @Autowired
-    public TypeServiceImpl(UserTypeMapper userTypeMapper, TypeMapper typeMapper, HttpSession session) {
+    public TypeServiceImpl(UserTypeMapper userTypeMapper, TypeMapper typeMapper, HttpSession session, RoleService roleService) {
         this.userTypeMapper = userTypeMapper;
         this.typeMapper = typeMapper;
         this.session = session;
+        this.roleService = roleService;
     }
 
     @Override
@@ -130,6 +135,10 @@ public class TypeServiceImpl extends ServiceImpl<TypeMapper, Type> implements Ty
     @Override
     public List<TypeVo> getQuestionFilterByUser() {
         User user = (User) session.getAttribute(Constants.LOGIN_USER_KEY);
+        UserRole role = roleService.getById(user.getRole());
+        if(role.getQuestion() == 0){
+            return typeMapper.selectAll();
+        }
         return typeMapper.selectTypesWithUser(user.getId());
     }
 }

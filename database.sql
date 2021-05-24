@@ -137,3 +137,14 @@ create table `hdms_problem_observer` (
     `modify` timestamp not null comment '修改时间',
     primary key (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+#任务处理人记录表
+create table `hdms_task_handler` (
+    `id` int unsigned not null auto_increment comment 'id',
+    `instance_id` varchar(64) not null comment '流程实例id',
+    `task_id` varchar(64) not null comment '任务id',
+    `email` varchar(25) not null comment '用户邮箱',
+    `create` timestamp not null comment '创建时间',
+    `modify` timestamp not null comment '修改时间',
+    primary key (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

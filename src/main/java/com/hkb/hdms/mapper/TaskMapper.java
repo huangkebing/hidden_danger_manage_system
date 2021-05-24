@@ -12,17 +12,17 @@ import java.util.List;
  */
 @Repository
 public interface TaskMapper {
-    List<Problem> getTodoInstances(@Param("email") String email, @Param("groups") List<String> groups, int limit , int offset);
+    List<Problem> getTodoInstances(@Param("email") String email, int limit , int offset);
 
-    Long getTodoCount(@Param("email") String email, @Param("groups") List<String> groups);
+    Long getTodoCount(@Param("email") String email);
 
-    List<Problem> getHistoryInstances(@Param("email") String email, @Param("groups") List<String> groups, int limit , int offset,String name, String priority, String begin, String end);
+    List<Problem> getHistoryInstances(@Param("email") String email, int limit , int offset,String name, String priority, String begin, String end);
 
-    Long getHistoryCount(@Param("email") String email, @Param("groups") List<String> groups, String name, String priority, String begin, String end);
+    Long getHistoryCount(@Param("email") String email, String name, String priority, String begin, String end);
 
-    List<Problem> getSolveingInstances(@Param("email") String email, @Param("groups") List<String> groups, int limit , int offset);
+    List<Problem> getSolveingInstances(@Param("email") String email, int limit , int offset);
 
-    Long getSolveingCount(@Param("email") String email, @Param("groups") List<String> groups);
+    Long getSolveingCount(@Param("email") String email);
 
     void deleteHiUsers(String taskId, String instanceId);
 

@@ -1,13 +1,11 @@
 package com.hkb.hdms.utils;
 
 import com.hkb.hdms.base.Constants;
-import com.hkb.hdms.base.MailConstants;
 import com.hkb.hdms.mapper.TaskMapper;
 import com.hkb.hdms.mapper.UserMapper;
 import com.hkb.hdms.model.pojo.Problem;
 import com.hkb.hdms.model.pojo.User;
 import lombok.extern.slf4j.Slf4j;
-import org.activiti.api.runtime.shared.identity.UserGroupManager;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -32,14 +30,12 @@ public class CronUtil {
     private final UserMapper userMapper;
     private final TaskMapper taskMapper;
     private final CronMailSender mailSender;
-    private final UserGroupManager userGroupManager;
     private final RedisTemplate<String,Object> redisTemplate;
 
     @Autowired
-    public CronUtil(UserMapper userMapper, TaskMapper taskMapper, UserGroupManager userGroupManager, CronMailSender mailSender, RedisTemplate<String, Object> redisTemplate) {
+    public CronUtil(UserMapper userMapper, TaskMapper taskMapper, CronMailSender mailSender, RedisTemplate<String, Object> redisTemplate) {
         this.userMapper = userMapper;
         this.taskMapper = taskMapper;
-        this.userGroupManager = userGroupManager;
         this.mailSender = mailSender;
         this.redisTemplate = redisTemplate;
     }
@@ -47,12 +43,11 @@ public class CronUtil {
     /**
      * 本来打算用线程池，多线程来处理数据，然后一直报莫名其妙的错，先单线程写一下算了
      */
-    @Scheduled(cron="0 30 7 * * ?")
+    @Scheduled(cron="0 0 8 * * ?")
     public void CronJobMethod() {
         List<User> users = userMapper.selectList(null);
         for (User user : users) {
-            List<String> groups = userGroupManager.getUserGroups(user.getEmail());
-            List<Problem> problems = taskMapper.getTodoInstances(user.getEmail(), groups, Integer.MAX_VALUE, 0);
+            List<Problem> problems = taskMapper.getTodoInstances(user.getEmail(), Integer.MAX_VALUE, 0);
             if (ObjectUtils.isNotEmpty(problems)) {
                 mailSender.sendMail(problems, user, user.getEmail());
             }
