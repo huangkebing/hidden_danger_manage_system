@@ -807,17 +807,29 @@
             type: "GET",
             url: basePath + "/user/getUserById/" + target.attr("userid"),
             success: function (result) {
-                $("#userTipName").html(result.username);
-                $("#userTipRole").html(result.role.name);
-                $("#userTipEmail").html(result.email);
-                $("#userTipPhone").html(result.phone);
-                $("#userTipRemark").html(result.remark);
-                var index = layer.open({
-                    title: '用户信息',
-                    type: 1,
-                    area: ['300px', '300px'],
-                    content: $("#userTip"),
-                })
+                if(result === ""){
+                    layer.msg("该用户已离职", {icon: 2})
+                } else{
+                    $("#userTipName").html(result.username);
+                    $("#userTipRole").html(result.role.name);
+                    $("#userTipEmail").html(result.email);
+                    if (result.phone == undefined) {
+                        $("#userTipPhone").html("未填写");
+                    } else {
+                        $("#userTipPhone").html(result.phone);
+                    }
+                    if (result.remark == undefined) {
+                        $("#userTipRemark").html("未填写");
+                    } else {
+                        $("#userTipRemark").html(result.remark);
+                    }
+                    var index = layer.open({
+                        title: '用户信息',
+                        type: 1,
+                        area: ['300px', '300px'],
+                        content: $("#userTip"),
+                    })
+                }
             },
             error: function () {
                 layer.msg('系统错误，请联系系统管理员', {icon: 2});

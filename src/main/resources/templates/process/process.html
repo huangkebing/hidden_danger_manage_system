@@ -252,7 +252,7 @@
                     title: "修改流程",
                 });
             } else if (obj.event === 'delete') {
-                layer.confirm('确定删除该流程吗？同个部署id下的流程都会被删除，请慎重！', {icon: 3, title: '提示'}, function (index) {
+                layer.confirm('确定删除该流程吗？已投入使用的流程建议保留，请慎重！', {icon: 3, title: '提示'}, function (index) {
                     $.ajax({
                         type: "POST",
                         url: basePath + "/process/deleteProcess",

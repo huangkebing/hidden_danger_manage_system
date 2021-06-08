@@ -206,7 +206,7 @@
                     }
                 });
             } else if (obj.event === 'delete') {
-                layer.confirm('你确定要删除该隐患类型吗?', {icon: 3, title: '提示'}, function (index) {
+                layer.confirm('你确定要删除该隐患类型吗?已投入使用的隐患请谨慎操作!', {icon: 3, title: '提示'}, function (index) {
                     $.ajax({
                         type: "POST",
                         url: basePath + "/question/deleteQuestion",
